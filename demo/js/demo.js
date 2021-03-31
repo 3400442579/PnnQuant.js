@@ -62,27 +62,28 @@ function quantizeImage(gl, result, width) {
 		
 		var img = document.createElement("img");
 		img.onload = function() {			
-			$("#redu h4").css("width", ((img.naturalWidth | img.width) - 10) + "px");
+			$("#redu h4").css("width", ($(this).width() - 10) + "px");
 		};
 		$redu.append(img);
 	}	
-	img.width = width, img.height = Math.ceil(result.img8.length / width);	
 		
 	var pal = new Uint32Array(result.pal8);
 	var can = document.createElement("canvas"),
 	ctx = can.getContext("2d");
 
 	can.width = width;
-	can.height = img.height;
+	can.height = Math.ceil(result.img8.length / width);
 
 	ctx.imageSmoothingEnabled = ctx.imageSmoothingEnabled = ctx.webkitImageSmoothingEnabled = ctx.msImageSmoothingEnabled = false;
 
 	var imgd = ctx.createImageData(can.width, can.height);
-	var buf8 = new Uint8ClampedArray(result.img8.buffer);
-	imgd.data.set(buf8);
+	imgd.data.set(result.img8);
 
 	ctx.putImageData(imgd, 0, 0);
 	img.src = can.toDataURL(result.type);
+	
+	$("#orig").find("img").css({"max-width": "1280px", "max-height": "1024px"}); 
+	$redu.find("img").css({"max-width": "1280px", "max-height": "1024px"});						
 	
 	var $palt = $("#palt");	
 	var colorCells = drawPalette(pal, pal.length, $palt.width(), $palt.height(), 32);	
@@ -90,12 +91,12 @@ function quantizeImage(gl, result, width) {
 		
 	if("image/gif" == result.type && !pngOnly) {
 		try {
-			var buf = new Uint8Array(width * img.height + 1000);
-			var gf = new GifWriter(buf, width, img.height);
+			var buf = new Uint8Array(width * can.height + 1000);
+			var gf = new GifWriter(buf, width, can.height);
 			var opts = {palette: toRGBPalette(pal)};
 			if(result.transparent > -1)
 				opts.transparent = result.transparent;
-			gf.addFrame(0, 0, width, img.height, result.indexedPixels, opts);
+			gf.addFrame(0, 0, width, can.height, result.indexedPixels, opts);
 			var data = buf.slice(0, gf.end());
 			var reader = new FileReader();
 			reader.onloadend = function() {					
@@ -221,8 +222,8 @@ function createImage(id, imgUrl, ev) {
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
-					opts.width = srcImg.naturalWidth | srcImg.width;
-					opts.height = srcImg.naturalHeight | srcImg.height;
+					opts.width = Math.min(srcImg.naturalWidth | srcImg.width, 1280);
+					opts.height = Math.min(srcImg.naturalHeight | srcImg.height, 1024);
 					$("#orig h4").css("width", (opts.width - 10) + "px");
 					$orig.append(srcImg);							
 				});
