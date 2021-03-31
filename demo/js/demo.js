@@ -222,8 +222,8 @@ function createImage(id, imgUrl, ev) {
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
-					opts.width = Math.min(srcImg.naturalWidth | srcImg.width, 1280);
-					opts.height = Math.min(srcImg.naturalHeight | srcImg.height, 1024);
+					opts.width = Math.min(srcImg.naturalWidth | srcImg.width, 1024);
+					opts.height = Math.min(srcImg.naturalHeight | srcImg.height, 800);
 					$("#orig h4").css("width", (opts.width - 10) + "px");
 					$orig.append(srcImg);							
 				});
