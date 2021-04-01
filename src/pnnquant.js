@@ -6,6 +6,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 (function(){
 	function PnnQuant(opts) {
 		this.opts = opts || {};
+		this.alphaThreshold = 0;
 		this.hasSemiTransparency = false;		
 		this.m_transparentPixelIndex = -1;
 		this.m_transparentColor = 0;
@@ -241,6 +242,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
+		if (this.hasSemiTransparency && a <= this.alphaThreshold)
+			return k;
 
 		var mindist = 1e100;
 		for (var i = 0; i < nMaxColors; i++)
@@ -278,6 +281,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
+		if (this.hasSemiTransparency && a <= this.alphaThreshold)
+			return k;
 
 		var closest = closestMap[pixel];
 		if (!closest)
@@ -463,18 +468,20 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	PnnQuant.prototype.quantizeImage = function quantizeImage() {
 		var pixels = this.opts.pixels, width = this.opts.width, height = this.opts.height,
 			nMaxColors = this.opts.colors, dither = this.opts.dithering;
+		if(this.opts.alphaThreshold)
+			this.alphaThreshold = this.opts.alphaThreshold;
 		
 		for (var i = 0; i < pixels.length; ++i) {
 			var a = (pixels[i] >>> 24) & 0xff;
 			
 			if (a < 0xff)
-			{
-				this.hasSemiTransparency = true;
-				if (a == 0)
-				{
+			{				
+				if (a == 0) {
 					this.m_transparentPixelIndex = i;
 					this.m_transparentColor = pixels[i];
 				}
+				else
+					this.hasSemiTransparency = true;
 			}
 		}
 
@@ -525,7 +532,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnQuant.prototype.getTransparentIndex = function getTransparentIndex() {
-		return this.m_transparentPixelIndex;
+		return this.m_transparentPixelIndex > -1 ? 0 : -1;
 	};
 
 	// expose
