@@ -14,6 +14,7 @@ var opts = {
     colors: 256,             /*  desired palette size  */
     dithering: true,         /*  whether to use dithering or not  */
     pixels: pixels,         /*  source pixels in RGBA 32 bits  */
+    alphaThreshold: 254,    /*  consider as transparent if alpha value <= 254  */
     width: _width, height: _height
 };
 
