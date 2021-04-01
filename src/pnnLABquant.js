@@ -316,8 +316,16 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = (pixels[i] >>> 16) & 0xff,
 			a = (pixels[i] >>> 24) & 0xff;
 			
-			if(a <= this.alphaThreshold)
-				a = 0;
+			if(a <= this.alphaThreshold) {
+				if (bins[0] == null)
+					bins[0] = new PnnBin();
+				bins[0].cnt++;
+				continue;
+			}				
+			if(a < 255) {
+				var alpha = a * 2;
+				a = alpha > 255 ? 255 : alpha;
+			}
 			
 			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
 			var lab1 = getLab(a, r, g, b);
