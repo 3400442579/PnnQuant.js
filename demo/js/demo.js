@@ -1,6 +1,6 @@
 var cfg_edited = false;
 var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
-var pngOnly = location.search != '' && location.search.toLowerCase().indexOf('png');
+var pngOnly = location.search.toLowerCase().indexOf('png');
 
 var dflt_opts = {
 	colors: 256,
@@ -54,6 +54,14 @@ function toRGBPalette(palette) {
 	return rgbPalette;
 }
 
+function getPngUrl(ctx, can, pixel32s) {
+	var imgd = ctx.createImageData(can.width, can.height);
+	imgd.data.set(new Uint8Array(pixel32s.buffer));
+
+	ctx.putImageData(imgd, 0, 0);
+	return can.toDataURL();
+}
+
 function quantizeImage(gl, result, width) {				
 	var $redu = $("#redu");
 	var img = $redu.find("img")[0];
@@ -75,15 +83,6 @@ function quantizeImage(gl, result, width) {
 	can.height = Math.ceil(result.img8.length / width);
 
 	ctx.imageSmoothingEnabled = ctx.imageSmoothingEnabled = ctx.webkitImageSmoothingEnabled = ctx.msImageSmoothingEnabled = false;
-
-	var imgd = ctx.createImageData(can.width, can.height);
-	imgd.data.set(new Uint8Array(result.img8.buffer));
-
-	ctx.putImageData(imgd, 0, 0);
-	img.src = can.toDataURL(result.type);
-	
-	$("#orig").find("img").css({"max-width": "1280px", "max-height": "1024px"}); 
-	$redu.find("img").css({"max-width": "1280px", "max-height": "1024px"});						
 	
 	var $palt = $("#palt");	
 	var colorCells = drawPalette(pal, pal.length, $palt.width(), $palt.height(), 32);	
@@ -105,13 +104,16 @@ function quantizeImage(gl, result, width) {
 
 			reader.readAsDataURL(new Blob([data], {type: result.type}));
 			img.onerror = function () { 
-				img.src = can.toDataURL(result.type);
+				img.src = getPngUrl(ctx, can, result.img8);
 			};
 		}
 		catch(err) {
+			img.src = getPngUrl(ctx, can, result.img8);
 			console.error(err);
 		}
-	}	
+	}
+	else
+		img.src = getPngUrl(ctx, can, result.img8);
 }
 
 function doProcess(gl, ti, opts) {	
@@ -188,6 +190,35 @@ function allowDrop(ev) {
 	$(ev.target).css("border", "4px dashed silver");
 }
 
+function drawImageFill(img){
+	var maxWidth = 1024, maxHeight = 800;
+	var width = img.naturalWidth | img.width;
+	var height = img.naturalHeight | img.height;
+	if(width <= maxWidth && height <= maxHeight)
+		return null;
+	
+	var can = document.createElement("canvas");
+	can.width = maxWidth;
+	can.height = maxHeight;
+	var ctx = can.getContext('2d');
+	//detect closet value to canvas edges
+    if(height / width * can.width > can.height)
+    {
+		// fill based on less image section loss if width matched
+		height = height / width * can.width;
+		var offset = (height - can.height) / 2;
+		ctx.drawImage(img, 0, -offset, can.width, height);
+    }
+    else
+    {
+		// fill based on less image section loss if height matched
+		width = width / can.height * can.height;
+		var offset = (width - can.width) / 2;
+		ctx.drawImage(img, -offset , 0, width, can.height);
+    }
+    return can.toDataURL();
+}
+
 function createImage(id, imgUrl, ev) {
 	var ti = new Timer();
 	ti.start();	
@@ -215,6 +246,12 @@ function createImage(id, imgUrl, ev) {
 		img.onload = function() {			
 			if(!$orig.attr("disabled")) {
 				var srcImg = this;
+				var srcUrl = drawImageFill(srcImg);
+				if(srcUrl != null) {
+					srcImg.src = srcUrl;
+					return;
+				}
+				
 				var id = srcImg.name;
 				var opts = getOpts(id);
 				
@@ -222,8 +259,8 @@ function createImage(id, imgUrl, ev) {
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
-					opts.width = Math.min(srcImg.naturalWidth | srcImg.width, 1024);
-					opts.height = Math.min(srcImg.naturalHeight | srcImg.height, 800);
+					opts.width = srcImg.naturalWidth | srcImg.width;
+					opts.height = srcImg.naturalHeight | srcImg.height;
 					$("#orig h4").css("width", (opts.width - 10) + "px");
 					$orig.append(srcImg);							
 				});
