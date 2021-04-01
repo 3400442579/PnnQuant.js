@@ -90,6 +90,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = (pixels[i] >>> 16) & 0xff,
 			a = (pixels[i] >>> 24) & 0xff;
 			
+			if(a <= this.alphaThreshold)
+				a = 0;
+			
 			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
 			if (bins[index] == null)
 				bins[index] = new PnnBin();
