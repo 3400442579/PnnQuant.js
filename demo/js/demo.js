@@ -1,6 +1,6 @@
 var cfg_edited = false;
 var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
-var pngOnly = location.search.toLowerCase().indexOf('png');
+var pngOnly = location.search.toLowerCase().indexOf('png') > -1;
 
 var dflt_opts = {
 	colors: 256,
