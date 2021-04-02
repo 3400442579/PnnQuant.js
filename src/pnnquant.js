@@ -101,10 +101,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				bins[index].cnt++;
 				continue;
 			}				
-			if(a < 255) {
-				var alpha = a * 2;
-				a = alpha > 255 ? 255 : alpha;
-			}
 			
 			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
 			if (bins[index] == null)
@@ -221,7 +217,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			bins[nb.fw].bk = nb.bk;
 			nb.mtm = 0xFFFF;
 		}
-		delete heap;
 
 		/* Fill palette */
 		var k = 0;
