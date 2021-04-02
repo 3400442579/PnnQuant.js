@@ -290,6 +290,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
+		if (a <= this.alphaThreshold)
+            return k;
 
 		var closest = closestMap[pixel];
 		if (!closest)
