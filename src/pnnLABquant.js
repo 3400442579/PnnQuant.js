@@ -357,7 +357,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		}
 		
 		var proportional = sqr(nMaxColors) / maxbins;
-		if(nMaxColors < 16)
+		if(nMaxColors < 16 || this.hasSemiTransparency)
 			quan_rt = -1;
 		else if ((proportional < .022 || proportional > .5) && nMaxColors < 64)
 			quan_rt = 0;
@@ -380,10 +380,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		else
 			ratio = Math.min(1.0, Math.pow(nMaxColors, 2.31) / maxbins);
 		
-		if (quan_rt < 0 || this.hasSemiTransparency)
-			ratio += 0.5;
-		
-		ratio = Math.min(1.0, ratio);
+		if (quan_rt < 0) {
+			ratio += 0.5;		
+			ratio = Math.min(1.0, ratio);
+		}
 		
 		/* Initialize nearest neighbors and build heap of them */
 		var heap = new Uint32Array(bins.length + 1);
