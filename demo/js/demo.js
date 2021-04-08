@@ -255,7 +255,7 @@ function createImage(id, imgUrl, ev) {
 				var id = srcImg.name;
 				var opts = getOpts(id);
 				
-				$orig.attr("pointer-events", "none");				
+				$orig.css("pointer-events", "none");				
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
