@@ -127,7 +127,7 @@ function doProcess(gl, ti, opts) {
 					transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				
 				$("#btn_upd").removeAttr("disabled").text("Update");
-				$("#orig").css("pointer-event", "");
+				$("#orig").css("pointer-events", "");
 			});
 		}, 0);
 	}
@@ -244,7 +244,7 @@ function createImage(id, imgUrl, ev) {
 		img = document.createElement("img");
 		img.crossOrigin = '';	
 		img.onload = function() {			
-			if($orig.css("pointer-event") != "none") {
+			if($orig.css("pointer-events") != "none") {
 				var srcImg = this;
 				var srcUrl = drawImageFill(srcImg);
 				if(srcUrl != null) {
@@ -255,7 +255,7 @@ function createImage(id, imgUrl, ev) {
 				var id = srcImg.name;
 				var opts = getOpts(id);
 				
-				$orig.attr("pointer-event", "none");				
+				$orig.attr("pointer-events", "none");				
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
@@ -271,7 +271,7 @@ function createImage(id, imgUrl, ev) {
 							quantizeImage(gl, e.data, opts.width);
 							
 							$("#btn_upd").removeAttr("disabled").text("Update");
-							$("#orig").css("pointer-event", "");
+							$("#orig").css("pointer-events", "");
 						});
 					}
 				}
@@ -281,7 +281,7 @@ function createImage(id, imgUrl, ev) {
 				else {
 					ti.mark("invalid image", function() {				
 						$("#btn_upd").removeAttr("disabled").text("Update");
-						$("#orig").css("pointer-event", "");
+						$("#orig").css("pointer-events", "");
 					});
 				}
 				
