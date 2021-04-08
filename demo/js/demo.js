@@ -127,7 +127,7 @@ function doProcess(gl, ti, opts) {
 					transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				
 				$("#btn_upd").removeAttr("disabled").text("Update");
-				$("#orig").removeAttr("disabled");
+				$("#orig").css("pointer-event", "");
 			});
 		}, 0);
 	}
