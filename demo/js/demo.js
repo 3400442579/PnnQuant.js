@@ -191,7 +191,7 @@ function allowDrop(ev) {
 }
 
 function drawImageFill(img){
-	var maxWidth = 1024, maxHeight = 800;
+	var maxWidth = 640, maxHeight = 480;
 	var width = img.naturalWidth | img.width;
 	var height = img.naturalHeight | img.height;
 	if(width <= maxWidth && height <= maxHeight)
@@ -244,7 +244,7 @@ function createImage(id, imgUrl, ev) {
 		img = document.createElement("img");
 		img.crossOrigin = '';	
 		img.onload = function() {			
-			if(!$orig.attr("disabled")) {
+			if($orig.css("pointer-event") != "none") {
 				var srcImg = this;
 				var srcUrl = drawImageFill(srcImg);
 				if(srcUrl != null) {
@@ -255,7 +255,7 @@ function createImage(id, imgUrl, ev) {
 				var id = srcImg.name;
 				var opts = getOpts(id);
 				
-				$orig.attr("disabled", true);				
+				$orig.attr("pointer-event", "none");				
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
@@ -271,7 +271,7 @@ function createImage(id, imgUrl, ev) {
 							quantizeImage(gl, e.data, opts.width);
 							
 							$("#btn_upd").removeAttr("disabled").text("Update");
-							$("#orig").removeAttr("disabled");
+							$("#orig").css("pointer-event", "");
 						});
 					}
 				}
@@ -281,7 +281,7 @@ function createImage(id, imgUrl, ev) {
 				else {
 					ti.mark("invalid image", function() {				
 						$("#btn_upd").removeAttr("disabled").text("Update");
-						$("#orig").removeAttr("disabled");
+						$("#orig").css("pointer-event", "");
 					});
 				}
 				
