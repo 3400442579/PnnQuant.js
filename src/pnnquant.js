@@ -90,18 +90,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = (pixels[i] >>> 16) & 0xff,
 			a = (pixels[i] >>> 24) & 0xff;
 			
-			if(a <= this.alphaThreshold) {
-				var r0 = (this.m_transparentColor & 0xff),
-				g0 = (this.m_transparentColor >>> 8) & 0xff,
-				b0 = (this.m_transparentColor >>> 16) & 0xff,
-				a0 = (this.m_transparentColor >>> 24) & 0xff;
-				var index = getARGBIndex(a0, r0, g0, b0, this.hasSemiTransparency);
-				if (bins[index] == null)
-					bins[index] = new PnnBin();
-				bins[index].cnt++;
-				continue;
-			}				
-			
 			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
 			if (bins[index] == null)
 				bins[index] = new PnnBin();
