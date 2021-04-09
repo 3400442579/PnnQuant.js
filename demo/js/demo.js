@@ -191,7 +191,10 @@ function allowDrop(ev) {
 }
 
 function drawImageFill(img){
-	var maxWidth = 640, maxHeight = 480;
+	if(!isExternal(img.src))
+		return null;
+	
+	var maxWidth = document.documentElement.clientWidth / 3.0, maxHeight = document.documentElement.clientHeight / 2.2;
 	var width = img.naturalWidth | img.width;
 	var height = img.naturalHeight | img.height;
 	if(width <= maxWidth && height <= maxHeight)
