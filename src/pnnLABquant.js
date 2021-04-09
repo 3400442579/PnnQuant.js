@@ -259,7 +259,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			var lab2 = new Lab();
 			lab2.alpha = bins[i].ac; lab2.L = bins[i].Lc; lab2.A = bins[i].Ac; lab2.B = bins[i].Bc;
-			var nerr = nerr2 * sqr(lab2.alpha - lab1.alpha) / Math.exp(1.7);
+			var nerr = nerr2 * sqr(lab2.alpha - lab1.alpha) / Math.exp(1.5);
 			if (nerr >= err)
 				continue;
 				
@@ -357,7 +357,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		}
 		
 		var proportional = sqr(nMaxColors) / maxbins;
-		if(nMaxColors < 16 || this.hasSemiTransparency)
+		if(nMaxColors < 16 || (this.hasSemiTransparency && nMaxColors < 32))
 			quan_rt = -1;
 		else if ((proportional < .022 || proportional > .5) && nMaxColors < 64)
 			quan_rt = 0;
