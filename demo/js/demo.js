@@ -194,7 +194,7 @@ function drawImageFill(img){
 	if(!isExternal(img.src))
 		return null;
 	
-	var maxWidth = document.documentElement.clientWidth / 3.0, maxHeight = document.documentElement.clientHeight / 2.2;
+	var maxWidth = document.documentElement.clientWidth / 2.2, maxHeight = document.documentElement.clientHeight / 2.2;
 	var width = img.naturalWidth | img.width;
 	var height = img.naturalHeight | img.height;
 	if(width <= maxWidth && height <= maxHeight)
