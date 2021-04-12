@@ -641,7 +641,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					var a_pix = ditherPixel[3];
 
 					var c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;
-					qPixels[pixelIndex] = noBias ? nearestColorIndex(this.palette, nMaxColors, c1) : closestColorIndex(this.palette, nMaxColors, c1);
+					if(a == 0 && a_pix > 0)
+						qPixels[pixelIndex] = 0;
+					else
+						qPixels[pixelIndex] = noBias ? nearestColorIndex(this.palette, nMaxColors, c1) : closestColorIndex(this.palette, nMaxColors, c1);
 
 					var c2 = this.palette[qPixels[pixelIndex]];
 					var r2 = (c2 & 0xff),
