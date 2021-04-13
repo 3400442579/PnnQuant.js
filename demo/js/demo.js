@@ -208,7 +208,7 @@ function drawImageScaled(img){
 	ctx.filter = "blur" + steps + "px";
 	ctx.drawImage(img, 0, 0, width, height,
         0, 0, can.width,  can.height);
-	$("#orig").css({"maxWidth": can.width, "maxHeight": can.height});
+	img.width = can.width; img.height = can.height;
     return can.toDataURL();
 }
 
