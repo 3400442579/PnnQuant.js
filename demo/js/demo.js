@@ -239,7 +239,7 @@ function createImage(id, imgUrl, ev) {
 				var srcImg = this;
 				var srcUrl = drawImageScaled(srcImg);
 				if(srcUrl != null) {
-					srcImg.src = srcUrl;
+					srcImg.src = srcUrl;					
 					return;
 				}
 				
@@ -252,7 +252,8 @@ function createImage(id, imgUrl, ev) {
 					opts.isHQ = $("#radHQ").is(":checked");
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
-					$("#orig h4").css("width", (opts.width - 10) + "px");					
+					$("#orig h4").css("width", (opts.width - 10) + "px");
+					$(srcImg).css({width: "100%", height: "100%"});
 					$orig.append(srcImg);							
 				});
 				
