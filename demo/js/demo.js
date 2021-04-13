@@ -239,6 +239,7 @@ function createImage(id, imgUrl, ev) {
 				var srcImg = this;
 				var srcUrl = drawImageScaled(srcImg);
 				if(srcUrl != null) {
+					$(srcImg).hide();
 					srcImg.src = srcUrl;					
 					return;
 				}
@@ -276,8 +277,7 @@ function createImage(id, imgUrl, ev) {
 					});
 				}
 				
-				srcImg.width = opts.width + "px";
-				srcImg.height = opts.height + "px";
+				$(srcImg).show();
 				dragLeave(ev);
 			}
 		};
