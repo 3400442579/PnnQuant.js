@@ -208,7 +208,6 @@ function drawImageScaled(img){
 	ctx.filter = "blur" + steps + "px";
 	ctx.drawImage(img, 0, 0, width, height,
         0, 0, can.width,  can.height);
-	img.style.width = "100%"; img.style.height = "100%";
     return can.toDataURL();
 }
 
