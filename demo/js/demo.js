@@ -190,7 +190,7 @@ function allowDrop(ev) {
 	$(ev.target).css("border", "4px dashed silver");
 }
 
-function drawImageFill(img){
+function drawImageScaled(img){
 	if(!isExternal(img.src))
 		return null;
 	
@@ -204,21 +204,8 @@ function drawImageFill(img){
 	can.width = maxWidth;
 	can.height = maxHeight;
 	var ctx = can.getContext('2d');
-	//detect closet value to canvas edges
-    if(height / width * can.width > can.height)
-    {
-		// fill based on less image section loss if width matched
-		height = height / width * can.width;
-		var offset = (height - can.height) / 2;
-		ctx.drawImage(img, 0, -offset, can.width, height);
-    }
-    else
-    {
-		// fill based on less image section loss if height matched
-		width = width / can.height * can.height;
-		var offset = (width - can.width) / 2;
-		ctx.drawImage(img, -offset , 0, width, can.height);
-    }
+	ctx.drawImage(img, 0, 0, width, height,     // source rectangle
+        0, 0, can.width, can.height); // destination rectangle
     return can.toDataURL();
 }
 
@@ -228,8 +215,7 @@ function createImage(id, imgUrl, ev) {
 	ti.mark("image loaded");
 	var $orig = $("#orig");
 	var img = $orig.find("img")[0];
-	if(!img) {
-		$orig.html("<h4>Original</h4>");
+	if(!img) {		
 		var gl = webgl_detect();
 		if (gl) {
 			gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);			
@@ -249,7 +235,7 @@ function createImage(id, imgUrl, ev) {
 		img.onload = function() {			
 			if($orig.css("pointer-events") != "none") {
 				var srcImg = this;
-				var srcUrl = drawImageFill(srcImg);
+				var srcUrl = drawImageScaled(srcImg);
 				if(srcUrl != null) {
 					srcImg.src = srcUrl;
 					return;
@@ -258,7 +244,7 @@ function createImage(id, imgUrl, ev) {
 				var id = srcImg.name;
 				var opts = getOpts(id);
 				
-				$orig.css("pointer-events", "none");				
+				$orig.css("pointer-events", "none").html("<h4>Original</h4>");
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
