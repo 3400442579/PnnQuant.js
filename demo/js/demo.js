@@ -253,7 +253,7 @@ function createImage(id, imgUrl, ev) {
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
 					$("#orig h4").css("width", (opts.width - 10) + "px");
-					$(srcImg).css({"maxWidth": opts.width, "maxHeight": opts.height});
+					$orig.css({"maxWidth": opts.width, "maxHeight": opts.height});
 					$orig.append(srcImg);							
 				});
 				
