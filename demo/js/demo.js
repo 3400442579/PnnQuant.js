@@ -204,8 +204,13 @@ function drawImageScaled(img){
 	can.width = maxWidth;
 	can.height = maxHeight;
 	var ctx = can.getContext('2d');
-	ctx.drawImage(img, 0, 0, width, height,     // source rectangle
-        0, 0, can.width, can.height); // destination rectangle
+	var hRatio = can.width  / width;
+	var vRatio =  can.height / height;
+	var ratio  = Math.min(hRatio, vRatio);
+	var centerShift_x = (can.width - width * ratio) / 2;
+	var centerShift_y = (can.height - height * ratio) / 2;  
+	ctx.drawImage(img, 0, 0, width, height,
+        centerShift_x, centerShift_y, width * ratio,  height * ratio);
     return can.toDataURL();
 }
 
