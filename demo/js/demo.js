@@ -71,7 +71,7 @@ function quantizeImage(gl, result, width) {
 		var img = document.createElement("img");
 		$redu.append(img);
 	}
-	$("#orig, #redu").css("background", result.transparent > -1 ? "none" : "");
+	$("#orig, #redu").css("background", result.transparent > -1 ? "" : "none");
 	$("#orig h4, #redu h4").css("width", (width - 10) + "px");
 		
 	var pal = new Uint32Array(result.pal8);
