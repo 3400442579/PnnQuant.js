@@ -81,7 +81,7 @@ function quantizeImage(gl, result, width) {
 	can.width = width;
 	can.height = Math.ceil(result.img8.length / width);
 
-	ctx.imageSmoothingEnabled = ctx.imageSmoothingEnabled = ctx.webkitImageSmoothingEnabled = ctx.msImageSmoothingEnabled = false;
+	ctx.imageSmoothingQuality = "high";
 	
 	var $palt = $("#palt");	
 	var colorCells = drawPalette(pal, pal.length, $palt.width(), $palt.height(), 32);	
@@ -208,6 +208,7 @@ function drawImageScaled(img){
 	ctx.filter = "blur" + steps + "px";
 	ctx.drawImage(img, 0, 0, width, height,
         0, 0, can.width,  can.height);
+	$("#orig").css({"maxWidth": can.width, "maxHeight": can.height});
     return can.toDataURL();
 }
 
@@ -252,8 +253,7 @@ function createImage(id, imgUrl, ev) {
 					opts.isHQ = $("#radHQ").is(":checked");
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
-					$("#orig h4").css("width", (opts.width - 10) + "px");
-					$orig.css({"maxWidth": opts.width, "maxHeight": opts.height});
+					$("#orig h4").css("width", (opts.width - 10) + "px");					
 					$orig.append(srcImg);							
 				});
 				
