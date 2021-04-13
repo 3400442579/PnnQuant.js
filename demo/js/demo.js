@@ -252,8 +252,7 @@ function createImage(id, imgUrl, ev) {
 					opts.isHQ = $("#radHQ").is(":checked");
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
-					$("#orig h4").css("width", (opts.width - 10) + "px");
-					$(srcImg).css({width: opts.width + "px", height: opts.height + "px"});
+					$("#orig h4").css("width", (opts.width - 10) + "px");					
 					$orig.append(srcImg);							
 				});
 				
@@ -277,6 +276,8 @@ function createImage(id, imgUrl, ev) {
 					});
 				}
 				
+				srcImg.width = opts.width + "px";
+				srcImg.height = opts.height + "px";
 				dragLeave(ev);
 			}
 		};
