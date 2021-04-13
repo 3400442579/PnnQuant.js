@@ -199,17 +199,13 @@ function drawImageScaled(img){
 	if(width <= maxWidth && height <= maxHeight)
 		return null;
 	
-	var can = document.createElement("canvas");
-	can.width = maxWidth;
-	can.height = maxHeight;
+	var can = document.createElement("canvas");	
 	var ctx = can.getContext('2d');
-	var hRatio = can.width  / width;
-	var vRatio =  can.height / height;
-	var ratio  = Math.min(hRatio, vRatio);
-	var centerShift_x = (can.width - width * ratio) / 2;
-	var centerShift_y = (can.height - height * ratio) / 2;  
+	var ratio  = Math.min(maxWidth  / width, maxHeight / height);
+	can.width = width * ratio;
+	can.height = height * ratio;
 	ctx.drawImage(img, 0, 0, width, height,
-        centerShift_x, centerShift_y, width * ratio,  height * ratio);
+        0, 0, can.width,  can.height);
     return can.toDataURL();
 }
 
