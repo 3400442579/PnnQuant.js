@@ -240,12 +240,13 @@ function createImage(id, imgUrl, ev) {
 				var srcUrl = drawImageScaled(srcImg);
 				if(srcUrl != null) {
 					$(srcImg).hide();
-					srcImg.src = srcUrl;					
+					srcImg.src = srcUrl;
 					return;
 				}
 				
 				var id = srcImg.name;
 				var opts = getOpts(id);
+				$(srcImg).show();
 				
 				$orig.css("pointer-events", "none").html("<h4>Original</h4>");
 				ti.start();				
@@ -277,7 +278,6 @@ function createImage(id, imgUrl, ev) {
 					});
 				}
 				
-				$(srcImg).show();
 				dragLeave(ev);
 			}
 		};
