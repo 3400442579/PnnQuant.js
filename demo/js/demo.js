@@ -69,11 +69,10 @@ function quantizeImage(gl, result, width) {
 		$redu.html("<h4>Quantized</h4>");	
 		
 		var img = document.createElement("img");
-		img.onload = function() {			
-			$("#redu h4").css("width", ($(this).width() - 10) + "px");
-		};
 		$redu.append(img);
-	}	
+	}
+	$("#orig, #redu").css("background", result.transparent > -1 ? "none" : "");
+	$("#orig h4, #redu h4").css("width", (width - 10) + "px");
 		
 	var pal = new Uint32Array(result.pal8);
 	var can = document.createElement("canvas"),
@@ -122,12 +121,12 @@ function doProcess(gl, ti, opts) {
 	else {
 		setTimeout(function(){
 			ti.mark("reduced -> DOM", function() {
-				var	quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
+				var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
 				quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
 					transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				
 				$("#btn_upd").removeAttr("disabled").text("Update");
-				$("#orig").css("pointer-events", "");
+				$("#orig").css("pointer-events", "");				
 			});
 		}, 0);
 	}
