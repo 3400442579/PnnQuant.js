@@ -201,9 +201,11 @@ function drawImageScaled(img){
 	
 	var can = document.createElement("canvas");	
 	var ctx = can.getContext('2d');
-	var ratio  = Math.min(maxWidth  / width, maxHeight / height);
+	var ratio  = Math.min(maxWidth / width, maxHeight / height);
 	can.width = width * ratio;
 	can.height = height * ratio;
+	var steps = (width / can.width) >> 1;
+	ctx.filter = "blur" + steps + "px";
 	ctx.drawImage(img, 0, 0, width, height,
         0, 0, can.width,  can.height);
     return can.toDataURL();
@@ -251,6 +253,7 @@ function createImage(id, imgUrl, ev) {
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
 					$("#orig h4").css("width", (opts.width - 10) + "px");
+					$(srcImg).css({"maxWidth": opts.width, "maxHeight": opts.height});
 					$orig.append(srcImg);							
 				});
 				
