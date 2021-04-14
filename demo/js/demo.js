@@ -215,8 +215,7 @@ function createImage(id, imgUrl, ev) {
 	var ti = new Timer();
 	ti.start();	
 	ti.mark("image loaded");
-	var $orig = $("#orig");
-	var img = $orig.find("img")[0];
+	var img = $("#orig").find("img")[0];
 	if(!img) {		
 		var gl = webgl_detect();
 		if (gl) {
@@ -235,6 +234,7 @@ function createImage(id, imgUrl, ev) {
 		img = document.createElement("img");
 		img.crossOrigin = '';	
 		img.onload = function() {			
+			var $orig = $("#orig");
 			if($orig.css("pointer-events") != "none") {
 				var srcImg = this;
 				var srcUrl = drawImageScaled(srcImg);
@@ -245,17 +245,16 @@ function createImage(id, imgUrl, ev) {
 				}
 				
 				var id = srcImg.name;
-				var opts = getOpts(id);
-				$(srcImg).show();
+				var opts = getOpts(id);				
 				
-				$orig.css("pointer-events", "none").html("<h4>Original</h4>");
+				$orig.css("pointer-events", "none").html("<h4>Original</h4>").append(srcImg);
+				$(srcImg).show();
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
 					opts.isHQ = $("#radHQ").is(":checked");
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
-					$("#orig h4").css("width", (opts.width - 10) + "px");					
-					$orig.append(srcImg);							
+					$orig.find("h4").css("width", (opts.width - 10) + "px");							
 				});
 				
 				if(worker != null) {			
@@ -264,7 +263,7 @@ function createImage(id, imgUrl, ev) {
 							quantizeImage(gl, e.data, opts.width);
 							
 							$("#btn_upd").removeAttr("disabled").text("Update");
-							$("#orig").css("pointer-events", "");
+							$orig.css("pointer-events", "");
 						});
 					}
 				}
@@ -274,7 +273,7 @@ function createImage(id, imgUrl, ev) {
 				else {
 					ti.mark("invalid image", function() {				
 						$("#btn_upd").removeAttr("disabled").text("Update");
-						$("#orig").css("pointer-events", "");
+						$orig.css("pointer-events", "");
 					});
 				}
 				
