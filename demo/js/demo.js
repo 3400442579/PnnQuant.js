@@ -496,12 +496,14 @@ $(document).on("click", "img.th", function() {
 		document.body.addEventListener("keyup", keyBoardListener);
 	else
 		$("body").on("paste", retrieveImageFromClipboardAsBase64);
-	$("#orig").click(function() {
-		$(this).next().change(function(ev) {
-			$("#btn_upd").attr("disabled", true).text("Please wait...");
-			var id = baseName(this.files[0].name)[0];
-			loadImage(id, this.files[0], ev);
-		}).trigger("click");
+	
+	$("#orig").next().change(function(ev) {
+		$("#btn_upd").attr("disabled", true).text("Please wait...");
+		var id = baseName(this.files[0].name)[0];
+		loadImage(id, this.files[0], ev);
+	});
+	$("#orig").on("click", function() {
+		$(this).next().trigger("click");
 	});
 	$("img.th").css("z-index", "2").on("dragstart", dragStart)
 	$("img.th, #readme").hover(function() {
