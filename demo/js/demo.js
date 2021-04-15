@@ -89,12 +89,12 @@ function quantizeImage(gl, result, width) {
 		
 	if("image/gif" == result.type && !pngOnly) {
 		try {
-			var buf = new Uint8Array(width * can.height + 1000);
-			var gf = new GifWriter(buf, width, can.height);
-			var opts = {palette: toRGBPalette(pal)};
+			var buf = new Uint8Array(width * can.height * 1.2 + 1000);			
+			var gf = new GifWriter(buf, width, can.height, {palette: toRGBPalette(pal)});
 			if(result.transparent > -1)
-				opts.transparent = result.transparent;
-			gf.addFrame(0, 0, width, can.height, result.indexedPixels, opts);
+				gf.addFrame(0, 0, width, can.height, result.indexedPixels, {transparent: result.transparent});
+			else
+				gf.addFrame(0, 0, width, can.height);
 			var data = buf.slice(0, gf.end());
 			var reader = new FileReader();
 			reader.onloadend = function() {					
