@@ -204,10 +204,8 @@ function drawImageScaled(img){
 	var ratio  = Math.min(maxWidth / width, maxHeight / height);
 	can.width = width * ratio;
 	can.height = height * ratio;
-	var steps = (width / can.width) >> 1;
-	ctx.filter = "blur" + steps + "px";
 	ctx.drawImage(img, 0, 0, width, height,
-        0, 0, can.width,  can.height);
+        0, 0, can.width, can.height);
     return can.toDataURL();
 }
 
