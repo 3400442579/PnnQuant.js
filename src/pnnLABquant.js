@@ -347,7 +347,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var proportional = sqr(nMaxColors) / maxbins;
 		if(nMaxColors < 16 || (this.hasSemiTransparency && nMaxColors < 32))
 			quan_rt = -1;
-		else if ((proportional < .022 || proportional > .5) && nMaxColors < 64)
+		else if ((proportional < .018 || proportional > .5) && nMaxColors < 64)
 			quan_rt = 0;
 		
 		if (quan_rt > 0)
@@ -361,8 +361,12 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		}		
 
 		var h, l, l2;
-		if (quan_rt != 0 && nMaxColors < 64)
-			ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(3.845) / Object.keys(pixelMap).length);
+		if (quan_rt != 0 && nMaxColors < 64) {
+			if (proportional > .018 && proportional < .022)
+				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(4.732) / Object.keys(pixelMap).length);
+		else
+				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(3.845) / Object.keys(pixelMap).length);
+		}
 		else if (quan_rt > 0)
 			ratio = Math.min(1.0, Math.pow(nMaxColors, 1.05) / Object.keys(pixelMap).length);			
 		else
