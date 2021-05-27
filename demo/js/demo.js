@@ -355,6 +355,8 @@ function download(imgUrl, ev) {
 
 function dragStart(evt) {
 	var ev = evt.originalEvent;
+	if(!ev)
+		ev = evt;
 	ev.dataTransfer.files = [];
 	ev.dataTransfer.setData("text", ev.target.src);
 }
