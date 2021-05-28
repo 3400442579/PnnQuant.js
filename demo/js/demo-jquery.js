@@ -16,25 +16,22 @@ function getOpts(id) {
 		var opts = {};
 
 		for (var i in dflt_opts) {
-			var $el = document.querySelector("#" + i),
-				typ = $el.getAttribute("type"),
-				val = $el.value,
+			var $el = $("#" + i),
+				typ = $el.attr("type"),
+				val = $el.val(),
 				num = parseFloat(val);
 
-			opts[i] = typ == "checkbox" ? $el.getAttribute("checked") : isNaN(num) ? val : num;
+			opts[i] = typ == "checkbox" ? $el.prop("checked") : isNaN(num) ? val : num;
 		}
 
-		Object.assign(opts, dflt_opts);
+		return $.extend({}, dflt_opts, opts);
 	}
 	else
 		var opts = dflt_opts;
 
 	for (var i in dflt_opts) {
-		var el = document.querySelector("#" + i);
-		if(el) {
-			el.value = opts[i];
-			el.size = el.value.length;
-		}
+		var el = $("#" + i).val(opts[i])[0];
+		el && (el.size = el.value.length);
 	}
 
 	return opts;
@@ -90,21 +87,16 @@ function drawPalette(idxi32, width, maxWidth, maxHeight, cols) {
 }
 
 function quantizeImage(gl, result, width) {				
-	var $redu = document.querySelector("#redu");
-	var img = $redu.querySelector("img");
+	var $redu = $("#redu");
+	var img = $redu.find("img")[0];
 	if(!img) {
-		$redu.innerHTML = "<h4>Quantized</h4>";	
+		$redu.html("<h4>Quantized</h4>");	
 		
 		var img = document.createElement("img");
-		$redu.appendChild(img);
+		$redu.append(img);
 	}
-	document.querySelectorAll("#orig, #redu").forEach(element => 
-		element.style.background = result.transparent < 0 ? "none" : ""
-	);
-		
-	document.querySelectorAll("#orig h4, #redu h4").forEach(element => 
-		element.style.width = (width - 10) + "px"
-	);
+	$("#orig, #redu").css("background", result.transparent < 0 ? "none" : "");
+	$("#orig h4, #redu h4").css("width", (width - 10) + "px");
 		
 	var pal = new Uint32Array(result.pal8);
 	var can = document.createElement("canvas"),
@@ -115,9 +107,9 @@ function quantizeImage(gl, result, width) {
 
 	ctx.imageSmoothingQuality = "high";
 	
-	var $palt = document.querySelector("#palt");	
-	var colorCells = drawPalette(pal, pal.length, $palt.offsetWidth, $palt.offsetHeight, 32);	
-	$palt.innerHTML = colorCells;
+	var $palt = $("#palt");	
+	var colorCells = drawPalette(pal, pal.length, $palt.width(), $palt.height(), 32);	
+	$palt.html(colorCells);
 		
 	if("image/gif" == result.type && !pngOnly) {
 		try {
@@ -147,13 +139,6 @@ function quantizeImage(gl, result, width) {
 		img.src = getPngUrl(ctx, can, result.img8);
 }
 
-function allowChange($orig) {
-	var btn_upd = document.querySelector("#btn_upd");
-	btn_upd.removeAttribute("disabled");
-	btn_upd.value = "Update";
-	$orig.style.pointerEvents = "";
-}
-
 function doProcess(gl, ti, opts) {	
 	if(worker != null)			
 		worker.postMessage(opts);
@@ -164,7 +149,8 @@ function doProcess(gl, ti, opts) {
 				quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
 					transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				
-				allowChange(document.querySelector("#orig"));		
+				$("#btn_upd").removeAttr("disabled").text("Update");
+				$("#orig").css("pointer-events", "");				
 			});
 		}, 0);
 	}
@@ -215,16 +201,16 @@ function readImageData(img, gl, opts) {
 
 function dragLeave(ev) {
 	if(ev)
-		ev.target.style.border = "";
+		$(ev.target).css("border", "");
 	else
-		document.querySelector("#orig img").style.border = "";
+		$("#orig img").css("border", "");
 }
 
 function allowDrop(ev) {
 	ev.stopPropagation();
 	ev.preventDefault();
 	
-	ev.target.style.border = "4px dashed silver";
+	$(ev.target).css("border", "4px dashed silver");
 }
 
 function drawImageScaled(img){
@@ -251,7 +237,7 @@ function createImage(id, imgUrl, ev) {
 	var ti = new Timer();
 	ti.start();	
 	ti.mark("image loaded");
-	var img = document.querySelector("#orig img");
+	var img = $("#orig").find("img")[0];
 	if(!img) {		
 		var gl = webgl_detect();
 		if (gl) {
@@ -270,12 +256,12 @@ function createImage(id, imgUrl, ev) {
 		img = document.createElement("img");
 		img.crossOrigin = '';	
 		img.onload = function() {			
-			var $orig = document.querySelector("#orig");
-			if($orig.style.pointerEvents != "none") {
+			var $orig = $("#orig");
+			if($orig.css("pointer-events") != "none") {
 				var srcImg = this;
 				var srcUrl = drawImageScaled(srcImg);
 				if(srcUrl != null) {
-					srcImg.style.display = "none";
+					$(srcImg).hide();
 					srcImg.src = srcUrl;
 					return;
 				}
@@ -283,23 +269,23 @@ function createImage(id, imgUrl, ev) {
 				var id = srcImg.name;
 				var opts = getOpts(id);				
 				
-				$orig.style.pointerEvents = "none";
-				$orig.innerHTML = "<h4>Original</h4>";
-				$orig.appendChild(srcImg);
-				srcImg.style.display = "block";
+				$orig.css("pointer-events", "none").html("<h4>Original</h4>").append(srcImg);
+				$(srcImg).show();
 				ti.start();				
 				ti.mark("'" + id + "' -> DOM", function() {					
-					opts.isHQ = document.querySelector("#radHQ").checked;
+					opts.isHQ = $("#radHQ").is(":checked");
 					opts.width = srcImg.naturalWidth | srcImg.width;
 					opts.height = srcImg.naturalHeight | srcImg.height;
-					$orig.querySelector("h4").style.width = (opts.width - 10) + "px";							
+					$orig.find("h4").css("width", (opts.width - 10) + "px");							
 				});
 				
 				if(worker != null) {			
 					worker.onmessage = function(e) {
 						ti.mark("reduced -> DOM", function() {
 							quantizeImage(gl, e.data, opts.width);
-							allowChange($orig);
+							
+							$("#btn_upd").removeAttr("disabled").text("Update");
+							$orig.css("pointer-events", "");
 						});
 					}
 				}
@@ -308,17 +294,18 @@ function createImage(id, imgUrl, ev) {
 					doProcess(gl, ti, opts);
 				else {
 					ti.mark("invalid image", function() {				
-						allowChange($orig);
+						$("#btn_upd").removeAttr("disabled").text("Update");
+						$orig.css("pointer-events", "");
 					});
 				}
 				
 				dragLeave(ev);
 			}
-		};
+		};		
 		
 		img.onerror = function () {
-			var $orig = document.querySelector("#orig");
-			allowChange($orig);
+			$("#btn_upd").removeAttr("disabled").text("Update");
+			$("#orig").css("pointer-events", "");
 		};
 	}
 	
@@ -327,9 +314,7 @@ function createImage(id, imgUrl, ev) {
 }
 
 function process(imgUrl) {		
-	var btn_upd = document.querySelector("#btn_upd");
-	btn_upd.setAttribute("disabled", "disabled");
-	btn_upd.value = "Please wait...";
+	$("#btn_upd").attr("disabled", true).text("Please wait...");
 	var id = baseName(imgUrl)[0];
 	createImage(id, imgUrl, null);
 }
@@ -356,8 +341,8 @@ function download(imgUrl, ev) {
 	if(!isExternal(imgUrl)) {
 		var rootUrl = location.href.substr(0, location.href.lastIndexOf("/") + 1);
 		var imgSrc = imgUrl.replace(rootUrl, "");
-		var srcSet = document.querySelector("img[srcset][src$='" + imgSrc + "']");
-		imgUrl = srcSet != null ? srcSet.getAttribute("srcset").split(",").pop().trim().split(" ")[0] : imgSrc;
+		var srcSet = $("img[srcset][src$='" + imgSrc + "']");
+		imgUrl = srcSet.length > 0 ? srcSet.attr("srcset").split(",").pop().trim().split(" ")[0] : imgSrc;
 		process(imgUrl);
 		dragLeave(ev);
 		return;
@@ -387,7 +372,7 @@ function download(imgUrl, ev) {
 				loadImage(id, new Blob([xhr.response]), ev);					
 			else {
 				dragLeave(ev);
-				if(document.querySelector("#wrapfabtest").offsetHeight <= 0)
+				if($("#wrapfabtest").height() <= 0)
 					alert("AdBlock Detected");
 			}					
 		}				
@@ -397,8 +382,16 @@ function download(imgUrl, ev) {
 	xhr.send();
 }
 
+function dragStart(evt) {
+	var ev = evt.originalEvent;
+	if(!ev)
+		ev = evt;
+	ev.dataTransfer.files = [];
+	ev.dataTransfer.setData("text", ev.target.src);
+}
+
 function drop(ev) {
-	if(document.querySelector("#btn_upd").disabled)
+	if($("#btn_upd").is(":disabled"))
 		return;
 	
 	ev.stopPropagation();
@@ -406,11 +399,11 @@ function drop(ev) {
 
 	var dt = ev.dataTransfer;
 	
-	if(dt.files == null || dt.files.length <= 0) {
+	if(dt.files.length <= 0) {
 		var imgUrl = dt.getData("text");
 		try {
-			var dropContext = document.querySelector("div").appendChild(dt.getData("text/html"));
-			var img = dropContext.querySelector("img");
+			var dropContext = $("<div>").append(dt.getData("text/html"));
+			var img = $(dropContext).find("img")[0];
 			if(img instanceof HTMLImageElement)
 				imgUrl = img.srcset ? img.srcset.split(",").pop().trim().split(" ")[0] : img.src;
 		}
@@ -425,24 +418,21 @@ function drop(ev) {
 	var imageType = /image.*/;
 
 	if (file.type.match(imageType)) {
-		var btn_upd = document.querySelector("#btn_upd");
-		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.value = "Please wait...";
+		$("#btn_upd").attr("disabled", true).text("Please wait...");
 		loadImage(file.name, file, ev);
 	}
 }
 
 function pasteUrl(imgUrl) {
 	if(/<.+>/g.exec(imgUrl)) {
-		var domContext = document.createElement("div");
-		domContext.innerHTML = imgUrl;
-		var hyperlink = domContext.querySelector("img");
-		if(hyperlink != null)
-			imgUrl = hyperlink.getAttribute("srcset") ? hyperlink.getAttribute("srcset").split(",").pop().trim().split(" ")[0] : hyperlink.getAttribute("src");
+		var domContext = $('<div>').append(imgUrl);
+		var hyperlink = $(domContext).find("img");
+		if(hyperlink.length > 0)
+			imgUrl = hyperlink.attr("srcset") ? hyperlink.attr("srcset").split(",").pop().trim().split(" ")[0] : hyperlink.prop("src");
 		else {
-			hyperlink = domContext.querySelector("a");
-			if(hyperlink != null)
-				imgUrl = hyperlink.getAttribute("href");
+			hyperlink = $(domContext).find("a");
+			if(hyperlink.length > 0)
+				imgUrl = hyperlink.prop("href");
 		}
 	}
 	
@@ -457,7 +447,7 @@ function pasteUrl(imgUrl) {
  */
 function retrieveImageFromClipboardAsBase64(pasteEvent){
 	var clipboardData = pasteEvent.clipboardData || pasteEvent.originalEvent.clipboardData;
-	if(!clipboardData || document.querySelector("#btn_upd").disabled)
+	if(!clipboardData || $("#btn_upd").is(":disabled"))
 		return;
 	
     var items = clipboardData.items;
@@ -495,7 +485,7 @@ function keyBoardListener(evt) {
 }
 
 function handlePaste(){
-	if(document.querySelector("#btn_upd").disabled)
+	if($("#btn_upd").is(":disabled"))
 		return;
 
 	var items = window.clipboardData.files;
@@ -517,38 +507,38 @@ function handlePaste(){
     }	
 }
 
-document.querySelectorAll("input, textarea, select").forEach(input => {
-	input.onchange = function() {
-		cfg_edited = true;
-	};
-});
+$(document).on("click", "img.th", function() {
+	if(!$("#btn_upd").is(":disabled")) {
+		var id = baseName(this.src)[0];
 
-document.addEventListener("DOMContentLoaded", function(){
+		var imgUrl = $(this).attr("srcset").split(",").pop().trim().split(" ")[0];
+
+		process(imgUrl);
+	}
+}).on("click", "#btn_upd", function(){	
+	var imgUrl = $("#orig img").prop("src");
+	process(imgUrl);
+}).on("change", "input, textarea, select", function() {
+	cfg_edited = true;
+}).ready(function(){
 	if(window.clipboardData)
 		document.body.addEventListener("keyup", keyBoardListener);
 	else
-		document.body.onpaste = retrieveImageFromClipboardAsBase64;
+		$("body").on("paste", retrieveImageFromClipboardAsBase64);
 	
-	document.querySelector("#orig").nextSibling.onchange = function(ev) {
-		var btn_upd = document.querySelector("#btn_upd");
-		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.value = "Please wait...";
+	$("#orig").next().change(function(ev) {
+		$("#btn_upd").attr("disabled", true).text("Please wait...");
 		var id = baseName(this.files[0].name)[0];
 		loadImage(id, this.files[0], ev);
-	};
-	document.querySelector("#orig").onclick = function() {
-		this.nextSibling.click();
-	};
-	
-	document.querySelector("img.th").style.zIndex = "2";
-	
-	document.querySelectorAll("img.th, #readme").forEach(element => {
-		element.addEventListener("mouseover", function() {
-			document.querySelector("#footer").style.zIndex = document.querySelector("#btn_upd").disabled ? "1" : "-1";
-		}, {once : true});
-		element.onmouseout = function() {
-			document.querySelector("#footer").style.zIndex = "1";
-		};
+	});
+	$("#orig").on("click", function() {
+		$(this).next().trigger("click");
+	});
+	$("img.th").css("z-index", "2").on("dragstart", dragStart)
+	$("img.th, #readme").hover(function() {
+		$("#footer").css("z-index", $("#btn_upd").is(":disabled") ? "1" : "-1");
+	}, function() {
+		$("#footer").css("z-index", "1");
 	});
 	process("img/SE5x9.jpg");
 });

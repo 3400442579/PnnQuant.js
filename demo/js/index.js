@@ -16,11 +16,11 @@ class Scene extends React.Component {
 					[
 						React.createElement("div", {key: "orig", id: "orig", style: {overflow: "auto"},
 							onDrop: (e) => {this.onDrop(e)}, onDragOver: (e) => {this.onDragOver(e)}, onDragLeave: (e) => {this.onDragLeave(e)}}, null),
-						React.createElement("input", {key: "file", type: "file", style: {display: "none", width: 0}}, null)
+						React.createElement("input", {key: "file", type: "file", style: {display: "none", width: 0}})
 					]
 				),
 				React.createElement("div", {key: "box2",  className: "box", style: {margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
-					React.createElement("div", {key: "redu", id: "redu", style: {overflow: "auto"}}, null)
+					React.createElement("div", {key: "redu", id: "redu", style: {overflow: "auto"}})
 				)
 			]
 		);
@@ -43,9 +43,20 @@ class Readme extends React.Component {
 						return React.createElement("li", {key: `li_${index}`, dangerouslySetInnerHTML: { __html:  text}})
 					})
 				),
-				React.createElement("div", {key: "palt", id: "palt"}, null)
+				React.createElement("div", {key: "palt", id: "palt"})
 			]
 		);
+	}
+}
+
+class Button extends React.Component {
+	onClick = (e) => {
+	    var imgUrl = document.querySelector("#orig img").getAttribute("src");
+		process(imgUrl);
+	}
+	
+	render() {
+		return React.createElement("button", {onClick: (e) => {this.onClick(e)}, ...this.props}, this.props.text);
 	}
 }
 
@@ -59,14 +70,14 @@ class Config extends React.Component {
 					'<div style="padding-left: 4em">colors: <input id="colors" type="number" value="256" min="2" max="65536" size="6" class="autosize">,</div>' +
 					'<div style="padding-left: 4em"><input id="dithering" type="checkbox" checked="checked"> <span>dithering</span>,</div>' +
 					'};'}
-				}, null),
+				}),
 				React.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}, 
 					dangerouslySetInnerHTML: { __html: 'Quality: <input type="radio" checked="checked" />' +
 						'Normal <input type="radio" id="radHQ" /> High'
 					}
-				}, null),
+				}),
 				React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
-					React.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button"}, "Update")
+					React.createElement(Button, {key: "btn_upd", id: "btn_upd", type: "button", text: "Update"})
 				)
 			]
 		);
@@ -85,15 +96,23 @@ class Footer extends React.Component {
 }
 
 class Image extends React.Component {  
+	onClick = (e) => {
+	    if(!document.querySelector("#btn_upd").disabled) {
+			var id = this.props.imageName;
+			var imgUrl = e.target.getAttribute("srcset").split(",").pop().trim().split(" ")[0];
+			process(imgUrl);
+		}
+	}
 	onDragStart = (e) => {
 	    e.dataTransfer.dropEffect = "copy";
-		dragStart(e);
+		const {imgName , imgType} = this.props;
+		e.dataTransfer.setData("text", `img/${imgName}${imgType}`);
 	}
 	
 	render() {
 		const {imgName , imgType} = this.props;
-		return React.createElement("img", {className: "th", draggable: true, onDragStart: (e) => {this.onDragStart(e)}, 
-			src: `img/${imgName}${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`}, null);
+		return React.createElement("img", {className: "th", draggable: true, onClick: (e) => {this.onClick(e)}, onDragStart: (e) => {this.onDragStart(e)}, 
+			src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`});
 	}
 }
 
@@ -101,7 +120,7 @@ class ImageSet extends React.Component {
 	render() {		
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
 		return this.props.images.map((imgName) => {			
-			return React.createElement(Image, {key: `img_${imgName}`, imgName: imgName, imgType: imgType}, null)
+			return React.createElement(Image, {key: `img_${imgName}`, imgName: imgName, imgType: imgType})
 		})
 	}
 }
@@ -133,7 +152,7 @@ class Gallery extends React.Component {
 		return React.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
 			React.createElement("tbody", {key: "tb_showcase"},
 				categories.map((category) => {
-					return React.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]}, null)
+					return React.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
 				})
 			)
 		);
