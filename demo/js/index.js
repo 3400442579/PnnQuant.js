@@ -72,8 +72,8 @@ class Config extends React.Component {
 					'};'}
 				}),
 				React.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}, 
-					dangerouslySetInnerHTML: { __html: 'Quality: <input type="radio" checked="checked" />' +
-						'Normal <input type="radio" id="radHQ" /> High'
+					dangerouslySetInnerHTML: { __html: 'Quality: <input type="radio" name="quality" checked="checked" />' +
+						'Normal <input type="radio" id="radHQ" name="quality" /> High'
 					}
 				}),
 				React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
