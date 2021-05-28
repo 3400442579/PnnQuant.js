@@ -150,7 +150,7 @@ function quantizeImage(gl, result, width) {
 function allowChange($orig) {
 	var btn_upd = document.querySelector("#btn_upd");
 	btn_upd.removeAttribute("disabled");
-	btn_upd.value = "Update";
+	btn_upd.textContent = "Update";
 	$orig.style.pointerEvents = "";
 }
 
@@ -329,7 +329,7 @@ function createImage(id, imgUrl, ev) {
 function process(imgUrl) {		
 	var btn_upd = document.querySelector("#btn_upd");
 	btn_upd.setAttribute("disabled", "disabled");
-	btn_upd.value = "Please wait...";
+	btn_upd.textContent = "Please wait...";
 	var id = baseName(imgUrl)[0];
 	createImage(id, imgUrl, null);
 }
@@ -427,7 +427,7 @@ function drop(ev) {
 	if (file.type.match(imageType)) {
 		var btn_upd = document.querySelector("#btn_upd");
 		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.value = "Please wait...";
+		btn_upd.textContent = "Please wait...";
 		loadImage(file.name, file, ev);
 	}
 }
@@ -532,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	document.querySelector("#orig").nextSibling.onchange = function(ev) {
 		var btn_upd = document.querySelector("#btn_upd");
 		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.value = "Please wait...";
+		btn_upd.textContent = "Please wait...";
 		var id = baseName(this.files[0].name)[0];
 		loadImage(id, this.files[0], ev);
 	};
