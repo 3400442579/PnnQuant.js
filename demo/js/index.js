@@ -60,14 +60,21 @@ class Button extends React.Component {
 	}
 }
 
-class Config extends React.Component {  
+class Config extends React.Component {
+constructor(props) {
+    super(props);
+    this.state = {colors: '256'};
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {    this.setState({colors: event.target.value});  }
 	render() {
 		return React.createElement("div", {className: "box", style: {zIndex: 999}},
 			[
 				React.createElement("h5", {key: "h5_config"}, "Config"),
 				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em"}, 
 					dangerouslySetInnerHTML: { __html: 'var opts = {<br />' +
-					'<div style="padding-left: 4em">colors: <input id="colors" type="number" value="256" min="2" max="65536" size="6" class="autosize">,</div>' +
+					'<div style="padding-left: 4em">colors: <input id="colors" type="number" min="2" max="65536" size="6" class="autosize" value={this.state.colors} onChange={this.handleChange} />,</div>' +
 					'<div style="padding-left: 4em"><input id="dithering" type="checkbox" checked="checked"> <span>dithering</span>,</div>' +
 					'};'}
 				}),
