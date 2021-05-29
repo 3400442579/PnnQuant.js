@@ -61,28 +61,58 @@ class Button extends React.Component {
 }
 
 class Config extends React.Component {
-constructor(props) {
-    super(props);
-    this.state = {colors: '256'};
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event) {    this.setState({colors: event.target.value});  }
+	constructor(props) {
+		super(props);
+		this.state = {colors: '256', dithering: true, isHQ: false};
+		this.colorsChange = this.colorsChange.bind(this);
+		this.ditheringChange = this.ditheringChange.bind(this);
+		this.qualityChange = this.qualityChange.bind(this);
+	}
+	colorsChange(e) {
+		this.setState({colors: e.target.value});
+	}
+	ditheringChange(e) {
+		this.setState({dithering: e.target.checked});
+	}
+	qualityChange(e) {
+		this.setState({isHQ: e.target.value == "H"});
+	}
+	
 	render() {
 		return React.createElement("div", {className: "box", style: {zIndex: 999}},
 			[
 				React.createElement("h5", {key: "h5_config"}, "Config"),
-				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em"}, 
-					dangerouslySetInnerHTML: { __html: 'var opts = {<br />' +
-					'<div style="padding-left: 4em">colors: <input id="colors" type="number" min="2" max="65536" size="6" class="autosize" value={this.state.colors} onChange={this.handleChange} />,</div>' +
-					'<div style="padding-left: 4em"><input id="dithering" type="checkbox" checked="checked"> <span>dithering</span>,</div>' +
-					'};'}
-				}),
-				React.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}, 
-					dangerouslySetInnerHTML: { __html: 'Quality: <input type="radio" name="quality" checked="checked" />' +
-						'Normal <input type="radio" id="radHQ" name="quality" /> High'
-					}
-				}),
+				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em"}}, 
+					[
+						React.createElement("span", {}, 'var opts = {\n'),
+						React.createElement("div", {style: {paddingLeft: "4em"}}, 
+							[
+								React.createElement("span", {}, 'colors: '),
+								React.createElement("input", {key: "colors", id: "colors", type: "number", min: "2", max: "65536", size: "6", className: "autosize",
+								value: this.state.colors, onChange: this.colorsChange })								
+							]
+						),
+						React.createElement("div", {style: {paddingLeft: "4em"}}, 
+							[								
+								React.createElement("input", {key: "dithering", id: "dithering", type: "checkbox",
+									checked: this.state.dithering, onChange: this.ditheringChange }),
+								React.createElement("span", {}, 'dithering,')
+							]
+						),
+						React.createElement("span", {}, '};')
+					]
+				),
+				React.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}},
+					[
+						React.createElement("span", {}, 'Quality: '),
+						React.createElement("input", {key: "radNQ", name: "quality", type: "radio", value: "N",
+							checked: !this.state.isHQ, onChange: this.qualityChange}),
+						React.createElement("span", {}, 'Normal '),
+						React.createElement("input", {key: "radHQ", id: "radHQ", name: "quality", type: "radio", value: "H",
+							checked: this.state.isHQ, onChange: this.qualityChange}),
+						React.createElement("span", {}, ' High')
+					]
+				),
 				React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
 					React.createElement(Button, {key: "btn_upd", id: "btn_upd", type: "button", text: "Update"})
 				)
@@ -117,7 +147,7 @@ class Image extends React.Component {
 	}
 	
 	render() {
-		const {imgName , imgType} = this.props;
+		const {imgName, imgType} = this.props;
 		return React.createElement("img", {className: "th", draggable: true, onClick: (e) => {this.onClick(e)}, onDragStart: (e) => {this.onDragStart(e)}, 
 			src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`});
 	}
