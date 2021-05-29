@@ -64,17 +64,14 @@ class Config extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {colors: '256', dithering: true, isHQ: false};
-		this.colorsChange = this.colorsChange.bind(this);
-		this.ditheringChange = this.ditheringChange.bind(this);
-		this.qualityChange = this.qualityChange.bind(this);
 	}
-	colorsChange(e) {
+	colorsChange = (e) => {
 		this.setState({colors: e.target.value});
 	}
-	ditheringChange(e) {
+	ditheringChange = (e) => {
 		this.setState({dithering: e.target.checked});
 	}
-	qualityChange(e) {
+	qualityChange = (e) => {
 		this.setState({isHQ: e.target.value == "H"});
 	}
 	
@@ -89,13 +86,13 @@ class Config extends React.Component {
 							[
 								React.createElement("span", {}, 'colors: '),
 								React.createElement("input", {key: "colors", id: "colors", type: "number", min: "2", max: "65536", size: "6", className: "autosize",
-								value: this.state.colors, onChange: this.colorsChange })								
+								value: this.state.colors, onChange: (e) => {this.colorsChange(e)} })								
 							]
 						),
 						React.createElement("div", {style: {paddingLeft: "4em"}}, 
 							[								
 								React.createElement("input", {key: "dithering", id: "dithering", type: "checkbox",
-									checked: this.state.dithering, onChange: this.ditheringChange }),
+									checked: this.state.dithering, onChange: (e) => {this.ditheringChange(e)} }),
 								React.createElement("span", {}, 'dithering,')
 							]
 						),
@@ -106,10 +103,10 @@ class Config extends React.Component {
 					[
 						React.createElement("span", {}, 'Quality: '),
 						React.createElement("input", {key: "radNQ", name: "quality", type: "radio", value: "N",
-							checked: !this.state.isHQ, onChange: this.qualityChange}),
+							checked: !this.state.isHQ, onChange: (e) => {this.qualityChange(e)} }),
 						React.createElement("span", {}, 'Normal '),
 						React.createElement("input", {key: "radHQ", id: "radHQ", name: "quality", type: "radio", value: "H",
-							checked: this.state.isHQ, onChange: this.qualityChange}),
+							checked: this.state.isHQ, onChange: (e) => {this.qualityChange(e)} }),
 						React.createElement("span", {}, ' High')
 					]
 				),
