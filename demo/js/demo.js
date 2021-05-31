@@ -173,17 +173,18 @@ function origLoad(imgChanged) {
 	
 	var $orig = document.querySelector("#orig");
 	if($orig.style.pointerEvents != "none") {
+		setData({enabled: false});
+		$orig.style.pointerEvents = "none";	
+		
 		var srcImg = $orig.querySelector("img");
 		var srcUrl = drawImageScaled(srcImg);
 		if(srcUrl != null) {
-			setData({display: "none", imgUrl: srcImg.src});
+			setData({display: "none", imgUrl: srcUrl});
 			return;
 		}
 		
 		var opts = getOpts();
-		var id = srcImg.name;		
-		
-		$orig.style.pointerEvents = "none";						
+		var id = srcImg.name;							
 		ti.mark("'" + id + "' -> DOM", function() {					
 			opts.width = srcImg.naturalWidth | srcImg.width;
 			opts.height = srcImg.naturalHeight | srcImg.height;
