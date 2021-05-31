@@ -1,43 +1,10 @@
-var cfg_edited = false;
 var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
+var gl = webgl_detect();
 var pngOnly = location.search.toLowerCase().indexOf('png') > -1;
-
-var dflt_opts = {
-	colors: 256,
-	dithering: true,
-};
+var getOpts, setData;
 
 function baseName(src) {
 	return src.split("/").pop().split(".");
-}
-
-function getOpts(id) {
-	if (cfg_edited) {
-		var opts = {};
-
-		for (var i in dflt_opts) {
-			var $el = document.querySelector("#" + i),
-				typ = $el.getAttribute("type"),
-				val = $el.value,
-				num = parseFloat(val);
-
-			opts[i] = typ == "checkbox" ? $el.getAttribute("checked") : isNaN(num) ? val : num;
-		}
-
-		Object.assign(opts, dflt_opts);
-	}
-	else
-		var opts = dflt_opts;
-
-	for (var i in dflt_opts) {
-		var el = document.querySelector("#" + i);
-		if(el) {
-			el.value = opts[i];
-			el.size = el.value.length;
-		}
-	}
-
-	return opts;
 }
 
 if(!Uint8Array.prototype.slice){
@@ -65,47 +32,7 @@ function getPngUrl(ctx, can, pixel32s) {
 	return can.toDataURL();
 }
 
-function drawPalette(idxi32, width, maxWidth, maxHeight, cols) {
-	if(!maxWidth)
-		maxWidth = width;
-
-	if(cols > idxi32.length)
-		cols = idxi32.length;
-	var rows = Math.floor(idxi32.length / cols);
-	var ratioX = Math.floor(100.0 / cols);
-	var ratioY = Math.floor(100.0 / rows);
-	if((ratioY * maxHeight) > (ratioX * maxWidth))
-		ratioY = ratioX * maxWidth / maxHeight;
-	
-	var divContent = "";
-	for(var k = 0; k < idxi32.length; ++k) {
-		var r = (idxi32[k] & 0xff),
-			g = (idxi32[k] >>> 8) & 0xff,
-			b = (idxi32[k] >>> 16) & 0xff,
-			a = (idxi32[k] >>> 24) & 0xff;
-		divContent += "<div style='background-color:rgba(" + r + ", " + g + ", " + b + ", " + a / 255.0 + "); float: left; ";
-		divContent += "width: " + ratioX + "%; height: " + ratioY + "%;'></div>";		
-	}
-	return divContent;
-}
-
-function quantizeImage(gl, result, width) {				
-	var $redu = document.querySelector("#redu");
-	var img = $redu.querySelector("img");
-	if(!img) {
-		$redu.innerHTML = "<h4>Quantized</h4>";	
-		
-		var img = document.createElement("img");
-		$redu.appendChild(img);
-	}
-	document.querySelectorAll("#orig, #redu").forEach(element => 
-		element.style.background = result.transparent < 0 ? "none" : ""
-	);
-		
-	document.querySelectorAll("#orig h4, #redu h4").forEach(element => 
-		element.style.width = (width - 10) + "px"
-	);
-		
+function quantizeImage(gl, result, width) {		
 	var pal = new Uint32Array(result.pal8);
 	var can = document.createElement("canvas"),
 	ctx = can.getContext("2d");
@@ -115,9 +42,7 @@ function quantizeImage(gl, result, width) {
 
 	ctx.imageSmoothingQuality = "high";
 	
-	var $palt = document.querySelector("#palt");	
-	var colorCells = drawPalette(pal, pal.length, $palt.offsetWidth, $palt.offsetHeight, 32);	
-	$palt.innerHTML = colorCells;
+	setData({boxWidth: (width - 10) + "px", background: result.transparent < 0 ? "none" : "", pal: pal});
 		
 	if("image/gif" == result.type && !pngOnly) {
 		try {
@@ -130,27 +55,25 @@ function quantizeImage(gl, result, width) {
 			var data = buf.slice(0, gf.end());
 			var reader = new FileReader();
 			reader.onloadend = function() {					
-				img.src = reader.result;
+				setData({imgBase64: reader.result});
 			};
 
 			reader.readAsDataURL(new Blob([data], {type: result.type}));
-			img.onerror = function () { 
-				img.src = getPngUrl(ctx, can, result.img8);
+			document.querySelector("#redu img").onerror = function () { 
+				setData({imgBase64: getPngUrl(ctx, can, result.img8)});
 			};
 		}
 		catch(err) {
-			img.src = getPngUrl(ctx, can, result.img8);
+			setData({imgBase64: getPngUrl(ctx, can, result.img8)});
 			console.error(err);
 		}
 	}
 	else
-		img.src = getPngUrl(ctx, can, result.img8);
+		setData({imgBase64: getPngUrl(ctx, can, result.img8)});
 }
 
 function allowChange($orig) {
-	var btn_upd = document.querySelector("#btn_upd");
-	btn_upd.removeAttribute("disabled");
-	btn_upd.textContent = "Update";
+	setData({enabled: true});
 	$orig.style.pointerEvents = "";
 }
 
@@ -213,20 +136,6 @@ function readImageData(img, gl, opts) {
 	return false;	
 }
 
-function dragLeave(ev) {
-	if(ev)
-		ev.target.style.border = "";
-	else
-		document.querySelector("#orig img").style.border = "";
-}
-
-function allowDrop(ev) {
-	ev.stopPropagation();
-	ev.preventDefault();
-	
-	ev.target.style.border = "4px dashed silver";
-}
-
 function drawImageScaled(img){
 	if(!isExternal(img.src))
 		return null;
@@ -247,89 +156,56 @@ function drawImageScaled(img){
     return can.toDataURL();
 }
 
-function createImage(id, imgUrl, ev) {
+function origLoad(imgChanged) {
 	var ti = new Timer();
-	ti.start();	
-	ti.mark("image loaded");
-	var img = document.querySelector("#orig img");
-	if(!img) {		
-		var gl = webgl_detect();
-		if (gl) {
-			gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);			
-			
-			// Make a framebuffer
-			var fb = gl.createFramebuffer();
-			gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-			
-			var tex = gl.createTexture();
-			gl.bindTexture(gl.TEXTURE_2D, tex);
-			// Attach the texture to the framebuffer
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+	ti.start();
+	if(imgChanged)			
+		ti.mark("image loaded");
+	
+	var $orig = document.querySelector("#orig");
+	if($orig.style.pointerEvents != "none") {
+		var srcImg = $orig.querySelector("img");
+		var srcUrl = drawImageScaled(srcImg);
+		if(srcUrl != null) {
+			setData({display: "none", imgUrl: srcImg.src});
+			return;
 		}
 		
-		img = document.createElement("img");
-		img.crossOrigin = '';	
-		img.onload = function() {			
-			var $orig = document.querySelector("#orig");
-			if($orig.style.pointerEvents != "none") {
-				var srcImg = this;
-				var srcUrl = drawImageScaled(srcImg);
-				if(srcUrl != null) {
-					srcImg.style.display = "none";
-					srcImg.src = srcUrl;
-					return;
-				}
-				
-				var id = srcImg.name;
-				var opts = getOpts(id);				
-				
-				$orig.style.pointerEvents = "none";
-				$orig.innerHTML = "<h4>Original</h4>";
-				$orig.appendChild(srcImg);
-				srcImg.style.display = "block";
-				ti.start();				
-				ti.mark("'" + id + "' -> DOM", function() {					
-					opts.isHQ = document.querySelector("#radHQ").checked;
-					opts.width = srcImg.naturalWidth | srcImg.width;
-					opts.height = srcImg.naturalHeight | srcImg.height;
-					$orig.querySelector("h4").style.width = (opts.width - 10) + "px";							
+		var opts = getOpts();
+		var id = srcImg.name;		
+		
+		$orig.style.pointerEvents = "none";						
+		ti.mark("'" + id + "' -> DOM", function() {					
+			opts.width = srcImg.naturalWidth | srcImg.width;
+			opts.height = srcImg.naturalHeight | srcImg.height;
+			setData({boxWidth: (opts.width - 10) + "px", display: "block"});							
+		});
+		
+		if(worker != null) {			
+			worker.onmessage = function(e) {
+				ti.mark("reduced -> DOM", function() {
+					quantizeImage(gl, e.data, opts.width);
+					allowChange($orig);
 				});
-				
-				if(worker != null) {			
-					worker.onmessage = function(e) {
-						ti.mark("reduced -> DOM", function() {
-							quantizeImage(gl, e.data, opts.width);
-							allowChange($orig);
-						});
-					}
-				}
-		
-				if(readImageData(srcImg, gl, opts))					
-					doProcess(gl, ti, opts);
-				else {
-					ti.mark("invalid image", function() {				
-						allowChange($orig);
-					});
-				}
-				
-				dragLeave(ev);
 			}
-		};
-		
-		img.onerror = function () {
-			var $orig = document.querySelector("#orig");
-			allowChange($orig);
-		};
+		}
+
+		if(readImageData(srcImg, gl, opts))					
+			doProcess(gl, ti, opts);
+		else {
+			ti.mark("invalid image", function() {				
+				allowChange($orig);
+			});
+		}
 	}
-	
-	img.name = id;
-	img.src = imgUrl;	
 }
 
-function process(imgUrl) {		
-	var btn_upd = document.querySelector("#btn_upd");
-	btn_upd.setAttribute("disabled", "disabled");
-	btn_upd.textContent = "Please wait...";
+function createImage(id, imgUrl, ev) {		
+	setData({imgName: id, imgUrl: imgUrl});	
+}
+
+function process(imgUrl) {	
+	setData({enabled: false});
 	var id = baseName(imgUrl)[0];
 	createImage(id, imgUrl, null);
 }
@@ -359,7 +235,7 @@ function download(imgUrl, ev) {
 		var srcSet = document.querySelector("img[srcset][src$='" + imgSrc + "']");
 		imgUrl = srcSet != null ? srcSet.getAttribute("srcset").split(",").pop().trim().split(" ")[0] : imgSrc;
 		process(imgUrl);
-		dragLeave(ev);
+		document.querySelector("#orig img").style.border = "";
 		return;
 	}
 
@@ -386,7 +262,7 @@ function download(imgUrl, ev) {
 			if(xhr.status == 200)
 				loadImage(id, new Blob([xhr.response]), ev);					
 			else {
-				dragLeave(ev);
+				document.querySelector("#orig img").style.border = "";
 				if(document.querySelector("#wrapfabtest").offsetHeight <= 0)
 					alert("AdBlock Detected");
 			}					
@@ -395,41 +271,6 @@ function download(imgUrl, ev) {
 	xhr.open('GET', imgUrl);
 	xhr.responseType = "arraybuffer";
 	xhr.send();
-}
-
-function drop(ev) {
-	if(document.querySelector("#btn_upd").disabled)
-		return;
-	
-	ev.stopPropagation();
-	ev.preventDefault();
-
-	var dt = ev.dataTransfer;
-	
-	if(dt.files == null || dt.files.length <= 0) {
-		var imgUrl = dt.getData("text");
-		try {
-			var dropContext = document.querySelector("div").appendChild(dt.getData("text/html"));
-			var img = dropContext.querySelector("img");
-			if(img instanceof HTMLImageElement)
-				imgUrl = img.srcset ? img.srcset.split(",").pop().trim().split(" ")[0] : img.src;
-		}
-		catch(err) {
-		}
-		
-		download(imgUrl, ev);
-		return;
-	}
-	
-	var file = dt.files[0];
-	var imageType = /image.*/;
-
-	if (file.type.match(imageType)) {
-		var btn_upd = document.querySelector("#btn_upd");
-		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.textContent = "Please wait...";
-		loadImage(file.name, file, ev);
-	}
 }
 
 function pasteUrl(imgUrl) {
@@ -517,38 +358,34 @@ function handlePaste(){
     }	
 }
 
-document.querySelectorAll("input, textarea, select").forEach(input => {
-	input.onchange = function() {
-		cfg_edited = true;
-	};
-});
-
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function(){	
+	if (gl) {
+		gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);			
+		
+		// Make a framebuffer
+		var fb = gl.createFramebuffer();
+		gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+		
+		var tex = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, tex);
+		// Attach the texture to the framebuffer
+		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+	}
+		
 	if(window.clipboardData)
 		document.body.addEventListener("keyup", keyBoardListener);
 	else
-		document.body.onpaste = retrieveImageFromClipboardAsBase64;
-	
-	document.querySelector("#orig").nextSibling.onchange = function(ev) {
-		var btn_upd = document.querySelector("#btn_upd");
-		btn_upd.setAttribute("disabled", "disabled");
-		btn_upd.textContent = "Please wait...";
-		var id = baseName(this.files[0].name)[0];
-		loadImage(id, this.files[0], ev);
-	};
-	document.querySelector("#orig").onclick = function() {
-		this.nextSibling.click();
-	};
-	
-	document.querySelector("img.th").style.zIndex = "2";
+		document.body.onpaste = retrieveImageFromClipboardAsBase64;	
 	
 	document.querySelectorAll("img.th, #readme").forEach(element => {
 		element.addEventListener("mouseover", function() {
-			document.querySelector("#footer").style.zIndex = document.querySelector("#btn_upd").disabled ? "1" : "-1";
+			var opts = getOpts();
+			document.querySelector("#footer").style.zIndex = opts.enabled ? "-1" : "1";
 		}, {once : true});
 		element.onmouseout = function() {
 			document.querySelector("#footer").style.zIndex = "1";
 		};
 	});
+	
 	process("img/SE5x9.jpg");
 });
