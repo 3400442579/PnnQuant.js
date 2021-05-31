@@ -174,8 +174,6 @@ function origLoad(imgChanged) {
 	var $orig = document.querySelector("#orig");
 	if($orig.style.pointerEvents != "none") {
 		setData({enabled: false});
-		$orig.style.pointerEvents = "none";	
-		
 		var srcImg = $orig.querySelector("img");
 		var srcUrl = drawImageScaled(srcImg);
 		if(srcUrl != null) {
@@ -184,7 +182,9 @@ function origLoad(imgChanged) {
 		}
 		
 		var opts = getOpts();
-		var id = srcImg.name;							
+		var id = srcImg.name;		
+		
+		$orig.style.pointerEvents = "none";						
 		ti.mark("'" + id + "' -> DOM", function() {					
 			opts.width = srcImg.naturalWidth | srcImg.width;
 			opts.height = srcImg.naturalHeight | srcImg.height;
