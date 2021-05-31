@@ -24,6 +24,15 @@ function toRGBPalette(palette) {
 	return rgbPalette;
 }
 
+function componentToHex(c) {
+	var hex = c.toString(16);
+	return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
 function getPngUrl(ctx, can, pixel32s) {
 	var imgd = ctx.createImageData(can.width, can.height);
 	imgd.data.set(new Uint8Array(pixel32s.buffer));

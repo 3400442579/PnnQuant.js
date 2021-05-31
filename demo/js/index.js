@@ -62,8 +62,8 @@ class Scene extends React.Component {
 	}
 	
 	render() {
-		const {background, boxWidth, display, imgName, imgUrl, imgBase64} = getOpts();
-		const reduDisplay = imgBase64 != "" ? display : "none";
+		const {background, boxWidth, display, enabled, imgName, imgUrl, imgBase64} = getOpts();
+		const reduDisplay = enabled ? display : "none";
 		return React.createElement("div", {id: "scene", style: {overflow: "auto"}},
 			[
 				React.createElement("div", {key: "box1", className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
@@ -125,7 +125,7 @@ class Readme extends React.Component {
 				b = (pal[k] >>> 16) & 0xff,
 				a = ((pal[k] >>> 24) & 0xff) / 255.0;
 			const div = React.createElement("div", {key: `pal${k}`, style: {backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, float: "left", 
-				width: `${ratioX}%`, height: `${ratioY}%`} });
+				width: `${ratioX}%`, height: `${ratioY}%`}, title: rgbToHex(r, g, b) });
 			divContent.push(div);
 		}
 		return divContent;
