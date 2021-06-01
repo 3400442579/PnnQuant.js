@@ -184,7 +184,7 @@ function origLoad(imgChanged, opts) {
 	if(imgChanged)			
 		ti.mark("image loaded");
 	
-	var $orig = document.querySelector("#orig");
+	var $orig = document.querySelector("#orig");	
 	if($orig.style.pointerEvents != "none") {
 		eventBus.dispatch("app", {enabled: false});
 		document.querySelector("#palt").style.opacity = 0;
@@ -199,10 +199,11 @@ function origLoad(imgChanged, opts) {
 		if(opts == null) {
 			eventBus.dispatch("origLoad", {callback: origLoad, imgChanged: false});
 			return;
-		}
+		}		
 		
+		srcImg.style.border = "";
+		$orig.style.pointerEvents = "none";
 		var id = srcImg.name;		
-		$orig.style.pointerEvents = "none";						
 		ti.mark("'" + id + "' -> DOM", function() {					
 			opts.width = srcImg.naturalWidth | srcImg.width;
 			opts.height = srcImg.naturalHeight | srcImg.height;
@@ -213,7 +214,7 @@ function origLoad(imgChanged, opts) {
 			worker.onmessage = function(e) {
 				ti.mark("reduced -> DOM", function() {
 					quantizeImage(gl, e.data, opts.width);
-					allowChange($orig);
+					allowChange(document.querySelector("#orig"));
 				});
 			}
 		}

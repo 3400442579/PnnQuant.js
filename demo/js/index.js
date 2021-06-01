@@ -66,10 +66,10 @@ class Scene extends React.Component {
 	    if(ev)
 			ev.target.style.border = "";
 		else
-			this.props.orig.current.style.border = "";
+			document.querySelector("#orig img").style.border = "";
 	}
 	onError = (ev) => {
-	    var $orig = document.querySelector("#orig");
+	    var $orig = this.props.orig.current;
 		allowChange($orig);
 	}
 	onLoad = (ev) => {
