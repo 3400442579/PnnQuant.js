@@ -131,9 +131,8 @@ function quantizeImage(gl, result, width) {
 			};
 		}
 		catch(err) {
-			alert(err);
+			console.error(err);
                     img.src = getPngUrl(ctx, can, result.img8);
-			//console.error(err);
 		}
 	}
 	else
