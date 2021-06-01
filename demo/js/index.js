@@ -130,7 +130,7 @@ class Readme extends React.Component {
 		if(pal.length == 0)
 			return divContent;
 		
-		const maxWidth = this.palt.current.offsetWidth;
+		var maxWidth = this.palt.current.offsetWidth;
 		const maxHeight = this.palt.current.offsetHeight;
 		if(!maxWidth)
 			maxWidth = pal.length;
@@ -359,8 +359,8 @@ class App extends React.Component {
 		eventBus.remove("app");
 	}
 	componentDidCatch(error, info) {
-		alert(`Error: ${error.message}`);
-		// location.replace('index-es5.html');
+		// alert(`Error: ${error.message}`);
+		location.replace('index-es5.html');
 	}
 	
 	isEnabled = () => this.state.enabled;
