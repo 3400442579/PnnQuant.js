@@ -157,7 +157,7 @@ class Readme extends React.Component {
 
 	render() {
 		const childrenData = [
-			"Click an image to quantize it.",
+			"<b>Click an image to quantize it.</b>",
 			"<b>Please input number of colors wanted.</b>",
 			"<b>Config</b> values can be edited &amp; re-processed via <b>update</b>.",
 			"If your browser can't load an image fully, just try again."
