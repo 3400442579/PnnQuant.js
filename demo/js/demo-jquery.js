@@ -64,7 +64,7 @@ function getPngUrl(ctx, can, pixel32s) {
 
 function drawPalette(idxi32, width, maxWidth, maxHeight, cols) {
 	if(!maxWidth)
-		maxWidth = width;
+		return "";
 
 	if(cols > idxi32.length)
 		cols = idxi32.length;
@@ -131,8 +131,9 @@ function quantizeImage(gl, result, width) {
 			};
 		}
 		catch(err) {
-			img.src = getPngUrl(ctx, can, result.img8);
-			console.error(err);
+			alert(err);
+                    img.src = getPngUrl(ctx, can, result.img8);
+			//console.error(err);
 		}
 	}
 	else
