@@ -358,9 +358,10 @@ class App extends React.Component {
 	componentWillUnmount() {
 		eventBus.remove("app");
 	}
-        componentDidCatch(error, info) {
-            location.replace('index-es5.html');
-        }
+	componentDidCatch(error, info) {
+		alert(`Error: ${error.message}`);
+		// location.replace('index-es5.html');
+	}
 	
 	isEnabled = () => this.state.enabled;
 	
