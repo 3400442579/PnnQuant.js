@@ -125,7 +125,10 @@ class Readme extends React.Component {
 	}
 	
 	drawPalette = () => {
-		var {cols, pal} = this.state;		
+		if(!this.palt.current)
+                    return null;
+
+                var {cols, pal} = this.state;		
 		const maxWidth = this.palt.current.offsetWidth;
 		const maxHeight = this.palt.current.offsetHeight;
 		if(!maxWidth || pal.length == 0)
