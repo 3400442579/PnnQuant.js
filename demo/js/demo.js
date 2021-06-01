@@ -201,7 +201,7 @@ function origLoad(imgChanged, opts) {
 			return;
 		}		
 		
-		// srcImg.style.border = "";
+		srcImg.style.border = "";
 		$orig.style.pointerEvents = "none";
 		var id = srcImg.name;		
 		ti.mark("'" + id + "' -> DOM", function() {					
