@@ -12,7 +12,7 @@ class Scene extends React.Component {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
-		const {enabled} = getOpts();
+		const {enabled} = getData();
 		if(!enabled)
 			return;
 
@@ -62,7 +62,7 @@ class Scene extends React.Component {
 	}
 	
 	render() {
-		const {background, boxWidth, display, enabled, imgName, imgUrl, imgBase64} = getOpts();
+		const {background, boxWidth, display, enabled, imgName, imgUrl, imgBase64} = getData();
 		const reduDisplay = enabled ? display : "none";
 		return React.createElement("div", {id: "scene", style: {overflow: "auto"}},
 			[
@@ -101,7 +101,7 @@ class Readme extends React.Component {
 		this.palt = React.createRef();
 	}
 	drawPalette = () => {
-		var {pal, cols} = getOpts();
+		var {pal, cols} = getData();
 		if(pal.length == 0)
 			return null;
 		
@@ -139,7 +139,7 @@ class Readme extends React.Component {
 			"If your browser can't load an image fully, just try again."
 		];
 		
-		return React.createElement("div", {className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
+		return React.createElement("div", {id: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
 			[
 				React.createElement("ul", {key: "readme", id: "readme"}, 
 					childrenData.map((text, index) => {
@@ -174,11 +174,11 @@ class Config extends React.Component {
 	}
 	
 	render() {
-		const {colors, dithering, enabled, isHQ} = getOpts();
-		return React.createElement("div", {className: "box", style: {zIndex: 999}},
+		const {colors, dithering, enabled, isHQ} = getData();
+		return React.createElement("div", {className: "box", style: {top: 0, zIndex: 999, minWidth: "100px"}},
 			[
 				React.createElement("h5", {key: "h5_config"}, "Config"),
-				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em"}}, 
+				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em", right: 0}}, 
 					[
 						React.createElement("span", {}, 'var opts = {\n'),
 						React.createElement("div", {style: {paddingLeft: "4em"}}, 
@@ -225,7 +225,7 @@ class Config extends React.Component {
 
 class Footer extends React.Component {  
 	render() {
-		return React.createElement("div", {id: "footer", style: {minWidth: "575px"}},		
+		return React.createElement("div", {id: "footer", style: {maxWidth: "70vw"}},		
 			[
 				React.createElement(Readme, {key: "readme", ...this.props}),				
 				React.createElement(Config, {key: "config", ...this.props})
@@ -319,13 +319,12 @@ class App extends React.Component {
 			dithering: true, isHQ: false, enabled: true};
 	}	
 	
-	setOpts = (opts) => {
-		this.setState(opts);
-	}
-	
 	render() {
-		getOpts = () => this.state;
-		setData = this.setOpts;
+		getData = () => this.state;
+		setData = (opts) => {
+			this.setState(opts);
+		}
+		
 		return [
 			React.createElement(Scene, {key: "scene", orig: this.orig}),
 			React.createElement(Footer, {key: "footer", orig: this.orig}),

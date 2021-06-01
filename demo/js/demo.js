@@ -1,7 +1,7 @@
 var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
 var gl = webgl_detect();
 var pngOnly = location.search.toLowerCase().indexOf('png') > -1;
-var getOpts, setData;
+var getData, setData;
 
 function baseName(src) {
 	return src.split("/").pop().split(".");
@@ -173,7 +173,7 @@ function origLoad(imgChanged) {
 	
 	var $orig = document.querySelector("#orig");
 	if($orig.style.pointerEvents != "none") {
-		setData({enabled: false});
+		setData({enabled: false, palt: []});
 		var srcImg = $orig.querySelector("img");
 		var srcUrl = drawImageScaled(srcImg);
 		if(srcUrl != null) {
@@ -181,7 +181,7 @@ function origLoad(imgChanged) {
 			return;
 		}
 		
-		var opts = getOpts();
+		var opts = getData();
 		var id = srcImg.name;		
 		
 		$orig.style.pointerEvents = "none";						
@@ -389,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	
 	document.querySelectorAll("img.th, #readme").forEach(element => {
 		element.addEventListener("mouseover", function() {
-			var opts = getOpts();
+			var opts = getData();
 			document.querySelector("#footer").style.zIndex = opts.enabled ? "-1" : "1";
 		}, {once : true});
 		element.onmouseout = function() {
