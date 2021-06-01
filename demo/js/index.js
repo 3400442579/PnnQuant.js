@@ -125,12 +125,11 @@ class Readme extends React.Component {
 	}
 	
 	drawPalette = () => {
-		var {cols, pal} = this.state;
-		var divContent = [];
+		var {cols, pal} = this.state;		
 		const maxWidth = this.palt.current.offsetWidth;
 		const maxHeight = this.palt.current.offsetHeight;
 		if(!maxWidth || pal.length == 0)
-			return divContent;		
+			return null;		
 
 		if(cols > pal.length)
 			cols = pal.length;
@@ -140,6 +139,7 @@ class Readme extends React.Component {
 		if((ratioY * maxHeight) > (ratioX * maxWidth))
 			ratioY = ratioX * maxWidth / maxHeight;		
 		
+		var divContent = [];
 		pal.map((pixel, k) => {
 			var r = (pixel & 0xff),
 				g = (pixel >>> 8) & 0xff,
