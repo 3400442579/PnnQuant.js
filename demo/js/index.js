@@ -127,13 +127,10 @@ class Readme extends React.Component {
 	drawPalette = () => {
 		var {cols, pal} = this.state;
 		var divContent = [];
-		if(pal.length == 0)
-			return divContent;
-		
-		var maxWidth = this.palt.current.offsetWidth;
+		const maxWidth = this.palt.current.offsetWidth;
 		const maxHeight = this.palt.current.offsetHeight;
-		if(!maxWidth)
-			maxWidth = pal.length;
+		if(!maxWidth || pal.length == 0)
+			return divContent;		
 
 		if(cols > pal.length)
 			cols = pal.length;
