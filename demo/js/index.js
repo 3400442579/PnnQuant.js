@@ -102,13 +102,14 @@ class Readme extends React.Component {
 	}
 	drawPalette = () => {
 		var {pal, cols} = getData();
+		var divContent = [];
 		if(pal.length == 0)
-			return null;
+			return divContent;
 		
 		const maxWidth = this.palt.current.offsetWidth;
 		const maxHeight = this.palt.current.offsetHeight;
 		if(!maxWidth)
-			maxWidth = width;
+			maxWidth = pal.length;
 
 		if(cols > pal.length)
 			cols = pal.length;
@@ -116,18 +117,17 @@ class Readme extends React.Component {
 		var ratioX = Math.floor(100.0 / cols);
 		var ratioY = Math.floor(100.0 / rows);
 		if((ratioY * maxHeight) > (ratioX * maxWidth))
-			ratioY = ratioX * maxWidth / maxHeight;
+			ratioY = ratioX * maxWidth / maxHeight;		
 		
-		var divContent = [];
-		for(var k = 0; k < pal.length; ++k) {
-			var r = (pal[k] & 0xff),
-				g = (pal[k] >>> 8) & 0xff,
-				b = (pal[k] >>> 16) & 0xff,
-				a = ((pal[k] >>> 24) & 0xff) / 255.0;
+		pal.map((pixel, k) => {
+			var r = (pixel & 0xff),
+				g = (pixel >>> 8) & 0xff,
+				b = (pixel >>> 16) & 0xff,
+				a = ((pixel >>> 24) & 0xff) / 255.0;
 			const div = React.createElement("div", {key: `pal${k}`, style: {backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, float: "left", 
 				width: `${ratioX}%`, height: `${ratioY}%`}, title: rgbToHex(r, g, b) });
 			divContent.push(div);
-		}
+		});
 		return divContent;
 	}
 
@@ -319,12 +319,13 @@ class App extends React.Component {
 			dithering: true, isHQ: false, enabled: true};
 	}	
 	
+	setOpts = (opts) => {
+		this.setState(opts);
+	}
+	
 	render() {
 		getData = () => this.state;
-		setData = (opts) => {
-			this.setState(opts);
-		}
-		
+		setData = this.setOpts;
 		return [
 			React.createElement(Scene, {key: "scene", orig: this.orig}),
 			React.createElement(Footer, {key: "footer", orig: this.orig}),

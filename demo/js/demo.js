@@ -84,6 +84,7 @@ function quantizeImage(gl, result, width) {
 function allowChange($orig) {
 	setData({enabled: true});
 	$orig.style.pointerEvents = "";
+	document.querySelector("#palt").style.opacity = 1;
 }
 
 function doProcess(gl, ti, opts) {	
@@ -173,7 +174,9 @@ function origLoad(imgChanged) {
 	
 	var $orig = document.querySelector("#orig");
 	if($orig.style.pointerEvents != "none") {
-		setData({enabled: false, palt: []});
+		setData({enabled: false});
+		document.querySelector("#palt").style.opacity = 0;
+		
 		var srcImg = $orig.querySelector("img");
 		var srcUrl = drawImageScaled(srcImg);
 		if(srcUrl != null) {
@@ -388,10 +391,10 @@ document.addEventListener("DOMContentLoaded", function(){
 		document.body.onpaste = retrieveImageFromClipboardAsBase64;	
 	
 	document.querySelectorAll("img.th, #readme").forEach(element => {
-		element.addEventListener("mouseover", function() {
+		element.onmouseenter = function() {
 			var opts = getData();
 			document.querySelector("#footer").style.zIndex = opts.enabled ? "-1" : "1";
-		}, {once : true});
+		};
 		element.onmouseout = function() {
 			document.querySelector("#footer").style.zIndex = "1";
 		};
