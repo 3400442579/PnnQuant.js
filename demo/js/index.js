@@ -1,6 +1,21 @@
 class Scene extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { background: "none", boxWidth: 0, transparent: -1,
+			display: "none", imgName: "", imgBase64: "", imgUrl: ""
+		};
+		this.palt = React.createRef();
+	}
+	
+	componentDidMount() {
+		eventBus.on("scene", (data) => this.setState(data));
+	}
+	componentWillUnmount() {
+		eventBus.remove("scene");
+	}
+  
 	onChange = (ev) => {
-	    setData({enabled: false});
+	    eventBus.dispatch("app", {enabled: false});
 		const imgPath = ev.target.files[0];
 		var id = baseName(imgPath.name)[0];
 		loadImage(id, imgPath, ev);
@@ -12,7 +27,7 @@ class Scene extends React.Component {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
-		const {enabled} = getData();
+		const enabled = this.props.isEnabled();
 		if(!enabled)
 			return;
 
@@ -37,7 +52,7 @@ class Scene extends React.Component {
 		var imageType = /image.*/;
 
 		if (file.type.match(imageType)) {
-			setData({enabled: false});
+			eventBus.dispatch("app", {enabled: false});
 			loadImage(file.name, file, ev);
 		}
 	}
@@ -58,12 +73,12 @@ class Scene extends React.Component {
 		allowChange($orig);
 	}
 	onLoad = (ev) => {
-	    origLoad(true);
+	    origLoad(true, null);
 	}
 	
 	render() {
-		const {background, boxWidth, display, enabled, imgName, imgUrl, imgBase64} = getData();
-		const reduDisplay = enabled ? display : "none";
+		const {background, boxWidth, display, imgName, imgUrl, imgBase64} = this.state;
+		const reduDisplay = this.props.isEnabled() ? display : "none";
 		return React.createElement("div", {id: "scene", style: {overflow: "auto"}},
 			[
 				React.createElement("div", {key: "box1", className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
@@ -98,10 +113,19 @@ class Scene extends React.Component {
 class Readme extends React.Component {  
 	constructor(props) {
 		super(props);
+		this.state = { cols: 32, pal: []};
 		this.palt = React.createRef();
 	}
+	
+	componentDidMount() {
+		eventBus.on("palt", (data) => this.setState(data));
+	}
+	componentWillUnmount() {
+		eventBus.remove("palt");
+	}
+	
 	drawPalette = () => {
-		var {pal, cols} = getData();
+		var {cols, pal} = this.state;
 		var divContent = [];
 		if(pal.length == 0)
 			return divContent;
@@ -156,25 +180,37 @@ class Readme extends React.Component {
 
 class Config extends React.Component {
 	constructor(props) {
-		super(props);		
+		super(props);
+		this.state = { colors: '256', dithering: true, isHQ: false};
 	}
+	
+	componentDidMount() {
+		eventBus.on("config", (data) => this.setState(data));
+		eventBus.on("origLoad", (data) => data.callback(data.imgChanged, this.state));
+	}
+	componentWillUnmount() {
+		eventBus.remove("config");
+		eventBus.remove("origLoad");
+	}
+	
 	colorsChange = (e) => {
-		setData({colors: e.target.value});
+		this.setState({colors: e.target.value});
 	}
 	ditheringChange = (e) => {
-		setData({dithering: e.target.checked});
+		this.setState({dithering: e.target.checked});
 	}
 	qualityChange = (e) => {
-		setData({isHQ: e.target.value == "H"});
+		this.setState({isHQ: e.target.value == "H"});
 	}
 	onClick = (e) => {
 	    var imgUrl = this.props.orig.current.getAttribute("src");
 		process(imgUrl);
-		origLoad(false);
+		origLoad(false, this.state);
 	}
 	
 	render() {
-		const {colors, dithering, enabled, isHQ} = getData();
+		const {colors, dithering, isHQ} = this.state;
+		const enabled = this.props.isEnabled();
 		return React.createElement("div", {className: "box", style: {top: 0, zIndex: 999, minWidth: "100px"}},
 			[
 				React.createElement("h5", {key: "h5_config"}, "Config"),
@@ -312,23 +348,23 @@ class ForkMe extends React.Component {
 class App extends React.Component {
 	constructor(props) {
 		super(props);
-		this.orig = React.createRef();
-		this.state = { boxWidth: 0, transparent: -1,
-			cols: 32, pal: [], colors: '256', 
-			display: "none", imgName: "", imgBase64: "", imgUrl: "",
-			dithering: true, isHQ: false, enabled: true};
-	}	
-	
-	setOpts = (opts) => {
-		this.setState(opts);
+		this.state = { enabled: true};
+		this.orig = React.createRef();		
 	}
 	
+	componentDidMount() {
+		eventBus.on("app", (data) => this.setState(data));
+	}
+	componentWillUnmount() {
+		eventBus.remove("app");
+	}
+	
+	isEnabled = () => this.state.enabled;
+	
 	render() {
-		getData = () => this.state;
-		setData = this.setOpts;
 		return [
-			React.createElement(Scene, {key: "scene", orig: this.orig}),
-			React.createElement(Footer, {key: "footer", orig: this.orig}),
+			React.createElement(Scene, {key: "scene", isEnabled: this.isEnabled, orig: this.orig}),
+			React.createElement(Footer, {key: "footer", isEnabled: this.isEnabled, orig: this.orig}),
 			React.createElement(Gallery, {key: "gallery"}),
 			React.createElement(ForkMe, {key: "forkMe"})
 		];

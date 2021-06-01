@@ -1,7 +1,18 @@
 var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
 var gl = webgl_detect();
 var pngOnly = location.search.toLowerCase().indexOf('png') > -1;
-var getData, setData;
+
+const eventBus = {
+	on(event, callback) {
+		document.addEventListener(event, (e) => callback(e.detail));
+	},
+	dispatch(event, data) {
+		document.dispatchEvent(new CustomEvent(event, { detail: data }));
+	},
+	remove(event, callback) {
+		document.removeEventListener(event, callback);
+	},
+};
 
 function baseName(src) {
 	return src.split("/").pop().split(".");
@@ -51,7 +62,8 @@ function quantizeImage(gl, result, width) {
 
 	ctx.imageSmoothingQuality = "high";
 	
-	setData({boxWidth: (width - 10) + "px", background: result.transparent < 0 ? "none" : "", pal: pal});
+	eventBus.dispatch("scene", {boxWidth: (width - 10) + "px", background: result.transparent < 0 ? "none" : ""});
+	eventBus.dispatch("palt", {pal: pal});
 		
 	if("image/gif" == result.type && !pngOnly) {
 		try {
@@ -64,25 +76,25 @@ function quantizeImage(gl, result, width) {
 			var data = buf.slice(0, gf.end());
 			var reader = new FileReader();
 			reader.onloadend = function() {					
-				setData({imgBase64: reader.result});
+				eventBus.dispatch("scene", {imgBase64: reader.result});
 			};
 
 			reader.readAsDataURL(new Blob([data], {type: result.type}));
 			document.querySelector("#redu img").onerror = function () { 
-				setData({imgBase64: getPngUrl(ctx, can, result.img8)});
+				eventBus.dispatch("scene", {imgBase64: getPngUrl(ctx, can, result.img8)});
 			};
 		}
 		catch(err) {
-			setData({imgBase64: getPngUrl(ctx, can, result.img8)});
+			eventBus.dispatch("scene", {imgBase64: getPngUrl(ctx, can, result.img8)});
 			console.error(err);
 		}
 	}
 	else
-		setData({imgBase64: getPngUrl(ctx, can, result.img8)});
+		eventBus.dispatch("scene", {imgBase64: getPngUrl(ctx, can, result.img8)});
 }
 
 function allowChange($orig) {
-	setData({enabled: true});
+	eventBus.dispatch("app", {enabled: true});
 	$orig.style.pointerEvents = "";
 	document.querySelector("#palt").style.opacity = 1;
 }
@@ -166,7 +178,7 @@ function drawImageScaled(img){
     return can.toDataURL();
 }
 
-function origLoad(imgChanged) {
+function origLoad(imgChanged, opts) {
 	var ti = new Timer();
 	ti.start();
 	if(imgChanged)			
@@ -174,24 +186,27 @@ function origLoad(imgChanged) {
 	
 	var $orig = document.querySelector("#orig");
 	if($orig.style.pointerEvents != "none") {
-		setData({enabled: false});
+		eventBus.dispatch("app", {enabled: false});
 		document.querySelector("#palt").style.opacity = 0;
 		
 		var srcImg = $orig.querySelector("img");
 		var srcUrl = drawImageScaled(srcImg);
 		if(srcUrl != null) {
-			setData({display: "none", imgUrl: srcUrl});
+			eventBus.dispatch("scene", {display: "none", imgUrl: srcUrl});
 			return;
 		}
 		
-		var opts = getData();
-		var id = srcImg.name;		
+		if(opts == null) {
+			eventBus.dispatch("origLoad", {callback: origLoad, imgChanged: false});
+			return;
+		}
 		
+		var id = srcImg.name;		
 		$orig.style.pointerEvents = "none";						
 		ti.mark("'" + id + "' -> DOM", function() {					
 			opts.width = srcImg.naturalWidth | srcImg.width;
 			opts.height = srcImg.naturalHeight | srcImg.height;
-			setData({boxWidth: (opts.width - 10) + "px", display: "block"});							
+			eventBus.dispatch("scene", {boxWidth: (opts.width - 10) + "px", display: "block"});							
 		});
 		
 		if(worker != null) {			
@@ -214,11 +229,11 @@ function origLoad(imgChanged) {
 }
 
 function createImage(id, imgUrl, ev) {		
-	setData({imgName: id, imgUrl: imgUrl});	
+	eventBus.dispatch("scene", {imgName: id, imgUrl: imgUrl});	
 }
 
 function process(imgUrl) {	
-	setData({enabled: false});
+	eventBus.dispatch("app", {enabled: false});
 	var id = baseName(imgUrl)[0];
 	createImage(id, imgUrl, null);
 }
@@ -392,8 +407,8 @@ document.addEventListener("DOMContentLoaded", function(){
 	
 	document.querySelectorAll("img.th, #readme").forEach(element => {
 		element.onmouseenter = function() {
-			var opts = getData();
-			document.querySelector("#footer").style.zIndex = opts.enabled ? "-1" : "1";
+			const disabled = document.querySelector("#btn_upd").disabled;
+			document.querySelector("#footer").style.zIndex = disabled ? "1" : "-1";
 		};
 		element.onmouseout = function() {
 			document.querySelector("#footer").style.zIndex = "1";
