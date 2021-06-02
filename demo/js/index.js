@@ -282,8 +282,8 @@ class Footer extends React.Component {
 class ImageSet extends React.Component {
 	onClick = (e) => {
 	    if(!document.querySelector("#btn_upd").disabled) {
-			var id = this.props.imageName;
-			var imgUrl = e.target.getAttribute("srcset").split(",").pop().trim().split(" ")[0];
+			var id = e.target.name;
+			var imgUrl = e.target.srcset.split(",").pop().trim().split(" ")[0];
 			process(imgUrl);
 		}
 	}
@@ -296,7 +296,7 @@ class ImageSet extends React.Component {
 		const imgName = this.props.imgName;
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
 		return this.props.images.map((imgName) => {			
-			return React.createElement("img", {key: `img_${imgName}`, className: "th", style: {zIndex : 2}, 
+			return React.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
 				src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
 				draggable: true, onClick: (e) => {this.onClick(e)}, onDragStart: (e) => {this.onDragStart(e)} })
 		})
