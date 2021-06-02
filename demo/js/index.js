@@ -126,7 +126,6 @@ class Readme extends React.Component {
 	}
 	
 	componentDidMount() {
-           if(this.container.style.display != "none")
 		this.setState({
 			dimensions: {
 				width: this.container.offsetWidth,
@@ -179,7 +178,7 @@ class Readme extends React.Component {
 			"If your browser can't load an image fully, just try again."
 		];
 		
-		return React.createElement("div", {key: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
+		return React.createElement("div", {key: "help", id: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
 			[
 				React.createElement("ul", {key: "readme", id: "readme"}, 
 					childrenData.map((text, index) => {
