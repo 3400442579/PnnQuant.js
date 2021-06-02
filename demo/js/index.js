@@ -126,6 +126,7 @@ class Readme extends React.Component {
 	}
 	
 	componentDidMount() {
+           if(this.container.style.display != "none")
 		this.setState({
 			dimensions: {
 				width: this.container.offsetWidth,
