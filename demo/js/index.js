@@ -293,7 +293,6 @@ class ImageSet extends React.Component {
 	}
 	
 	render() {
-		const imgName = this.props.imgName;
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
 		return this.props.images.map((imgName) => {			
 			return React.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
