@@ -411,7 +411,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			const disabled = document.querySelector("#btn_upd").disabled;
 			document.querySelector("#footer").style.zIndex = disabled ? "1" : "-1";
 		};
-		element.onmouseout = function() {
+		element.onmouseleave = function() {
 			document.querySelector("#footer").style.zIndex = "1";
 		};
 	});

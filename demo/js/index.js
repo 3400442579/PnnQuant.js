@@ -174,7 +174,7 @@ class Readme extends React.Component {
 			"If your browser can't load an image fully, just try again."
 		];
 		
-		return React.createElement("div", {id: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
+		return React.createElement("div", {key: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
 			[
 				React.createElement("ul", {key: "readme", id: "readme"}, 
 					childrenData.map((text, index) => {
@@ -192,7 +192,7 @@ class Readme extends React.Component {
 class Config extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { colors: '256', dithering: true, isHQ: false};
+		this.state = { colors: 256, dithering: true, isHQ: false};
 	}
 	
 	componentDidMount() {
@@ -270,7 +270,7 @@ class Config extends React.Component {
 
 class Footer extends React.Component {  
 	render() {
-		return React.createElement("div", {id: "footer", style: {maxWidth: "70vw"}},		
+		return React.createElement("div", {key: "footer", id: "footer", style: {maxWidth: "70vw"}},		
 			[
 				React.createElement(Readme, {key: "readme", ...this.props}),				
 				React.createElement(Config, {key: "config", ...this.props})
