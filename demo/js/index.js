@@ -4,11 +4,16 @@ class Scene extends React.Component {
 		this.state = { background: "none", boxWidth: 0, transparent: -1,
 			display: "none", imgName: "", imgBase64: "", imgUrl: ""
 		};
-		this.palt = React.createRef();
+		this.orig = React.createRef();
 	}
 	
 	componentDidMount() {
 		eventBus.on("scene", (data) => this.setState(data));
+		eventBus.on("process", (data) => {
+			var imgUrl = this.orig.current.getAttribute("src");
+			process(imgUrl);
+			origLoad(false, data);
+		});
 	}
 	componentWillUnmount() {
 		eventBus.remove("scene");
@@ -66,10 +71,10 @@ class Scene extends React.Component {
 	    if(ev)
 			ev.target.style.border = "";
 		else
-			document.querySelector("#orig img").style.border = "";
+			this.orig.current.style.border = "";
 	}
 	onError = (ev) => {
-	    var $orig = this.props.orig.current;
+	    var $orig = this.orig.current;
 		allowChange($orig);
 	}
 	onLoad = (ev) => {
@@ -88,7 +93,7 @@ class Scene extends React.Component {
 							onDragOver: (e) => {this.onDragOver(e)}, onDragLeave: (e) => {this.onDragLeave(e)} }, 							
 							[
 								React.createElement("h4", {style: {width: boxWidth} }, "Original"),
-								React.createElement("img", {key: "origImg", crossOrigin: "", ref: this.props.orig, 
+								React.createElement("img", {key: "origImg", crossOrigin: "", ref: this.orig, 
 									name: imgName, src: imgUrl,
 									onError: (e) => {this.onError(e)}, onLoad: (e) => {this.onLoad(e)}
 								})
@@ -113,11 +118,16 @@ class Scene extends React.Component {
 class Readme extends React.Component {  
 	constructor(props) {
 		super(props);
-		this.state = { cols: 32, pal: []};
-		this.palt = React.createRef();
+		this.state = { cols: 32, dimensions: null, pal: []};
 	}
 	
 	componentDidMount() {
+		this.setState({
+			dimensions: {
+				width: this.container.offsetWidth,
+				height: this.container.offsetHeight,
+			},
+		});
 		eventBus.on("palt", (data) => this.setState(data));
 	}
 	componentWillUnmount() {
@@ -125,12 +135,13 @@ class Readme extends React.Component {
 	}
 	
 	drawPalette = () => {
-		if(!this.palt.current)
-                    return null;
+		const { dimensions } = this.state;
+		if(!dimensions)
+            return null;
 
-                var {cols, pal} = this.state;		
-		const maxWidth = this.palt.current.offsetWidth;
-		const maxHeight = this.palt.current.offsetHeight;
+        var {cols, pal} = this.state;		
+		const maxWidth = dimensions.width;
+		const maxHeight = dimensions.height;
 		if(!maxWidth || pal.length == 0)
 			return null;		
 
@@ -172,7 +183,7 @@ class Readme extends React.Component {
 						return React.createElement("li", {key: `li_${index}`},  text)
 					})
 				),
-				React.createElement("div", {key: "palt", id: "palt", ref: this.palt}, this.drawPalette())
+				React.createElement("div", {key: "palt", id: "palt", ref: el => (this.container = el)}, this.drawPalette())
 			]
 		);
 	}
@@ -203,9 +214,7 @@ class Config extends React.Component {
 		this.setState({isHQ: e.target.value == "H"});
 	}
 	onClick = (e) => {
-	    var imgUrl = this.props.orig.current.getAttribute("src");
-		process(imgUrl);
-		origLoad(false, this.state);
+	    eventBus.dispatch("process", this.state);		
 	}
 	
 	render() {
@@ -348,8 +357,7 @@ class ForkMe extends React.Component {
 class App extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { enabled: true};
-		this.orig = React.createRef();		
+		this.state = { enabled: true};				
 	}
 	
 	componentDidMount() {
@@ -359,16 +367,15 @@ class App extends React.Component {
 		eventBus.remove("app");
 	}
 	componentDidCatch(error, info) {
-		alert(`Error: ${error.message}`);
-		// location.replace('index-es5.html');
+		console.error(`Error: ${error.message}`);
 	}
 	
 	isEnabled = () => this.state.enabled;
 	
 	render() {
 		return [
-			React.createElement(Scene, {key: "scene", isEnabled: this.isEnabled, orig: this.orig}),
-			React.createElement(Footer, {key: "footer", isEnabled: this.isEnabled, orig: this.orig}),
+			React.createElement(Scene, {key: "scene", isEnabled: this.isEnabled}),
+			React.createElement(Footer, {key: "footer", isEnabled: this.isEnabled}),
 			React.createElement(Gallery, {key: "gallery"}),
 			React.createElement(ForkMe, {key: "forkMe"})
 		];

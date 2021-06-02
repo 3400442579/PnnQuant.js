@@ -132,7 +132,7 @@ function quantizeImage(gl, result, width) {
 		}
 		catch(err) {
 			console.error(err);
-                    img.src = getPngUrl(ctx, can, result.img8);
+			img.src = getPngUrl(ctx, can, result.img8);
 		}
 	}
 	else
