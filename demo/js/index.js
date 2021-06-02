@@ -39,8 +39,10 @@ class Scene extends React.Component {
 		var dt = ev.dataTransfer;		
 		if(dt.files == null || dt.files.length <= 0) {
 			var imgUrl = dt.getData("text");
-			if(imgUrl == ev.target.src)
+			if(imgUrl == ev.target.src) {
+				onDragLeave(ev);
 				return;
+			}
 			
 			try {
 				var dropContext = document.querySelector("div").appendChild(dt.getData("text/html"));
