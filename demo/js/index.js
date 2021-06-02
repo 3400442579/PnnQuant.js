@@ -289,8 +289,7 @@ class ImageSet extends React.Component {
 	}
 	onDragStart = (e) => {
 	    e.dataTransfer.dropEffect = "copy";
-		const {imgName , imgType} = this.props;
-		e.dataTransfer.setData("text", `img/${imgName}${imgType}`);
+		e.dataTransfer.setData("text", e.target.src);
 	}
 	
 	render() {
