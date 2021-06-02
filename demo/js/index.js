@@ -10,7 +10,7 @@ class Scene extends React.Component {
 	componentDidMount() {
 		eventBus.on("scene", (data) => this.setState(data));
 		eventBus.on("process", (data) => {
-			var imgUrl = this.orig.current.getAttribute("src");
+			var imgUrl = this.orig.current.src;
 			process(imgUrl);
 			origLoad(false, data);
 		});

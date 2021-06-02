@@ -262,7 +262,7 @@ function download(imgUrl, ev) {
 		var rootUrl = location.href.substr(0, location.href.lastIndexOf("/") + 1);
 		var imgSrc = imgUrl.replace(rootUrl, "");
 		var srcSet = document.querySelector("img[srcset][src$='" + imgSrc + "']");
-		imgUrl = srcSet != null ? srcSet.getAttribute("srcset").split(",").pop().trim().split(" ")[0] : imgSrc;
+		imgUrl = srcSet != null ? srcSet.srcset.split(",").pop().trim().split(" ")[0] : imgSrc;
 		process(imgUrl);
 		document.querySelector("#orig img").style.border = "";
 		return;
@@ -308,11 +308,11 @@ function pasteUrl(imgUrl) {
 		domContext.innerHTML = imgUrl;
 		var hyperlink = domContext.querySelector("img");
 		if(hyperlink != null)
-			imgUrl = hyperlink.getAttribute("srcset") ? hyperlink.getAttribute("srcset").split(",").pop().trim().split(" ")[0] : hyperlink.getAttribute("src");
+			imgUrl = hyperlink.srcset ? hyperlink.srcset.split(",").pop().trim().split(" ")[0] : hyperlink.src;
 		else {
 			hyperlink = domContext.querySelector("a");
 			if(hyperlink != null)
-				imgUrl = hyperlink.getAttribute("href");
+				imgUrl = hyperlink.href;
 		}
 	}
 	
