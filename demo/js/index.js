@@ -40,7 +40,7 @@ class Scene extends React.Component {
 		if(dt.files == null || dt.files.length <= 0) {
 			var imgUrl = dt.getData("text");
 			if(imgUrl == ev.target.src) {
-				onDragLeave(ev);
+				ev.target.style.border = "";
 				return;
 			}
 			
