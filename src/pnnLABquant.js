@@ -222,9 +222,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			deltaR_T;
 	}
 	
-	function getARGBIndex(a, r, g, b, hasSemiTransparency) {
+	function getARGBIndex(a, r, g, b, hasSemiTransparency, hasTransparency) {
 		if (hasSemiTransparency)
 			return (a & 0xF0) << 8 | (r & 0xF0) << 4 | (g & 0xF0) | (b >> 4);
+		if (hasTransparency)
+			return (a & 0x80) << 8 | (r & 0xF8) << 7 | (g & 0xF8) << 2 | (b >> 3);
 		return (r & 0xF8) << 8 | (g & 0xFC) << 3 | (b >> 3);
 	}
 	
@@ -316,7 +318,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = (pixels[i] >>> 16) & 0xff,
 			a = (pixels[i] >>> 24) & 0xff;		
 			
-			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
+			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency, this.m_transparentPixelIndex >= 0);
 			var lab1 = getLab(a, r, g, b);
 			
 			if (bins[index] == null)

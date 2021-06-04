@@ -29,9 +29,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		this.err = 0.0;
 	}
 	
-	function getARGBIndex(a, r, g, b, hasSemiTransparency) {
+	function getARGBIndex(a, r, g, b, hasSemiTransparency, hasTransparency) {
 		if (hasSemiTransparency)
 			return (a & 0xF0) << 8 | (r & 0xF0) << 4 | (g & 0xF0) | (b >> 4);
+		if (hasTransparency)
+			return (a & 0x80) << 8 | (r & 0xF8) << 7 | (g & 0xF8) << 2 | (b >> 3);
 		return (r & 0xF8) << 8 | (g & 0xFC) << 3 | (b >> 3);
 	}
 	
@@ -90,7 +92,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = (pixels[i] >>> 16) & 0xff,
 			a = (pixels[i] >>> 24) & 0xff;
 			
-			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency);
+			var index = getARGBIndex(a, r, g, b, this.hasSemiTransparency, nMaxColors < 64 || this.m_transparentPixelIndex >= 0);
 			if (bins[index] == null)
 				bins[index] = new PnnBin();
 			bins[index].ac += a;
@@ -139,7 +141,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		var h, l, l2;
 		/* Initialize nearest neighbors and build heap of them */
-		var heap = new Uint32Array(65537);
+		var heap = new Uint32Array(bins.length + 1);
 		for (var i = 0; i < maxbins; ++i)
 		{
 			find_nn(bins, i);
