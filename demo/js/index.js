@@ -155,7 +155,7 @@ class Readme extends React.Component {
 			cols = pal.length;
 		const rows = Math.floor(pal.length / cols);
 		const ratioX = Math.floor(100.0 / cols);
-		const ratioY = Math.floor(100.0 / rows);
+		let ratioY = Math.floor(100.0 / rows);
 		if((ratioY * maxHeight) > (ratioX * maxWidth))
 			ratioY = ratioX * maxWidth / maxHeight;		
 		
