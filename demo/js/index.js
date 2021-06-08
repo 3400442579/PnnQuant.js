@@ -26,7 +26,7 @@ class Scene extends React.Component {
 		loadImage(id, imgPath, ev);
 	}
 	onClick = (ev) => {
-	    document.querySelector("#orig").nextSibling.click();
+	    ev.target.parentNode.nextSibling.click();
 	}
 	onDrop = (ev) => {
 		ev.stopPropagation();
@@ -93,17 +93,17 @@ class Scene extends React.Component {
 				React.createElement("div", {key: "box1", className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
 					[
 						React.createElement("div", {key: "orig", id: "orig", style: {display: display, overflow: "auto"},
-							onClick: (e) => {this.onClick(e)}, onDrop: (e) => {this.onDrop(e)}, 
-							onDragOver: (e) => {this.onDragOver(e)}, onDragLeave: (e) => {this.onDragLeave(e)} }, 							
+							onClick: this.onClick, onDrop: this.onDrop, 
+							onDragOver: this.onDragOver, onDragLeave: this.onDragLeave }, 							
 							[
 								React.createElement("h4", {style: {width: boxWidth} }, "Original"),
 								React.createElement("img", {key: "origImg", crossOrigin: "", ref: this.orig, 
 									name: imgName, src: imgUrl,
-									onError: (e) => {this.onError(e)}, onLoad: (e) => {this.onLoad(e)}
+									onError: this.onError, onLoad: this.onLoad
 								})
 							]),
 						React.createElement("input", {key: "file", type: "file", style: {display: "none", width: 0},
-							onChange: (e) => {this.onChange(e)}
+							onChange: this.onChange
 						})
 					]
 				),
@@ -234,13 +234,13 @@ class Config extends React.Component {
 							[
 								React.createElement("span", {}, 'colors: '),
 								React.createElement("input", {key: "colors", id: "colors", type: "number", min: 2, max: 65536, size: 6, className: "autosize",
-								value: colors, onChange: (e) => {this.colorsChange(e)} })								
+								value: colors, onChange: this.colorsChange })								
 							]
 						),
 						React.createElement("div", {style: {paddingLeft: "4em"}}, 
 							[								
 								React.createElement("input", {key: "dithering", id: "dithering", type: "checkbox",
-									checked: dithering, onChange: (e) => {this.ditheringChange(e)} }),
+									checked: dithering, onChange: this.ditheringChange }),
 								React.createElement("span", {}, 'dithering,')
 							]
 						),
@@ -251,17 +251,17 @@ class Config extends React.Component {
 					[
 						React.createElement("span", {}, 'Quality: '),
 						React.createElement("input", {key: "radNQ", name: "quality", type: "radio", value: "N",
-							checked: !isHQ, onChange: (e) => {this.qualityChange(e)} }),
+							checked: !isHQ, onChange: this.qualityChange }),
 						React.createElement("span", {}, 'Normal '),
 						React.createElement("input", {key: "radHQ", id: "radHQ", name: "quality", type: "radio", value: "H",
-							checked: isHQ, onChange: (e) => {this.qualityChange(e)} }),
+							checked: isHQ, onChange: this.qualityChange }),
 						React.createElement("span", {}, ' High')
 					]
 				),
 				enabled ?
 					React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
 						React.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
-							onClick: (e) => {this.onClick(e)} }, "Update")					
+							onClick: this.onClick }, "Update")					
 					) :
 					React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
 						React.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
@@ -298,10 +298,10 @@ class ImageSet extends React.Component {
 	
 	render() {
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
-		return this.props.images.map((imgName) => {			
+		return this.props.images.map(imgName => {			
 			return React.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
 				src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
-				draggable: true, onClick: (e) => {this.onClick(e)}, onDragStart: (e) => {this.onDragStart(e)} })
+				draggable: true, onClick: this.onClick, onDragStart: this.onDragStart })
 		})
 	}
 }
@@ -332,7 +332,7 @@ class Gallery extends React.Component {
 		];
 		return React.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
 			React.createElement("tbody", {key: "tb_showcase"},
-				categories.map((category) => {
+				categories.map(category => {
 					return React.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
 				})
 			)
