@@ -44,13 +44,15 @@ class Scene extends React.Component {
 				return;
 			}
 			
+			const mineType = "text/html";
 			try {
-				var dropContext = document.querySelector("div").appendChild(dt.getData("text/html"));
+				var dropContext = new DOMParser().parseFromString(dt.getData(mineType), mineType);
 				var img = dropContext.querySelector("img");
 				if(img instanceof HTMLImageElement)
 					imgUrl = img.srcset ? img.srcset.split(",").pop().trim().split(" ")[0] : img.src;
 			}
 			catch(err) {
+				console.error(err);
 			}
 			
 			download(imgUrl, ev);
@@ -97,7 +99,7 @@ class Scene extends React.Component {
 							onDragOver: this.onDragOver, onDragLeave: this.onDragLeave }, 							
 							[
 								React.createElement("h4", {style: {width: boxWidth} }, "Original"),
-								React.createElement("img", {key: "origImg", crossOrigin: "", ref: this.orig, 
+								React.createElement("img", {key: "origImg", crossOrigin: "", draggable: false, ref: this.orig, 
 									name: imgName, src: imgUrl,
 									onError: this.onError, onLoad: this.onLoad
 								})
@@ -143,7 +145,7 @@ class Readme extends React.Component {
 		if(!dimensions)
             return null;
 
-        var {cols, pal} = this.state;		
+        let {cols, pal} = this.state;		
 		const maxWidth = dimensions.width;
 		const maxHeight = dimensions.height;
 		if(!maxWidth || pal.length == 0)
@@ -151,15 +153,15 @@ class Readme extends React.Component {
 
 		if(cols > pal.length)
 			cols = pal.length;
-		var rows = Math.floor(pal.length / cols);
-		var ratioX = Math.floor(100.0 / cols);
-		var ratioY = Math.floor(100.0 / rows);
+		const rows = Math.floor(pal.length / cols);
+		const ratioX = Math.floor(100.0 / cols);
+		const ratioY = Math.floor(100.0 / rows);
 		if((ratioY * maxHeight) > (ratioX * maxWidth))
 			ratioY = ratioX * maxWidth / maxHeight;		
 		
-		var divContent = [];
+		let divContent = [];
 		pal.map((pixel, k) => {
-			var r = (pixel & 0xff),
+			const r = (pixel & 0xff),
 				g = (pixel >>> 8) & 0xff,
 				b = (pixel >>> 16) & 0xff,
 				a = ((pixel >>> 24) & 0xff) / 255.0;
@@ -292,8 +294,10 @@ class ImageSet extends React.Component {
 		}
 	}
 	onDragStart = (e) => {
-	    e.dataTransfer.dropEffect = "copy";
-		e.dataTransfer.setData("text", e.target.src);
+		if(!document.querySelector("#btn_upd").disabled) {
+			e.dataTransfer.dropEffect = "copy";
+			e.dataTransfer.setData("text", e.target.src);
+		}
 	}
 	
 	render() {
