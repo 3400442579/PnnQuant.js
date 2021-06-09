@@ -1,15 +1,15 @@
-class Scene extends React.Component {
+class Scene extends preact.Component {
 	constructor(props) {
 		super(props);
 		this.state = { background: "none", boxWidth: 0, transparent: -1,
 			display: "none", imgName: "", imgBase64: "", imgUrl: ""
 		};
-		this.orig = React.createRef();
+		this.orig = preact.createRef();
 	}
 	
 	componentDidMount() {
-		eventBus.on("scene", (data) => this.setState(data));
-		eventBus.on("process", (data) => {
+		eventBus.on("scene", data => this.setState(data));
+		eventBus.on("process", data => {
 			var imgUrl = this.orig.current.src;
 			process(imgUrl);
 			origLoad(false, data);
@@ -19,16 +19,16 @@ class Scene extends React.Component {
 		eventBus.remove("scene");
 	}
   
-	onChange = (ev) => {
+	onChange = ev => {
 	    eventBus.dispatch("app", {enabled: false});
 		const imgPath = ev.target.files[0];
 		var id = baseName(imgPath.name)[0];
 		loadImage(id, imgPath, ev);
 	}
-	onClick = (ev) => {
+	onClick = ev => {
 	    ev.target.parentNode.nextSibling.click();
 	}
-	onDrop = (ev) => {
+	onDrop = ev => {
 		ev.stopPropagation();
 		ev.preventDefault();
 		
@@ -67,53 +67,53 @@ class Scene extends React.Component {
 			loadImage(file.name, file, ev);
 		}
 	}
-	onDragOver = (ev) => {
+	onDragOver = ev => {
 	    ev.stopPropagation();
 		ev.preventDefault();
 		
 		ev.target.style.border = "4px dashed silver";
 	}
-	onDragLeave = (ev) => {
+	onDragLeave = ev => {
 	    if(ev)
 			ev.target.style.border = "";
 		else
 			this.orig.current.style.border = "";
 	}
-	onError = (ev) => {
+	onError = ev => {
 	    var $orig = this.orig.current;
 		allowChange($orig);
 	}
-	onLoad = (ev) => {
+	onLoad = ev => {
 	    origLoad(true, null);
 	}
 	
 	render() {
 		const {background, boxWidth, display, imgName, imgUrl, imgBase64} = this.state;
 		const reduDisplay = this.props.isEnabled() ? display : "none";
-		return React.createElement("div", {id: "scene", style: {overflow: "auto"}},
+		return preact.createElement("div", {id: "scene", style: {overflow: "auto"}},
 			[
-				React.createElement("div", {key: "box1", className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
+				preact.createElement("div", {key: "box1", className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
 					[
-						React.createElement("div", {key: "orig", id: "orig", style: {display: display, overflow: "auto"},
+						preact.createElement("div", {key: "orig", id: "orig", style: {display: display, overflow: "auto"},
 							onClick: this.onClick, onDrop: this.onDrop, 
 							onDragOver: this.onDragOver, onDragLeave: this.onDragLeave }, 							
 							[
-								React.createElement("h4", {style: {width: boxWidth} }, "Original"),
-								React.createElement("img", {key: "origImg", crossOrigin: "", draggable: false, ref: this.orig, 
+								preact.createElement("h4", {style: {width: boxWidth} }, "Original"),
+								preact.createElement("img", {key: "origImg", crossOrigin: "", draggable: false, ref: this.orig, 
 									name: imgName, src: imgUrl,
 									onError: this.onError, onLoad: this.onLoad
 								})
 							]),
-						React.createElement("input", {key: "file", type: "file", style: {display: "none", width: 0},
+						preact.createElement("input", {key: "file", type: "file", style: {display: "none", width: 0},
 							onChange: this.onChange
 						})
 					]
 				),
-				React.createElement("div", {key: "box2",  className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
-					React.createElement("div", {key: "redu", id: "redu", style: {display: reduDisplay, overflow: "auto"}},
+				preact.createElement("div", {key: "box2",  className: "box", style: {background: background, margin: "0 auto", maxWidth: "49%", maxHeight: "35%"}}, 
+					preact.createElement("div", {key: "redu", id: "redu", style: {display: reduDisplay, overflow: "auto"}},
 						[
-							React.createElement("h4", {style: {width: boxWidth} }, "Quantized"),
-							React.createElement("img", {key: "reducedImg", src: imgBase64 })
+							preact.createElement("h4", {style: {width: boxWidth} }, "Quantized"),
+							preact.createElement("img", {key: "reducedImg", src: imgBase64 })
 						])
 				)
 			]
@@ -121,7 +121,7 @@ class Scene extends React.Component {
 	}
 }
 
-class Readme extends React.Component {  
+class Readme extends preact.Component {  
 	constructor(props) {
 		super(props);
 		this.state = { cols: 32, dimensions: null, pal: []};
@@ -134,7 +134,7 @@ class Readme extends React.Component {
 				height: this.container.offsetHeight,
 			},
 		});
-		eventBus.on("palt", (data) => this.setState(data));
+		eventBus.on("palt", data => this.setState(data));
 	}
 	componentWillUnmount() {
 		eventBus.remove("palt");
@@ -165,7 +165,7 @@ class Readme extends React.Component {
 				g = (pixel >>> 8) & 0xff,
 				b = (pixel >>> 16) & 0xff,
 				a = ((pixel >>> 24) & 0xff) / 255.0;
-			const div = React.createElement("div", {key: `pal${k}`, style: {backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, float: "left", 
+			const div = preact.createElement("div", {key: `pal${k}`, style: {backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, float: "left", 
 				width: `${ratioX}%`, height: `${ratioY}%`}, title: rgbToHex(r, g, b) });
 			divContent.push(div);
 		});
@@ -180,93 +180,93 @@ class Readme extends React.Component {
 			"If your browser can't load an image fully, just try again."
 		];
 		
-		return React.createElement("div", {key: "help", id: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
+		return preact.createElement("div", {key: "help", id: "help", className: "box", style: {paddingRight: "1em", maxWidth: "100vw"}},
 			[
-				React.createElement("ul", {key: "readme", id: "readme"}, 
+				preact.createElement("ul", {key: "readme", id: "readme"}, 
 					childrenData.map((text, index) => {
 						if(text.match(/^/))
-							return React.createElement("li", {key: `li_${index}`,  dangerouslySetInnerHTML: { __html:  text} })
-						return React.createElement("li", {key: `li_${index}`},  text)
+							return preact.createElement("li", {key: `li_${index}`,  dangerouslySetInnerHTML: { __html:  text} })
+						return preact.createElement("li", {key: `li_${index}`},  text)
 					})
 				),
-				React.createElement("div", {key: "palt", id: "palt", ref: el => (this.container = el)}, this.drawPalette())
+				preact.createElement("div", {key: "palt", id: "palt", ref: el => (this.container = el)}, this.drawPalette())
 			]
 		);
 	}
 }
 
-class Config extends React.Component {
+class Config extends preact.Component {
 	constructor(props) {
 		super(props);
 		this.state = { colors: 256, dithering: true, isHQ: false};
 	}
 	
 	componentDidMount() {
-		eventBus.on("config", (data) => this.setState(data));
-		eventBus.on("origLoad", (data) => data.callback(data.imgChanged, this.state));
+		eventBus.on("config", data => this.setState(data));
+		eventBus.on("origLoad", data => data.callback(data.imgChanged, this.state));
 	}
 	componentWillUnmount() {
 		eventBus.remove("config");
 		eventBus.remove("origLoad");
 	}
 	
-	colorsChange = (e) => {
+	colorsChange = e => {
 		this.setState({colors: e.target.value});
 	}
-	ditheringChange = (e) => {
+	ditheringChange = e => {
 		this.setState({dithering: e.target.checked});
 	}
-	qualityChange = (e) => {
+	qualityChange = e => {
 		this.setState({isHQ: e.target.value == "H"});
 	}
-	onClick = (e) => {
+	onClick = e => {
 	    eventBus.dispatch("process", this.state);		
 	}
 	
 	render() {
 		const {colors, dithering, isHQ} = this.state;
 		const enabled = this.props.isEnabled();
-		return React.createElement("div", {className: "box", style: {top: 0, zIndex: 999, minWidth: "100px"}},
+		return preact.createElement("div", {className: "box", style: {top: 0, zIndex: 999, minWidth: "100px"}},
 			[
-				React.createElement("h5", {key: "h5_config"}, "Config"),
-				React.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em", right: 0}}, 
+				preact.createElement("h5", {key: "h5_config"}, "Config"),
+				preact.createElement("div", {key: "pre_config", id: "config", style: {paddingLeft: "1em", right: 0}}, 
 					[
-						React.createElement("span", {}, 'var opts = {\n'),
-						React.createElement("div", {style: {paddingLeft: "4em"}}, 
+						preact.createElement("span", {}, 'var opts = {\n'),
+						preact.createElement("div", {style: {paddingLeft: "4em"}}, 
 							[
-								React.createElement("span", {}, 'colors: '),
-								React.createElement("input", {key: "colors", id: "colors", type: "number", min: 2, max: 65536, size: 6, className: "autosize",
+								preact.createElement("span", {}, 'colors: '),
+								preact.createElement("input", {key: "colors", id: "colors", type: "number", min: 2, max: 65536, size: 6, className: "autosize",
 								value: colors, onChange: this.colorsChange })								
 							]
 						),
-						React.createElement("div", {style: {paddingLeft: "4em"}}, 
+						preact.createElement("div", {style: {paddingLeft: "4em"}}, 
 							[								
-								React.createElement("input", {key: "dithering", id: "dithering", type: "checkbox",
+								preact.createElement("input", {key: "dithering", id: "dithering", type: "checkbox",
 									checked: dithering, onChange: this.ditheringChange }),
-								React.createElement("span", {}, 'dithering,')
+								preact.createElement("span", {}, 'dithering,')
 							]
 						),
-						React.createElement("span", {}, '};')
+						preact.createElement("span", {}, '};')
 					]
 				),
-				React.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}},
+				preact.createElement("span", {key: "input_config", style: {paddingLeft: "1em", paddingBottom: "1em"}},
 					[
-						React.createElement("span", {}, 'Quality: '),
-						React.createElement("input", {key: "radNQ", name: "quality", type: "radio", value: "N",
+						preact.createElement("span", {}, 'Quality: '),
+						preact.createElement("input", {key: "radNQ", name: "quality", type: "radio", value: "N",
 							checked: !isHQ, onChange: this.qualityChange }),
-						React.createElement("span", {}, 'Normal '),
-						React.createElement("input", {key: "radHQ", id: "radHQ", name: "quality", type: "radio", value: "H",
+						preact.createElement("span", {}, 'Normal '),
+						preact.createElement("input", {key: "radHQ", id: "radHQ", name: "quality", type: "radio", value: "H",
 							checked: isHQ, onChange: this.qualityChange }),
-						React.createElement("span", {}, ' High')
+						preact.createElement("span", {}, ' High')
 					]
 				),
 				enabled ?
-					React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
-						React.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
+					preact.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
+						preact.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
 							onClick: this.onClick }, "Update")					
 					) :
-					React.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
-						React.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
+					preact.createElement("div", {key: "btn_config", style: {padding: "0.5em 1em 0.5em 11em"}}, 
+						preact.createElement("button", {key: "btn_upd", id: "btn_upd", type: "button",
 							disabled: "disabled" }, "Please wait...")
 					)
 			]
@@ -274,26 +274,26 @@ class Config extends React.Component {
 	}
 }
 
-class Footer extends React.Component {  
+class Footer extends preact.Component {  
 	render() {
-		return React.createElement("div", {key: "footer", id: "footer", style: {maxWidth: "70vw"}},		
+		return preact.createElement("div", {key: "footer", id: "footer", style: {maxWidth: "70vw"}},		
 			[
-				React.createElement(Readme, {key: "readme", ...this.props}),				
-				React.createElement(Config, {key: "config", ...this.props})
+				preact.createElement(Readme, {key: "readme", ...this.props}),				
+				preact.createElement(Config, {key: "config", ...this.props})
 			]
 		);
 	}
 }
 
-class ImageSet extends React.Component {
-	onClick = (e) => {
+class ImageSet extends preact.Component {
+	onClick = e => {
 	    if(!document.querySelector("#btn_upd").disabled) {
 			var id = e.target.name;
 			var imgUrl = e.target.srcset.split(",").pop().trim().split(" ")[0];
 			process(imgUrl);
 		}
 	}
-	onDragStart = (e) => {
+	onDragStart = e => {
 		if(!document.querySelector("#btn_upd").disabled) {
 			e.dataTransfer.dropEffect = "copy";
 			e.dataTransfer.setData("text", e.target.src);
@@ -303,25 +303,25 @@ class ImageSet extends React.Component {
 	render() {
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
 		return this.props.images.map(imgName => {			
-			return React.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
+			return preact.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
 				src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
 				draggable: true, onClick: this.onClick, onDragStart: this.onDragStart })
 		})
 	}
 }
 
-class Category extends React.Component {
+class Category extends preact.Component {
 	render() {
 		const key = this.props.images[0];
-		const th = React.createElement("th", {key: `th_${key}`}, this.props.text);
+		const th = preact.createElement("th", {key: `th_${key}`}, this.props.text);
 		const pngOnly = this.props.text.indexOf("Transparent") > -1;
-		const imgSet = React.createElement(ImageSet,  {key: `imgs_${key}`, images: this.props.images, pngOnly: pngOnly});	
-		const td = React.createElement("td", {key: `td_${key}`}, imgSet);		
-		return React.createElement("tr", {key: `tr_${key}`}, [th, td]);
+		const imgSet = preact.createElement(ImageSet,  {key: `imgs_${key}`, images: this.props.images, pngOnly: pngOnly});	
+		const td = preact.createElement("td", {key: `td_${key}`}, imgSet);		
+		return preact.createElement("tr", {key: `tr_${key}`}, [th, td]);
 	}
 }
 
-class Gallery extends React.Component {  
+class Gallery extends preact.Component {  
 	render() {
 		const categories = [
 			{images: ["baseball", "compcube", "island", "legend",  "museum",
@@ -334,40 +334,40 @@ class Gallery extends React.Component {
 			{images: ["color-wheel", "cup", "rainbow-shadow"],
 				text: "Partial Transparent"}
 		];
-		return React.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
-			React.createElement("tbody", {key: "tb_showcase"},
+		return preact.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
+			preact.createElement("tbody", {key: "tb_showcase"},
 				categories.map(category => {
-					return React.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
+					return preact.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
 				})
 			)
 		);
 	}
 }
 
-class ForkMe extends React.Component {  
+class ForkMe extends preact.Component {  
 	render() {
 		const childrenData = [
 			{tag: "a", attrs: {href: "https://github.com/mcychan/PnnQuant.js"}},
 			{tag: "img", attrs: {src: "img/forkme_right_red_aa0000.svg", style: {position: "absolute", top: 0, right: 0}, alt: "Fork me on GitHub"}},
-			{tag: "div", attrs: {id: "wrapfabtest"}, children: (React.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
+			{tag: "div", attrs: {id: "wrapfabtest"}, children: (preact.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
 		];
 
-		return React.createElement("div", {key: "forkme"},
+		return preact.createElement("div", {key: "forkme"},
 			childrenData.map((item, index) => {
-				return React.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
+				return preact.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
 			})
 		);
 	}
 }
 
-class App extends React.Component {
+class App extends preact.Component {
 	constructor(props) {
 		super(props);
 		this.state = { enabled: true};				
 	}
 	
 	componentDidMount() {
-		eventBus.on("app", (data) => this.setState(data));
+		eventBus.on("app", data => this.setState(data));
 	}
 	componentWillUnmount() {
 		eventBus.remove("app");
@@ -380,13 +380,13 @@ class App extends React.Component {
 	
 	render() {
 		return [
-			React.createElement(Scene, {key: "scene", isEnabled: this.isEnabled}),
-			React.createElement(Footer, {key: "footer", isEnabled: this.isEnabled}),
-			React.createElement(Gallery, {key: "gallery"}),
-			React.createElement(ForkMe, {key: "forkMe"})
+			preact.createElement(Scene, {key: "scene", isEnabled: this.isEnabled}),
+			preact.createElement(Footer, {key: "footer", isEnabled: this.isEnabled}),
+			preact.createElement(Gallery, {key: "gallery"}),
+			preact.createElement(ForkMe, {key: "forkMe"})
 		];
 	}
 }
 
 // render
-ReactDOM.render(React.createElement(App, {}), document.querySelector('#app'));
+preact.render(preact.createElement(App, {}), document.querySelector('#app'));
