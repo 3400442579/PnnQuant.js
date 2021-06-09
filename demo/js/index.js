@@ -303,8 +303,8 @@ class ImageSet extends preact.Component {
 	render() {
 		const imgType = this.props.pngOnly ? ".png" : ".jpg";
 		return this.props.images.map(imgName => {			
-			return preact.createElement("img", {key: `img_${imgName}`, className: "th", name: imgName, style: {zIndex : 2}, 
-				src: `img/${imgName}_th${imgType}`, srcSet: `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
+			return preact.createElement("img", {key: `img_${imgName}`, className: "lazyload th", name: imgName, style: {zIndex : 2}, 
+				"data-sizes": "auto", "data-src": `img/${imgName}_th${imgType}`, "data-srcset": `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
 				draggable: true, onClick: this.onClick, onDragStart: this.onDragStart })
 		})
 	}
