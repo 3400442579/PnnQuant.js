@@ -284,23 +284,14 @@ function download(imgUrl, ev) {
 		return;
 	}
 	
-	var id = baseName(imgUrl)[0];
-
-	var xhr = new XMLHttpRequest();	
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4) {
-			if(xhr.status == 200)
-				loadImage(id, new Blob([xhr.response]), ev);					
-			else {
-				document.querySelector("#orig img").style.border = "";
-				if(document.querySelector("#wrapfabtest").offsetHeight <= 0)
-					alert("AdBlock Detected");
-			}					
-		}				
-	};
-	xhr.open('GET', imgUrl);
-	xhr.responseType = "arraybuffer";
-	xhr.send();
+	var id = baseName(imgUrl)[0];	
+	fetch(imgUrl, {credentials: 'include'})
+	.then(response => response.blob())
+	.then(blob => loadImage(id, blob, ev))
+	.catch(error => {
+		if(document.querySelector("#wrapfabtest").offsetHeight <= 0)
+			alert("AdBlock Detected");
+	});
 }
 
 function pasteUrl(imgUrl) {
