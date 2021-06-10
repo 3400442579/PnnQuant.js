@@ -268,7 +268,8 @@ function download(imgUrl, ev) {
 		return;
 	}
 
-	imgUrl = imgUrl.replace("http:", location.protocol);
+	const queryChar = imgUrl.indexOf("?") >= 0 ? "&" : "?";
+	imgUrl += queryChar + new Date().getTime();
 	
 	var svgTag = "<svg ";
 	var svgIndex = imgUrl.indexOf(svgTag);
