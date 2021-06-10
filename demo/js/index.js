@@ -54,8 +54,8 @@ class Scene extends preact.Component {
 			catch(err) {
 				console.error(err);
 			}
-			const queryChar = imgUrl.indexOf("?") >= 0 ? "&" : "?";
-			download(imgUrl + queryChar + new Date().getTime(), ev);
+
+			download(imgUrl, ev);
 			return;
 		}
 		
