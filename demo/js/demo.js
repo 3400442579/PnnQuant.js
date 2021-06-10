@@ -285,7 +285,7 @@ function download(imgUrl, ev) {
 	}
 	
 	var id = baseName(imgUrl)[0];	
-	fetch(imgUrl, {credentials: 'include'})
+	fetch(imgUrl, {mode: 'cors'})
 	.then(response => response.blob())
 	.then(blob => loadImage(id, blob, ev))
 	.catch(error => {
