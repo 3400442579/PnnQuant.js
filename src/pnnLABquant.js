@@ -628,6 +628,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			var dir = 1;
 			var row0 = new Uint32Array(err_len);
 			var row1 = new Uint32Array(err_len);
+			var lookup = new Uint32Array(65536);
 			for (var i = 0; i < height; ++i) {
 				if (dir < 0)
 					pixelIndex += width - 1;					
@@ -647,10 +648,14 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					var a_pix = ditherPixel[3];
 
 					var c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;
-					if(a == 0 && a_pix > 0)
-						qPixels[pixelIndex] = 0;
-					else
-						qPixels[pixelIndex] = noBias ? nearestColorIndex(this.palette, nMaxColors, c1) : closestColorIndex(this.palette, nMaxColors, c1);
+					if(noBias) {
+						var offset = getARGBIndex(a_pix, r_pix, g_pix, b_pix, this.hasSemiTransparency, this.m_transparentPixelIndex >= 0);
+						if (lookup[offset] == 0)
+							lookup[offset] = (a == 0) ? 1 : nearestColorIndex(this.palette, nMaxColors, c1) + 1;
+						qPixels[pixelIndex] = lookup[offset] - 1;
+					}
+					else 
+						qPixels[pixelIndex] = (a == 0) ? 0 : closestColorIndex(this.palette, nMaxColors, c1);
 
 					var c2 = this.palette[qPixels[pixelIndex]];
 					var r2 = (c2 & 0xff),
@@ -667,25 +672,25 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					row1[cursor1 - DJ] = r_pix;
 					row1[cursor1 + DJ] += (r_pix += k);
 					row1[cursor1] += (r_pix += k);
-					row0[cursor0 + DJ] += (r_pix += k);
+					row0[cursor0 + DJ] += (r_pix + k);
 
 					k = g_pix * 2;
 					row1[cursor1 + 1 - DJ] = g_pix;
 					row1[cursor1 + 1 + DJ] += (g_pix += k);
 					row1[cursor1 + 1] += (g_pix += k);
-					row0[cursor0 + 1 + DJ] += (g_pix += k);
+					row0[cursor0 + 1 + DJ] += (g_pix + k);
 
 					k = b_pix * 2;
 					row1[cursor1 + 2 - DJ] = b_pix;
 					row1[cursor1 + 2 + DJ] += (b_pix += k);
 					row1[cursor1 + 2] += (b_pix += k);
-					row0[cursor0 + 2 + DJ] += (b_pix += k);
+					row0[cursor0 + 2 + DJ] += (b_pix + k);
 
 					k = a_pix * 2;
 					row1[cursor1 + 3 - DJ] = a_pix;
 					row1[cursor1 + 3 + DJ] += (a_pix += k);
 					row1[cursor1 + 3] += (a_pix += k);
-					row0[cursor0 + 3 + DJ] += (a_pix += k);
+					row0[cursor0 + 3 + DJ] += (a_pix + k);
 
 					cursor0 += DJ;
 					cursor1 -= DJ;
