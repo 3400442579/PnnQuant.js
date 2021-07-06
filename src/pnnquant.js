@@ -362,7 +362,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				limtb[i + BLOCK_SIZE] = DITHER_MAX;
 			}
 			for (var i = -DITHER_MAX; i <= DITHER_MAX; ++i)
-				limtb[i + BLOCK_SIZE] = i;
+				limtb[i + BLOCK_SIZE] = i % 4 == 3 ? 0 : i;
 
 			var noBias = this.hasSemiTransparency || nMaxColors < 64;
 			var dir = 1;
