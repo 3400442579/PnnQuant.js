@@ -17,6 +17,7 @@ class Scene extends preact.Component {
 	}
 	componentWillUnmount() {
 		eventBus.remove("scene");
+		eventBus.remove("process");
 	}
   
 	onChange = ev => {
