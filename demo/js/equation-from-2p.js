@@ -161,65 +161,58 @@ const useContext = context => context.Provider.value;
 
 const AppContext = preact.createContext();
 	
-class EquationEditor extends preact.Component {	
-	onB1Click = e => {
-		const {state, setState} = useContext(AppContext);
+function EquationEditor() {	
+	const {state, setState} = useContext(AppContext);
+	onB1Click = e => {		
 	    twoPForm(state.x1, state.y1, state.x2, state.y2);
 		setState({workouts: rows});
 	}
 	onB2Click = e => {
-		const {state, setState} = useContext(AppContext);
 	    knForm(state.x1, state.y1, state.x2, state.y2);
 		setState({workouts: rows});
 	}
 	onB3Click = e => {
-		const {state, setState} = useContext(AppContext);
 	    kenForm(state.x1, state.y1, state.x2, state.y2);
 		setState({workouts: rows});
 	}
 	onChange = e => {
 		const {id, value} = e.currentTarget;
-		const {setState} = useContext(AppContext);
 		setState({[id]: value - 0});
 	}
 	onClear = e => {
-	    const {setState} = useContext(AppContext);
 	    setState({workouts: []});
 		draw();
 	}
 	
-	render() {
-		const {state} = useContext(AppContext);
-		return preact.createElement("form", {key: "form", novalidate: ""},
-		[
-			preact.createElement("div", {style: {float: "left", width: "100%"} },
-				Object.keys(state).filter(key => !Array.isArray(state[key])).map((key, index) => {
-					if(index % 2 == 0)
-						return preact.createElement("div", {style: {float: "left", paddingLeft: "1ex", width: "30%", minWidth: "35%"} }, 
-							[
-								preact.createElement("span", {}, `${key}: `),
-								preact.createElement("input", {key: key, id: key, type: "number", value: state[key], onChange: this.onChange, style: {width: "11em", maxWidth: "45%"} })
-							]
-						)
-						
-					return preact.createElement("div", {style: {float: "left", paddingLeft: "2ex", width: "60%", minWidth: "35%"} }, 
+	return preact.createElement("form", {key: "form", novalidate: ""},
+	[
+		preact.createElement("div", {style: {float: "left", width: "100%"} },
+			Object.keys(state).filter(key => !Array.isArray(state[key])).map((key, index) => {
+				if(index % 2 == 0)
+					return preact.createElement("div", {style: {float: "left", paddingLeft: "1ex", width: "30%", minWidth: "35%"} }, 
 						[
 							preact.createElement("span", {}, `${key}: `),
-							preact.createElement("input", {key: key, id: key, type: "number", value: state[key], onChange: this.onChange, style: {width: "11em", maxWidth: "45%"} })
+							preact.createElement("input", {key: key, id: key, type: "number", value: state[key], onChange: onChange, style: {width: "11em", maxWidth: "45%"} })
 						]
 					)
-				})
-			),
-			preact.createElement("div", {style: {clear: "both", paddingTop: "0.5em", paddingBottom: "0.5em"}},
-				[
-					preact.createElement("button", {key: "btn1", onClick: this.onB1Click, type: "button", style: {marginRight: "0.5em"}}, "y = mx + c"),
-					preact.createElement("button", {key: "btn2", onClick: this.onB2Click, "data-superscript": "n", type: "button", style: {marginRight: "0.5em"}}, "y = kx"),
-					preact.createElement("button", {key: "btn3", onClick: this.onB3Click, "data-superscript": "nx", type: "button", style: {marginRight: "0.5em"}}, "y = ke"),
-					preact.createElement("button", {key: "btnClear", onClick: this.onClear, type: "button" }, "C")
-				]
-			)
-		]);
-	}
+					
+				return preact.createElement("div", {style: {float: "left", paddingLeft: "2ex", width: "60%", minWidth: "35%"} }, 
+					[
+						preact.createElement("span", {}, `${key}: `),
+						preact.createElement("input", {key: key, id: key, type: "number", value: state[key], onChange: onChange, style: {width: "11em", maxWidth: "45%"} })
+					]
+				)
+			})
+		),
+		preact.createElement("div", {style: {clear: "both", paddingTop: "0.5em", paddingBottom: "0.5em"}},
+			[
+				preact.createElement("button", {key: "btn1", onClick: onB1Click, type: "button", style: {marginRight: "0.5em"}}, "y = mx + c"),
+				preact.createElement("button", {key: "btn2", onClick: onB2Click, "data-superscript": "n", type: "button", style: {marginRight: "0.5em"}}, "y = kx"),
+				preact.createElement("button", {key: "btn3", onClick: onB3Click, "data-superscript": "nx", type: "button", style: {marginRight: "0.5em"}}, "y = ke"),
+				preact.createElement("button", {key: "btnClear", onClick: onClear, type: "button" }, "C")
+			]
+		)
+	]);
 }
 
 class GraphPaper extends preact.Component {
@@ -233,34 +226,30 @@ class GraphPaper extends preact.Component {
 	}
 }
 
-class Workbook extends preact.Component {	
-	render() {
-		const {state} = useContext(AppContext);
-		return preact.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
-			preact.createElement("tbody", {key: "tb_showcase"},
-				state.workouts.map((workout, index) => {
-					return preact.createElement("tr", {key: `q_${index}`}, 
-						preact.createElement("td", {key: `td_${index}`, style: {color: workout.color},  
-							dangerouslySetInnerHTML: { __html:  workout.answer} })
-					)
-				})
-			)
-		);
-	}
+function Workbook() {	
+	const {state} = useContext(AppContext);
+	return preact.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
+		preact.createElement("tbody", {key: "tb_showcase"},
+			state.workouts.map((workout, index) => {
+				return preact.createElement("tr", {key: `q_${index}`}, 
+					preact.createElement("td", {key: `td_${index}`, style: {color: workout.color},  
+						dangerouslySetInnerHTML: { __html:  workout.answer} })
+				)
+			})
+		)
+	);
 }
 	
-class Footer extends preact.Component {  
-	render() {
-		const childrenData = [
-			{tag: "div", attrs: {id: "wrapfabtest"}, children: (preact.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
-		];
+function Footer() {  
+	const childrenData = [
+		{tag: "div", attrs: {id: "wrapfabtest"}, children: (preact.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
+	];
 
-		return preact.createElement("div", {key: "footer"},
-			childrenData.map((item, index) => {
-				return preact.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
-			})
-		);
-	}
+	return preact.createElement("div", {key: "footer"},
+		childrenData.map((item, index) => {
+			return preact.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
+		})
+	);
 }
 	
 class App extends preact.Component {		
