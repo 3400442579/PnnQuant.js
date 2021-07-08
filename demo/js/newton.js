@@ -252,7 +252,7 @@ class EquationEditor extends preact.Component {
 	onChange = e => {
 		const {id, value} = e.currentTarget;
 		const {setState} = useContext(AppContext);
-		setState({[id]: value});
+		setState({[id]: value - 0});
 	}
 	onClear = e => {
 		const {setState} = useContext(AppContext);
