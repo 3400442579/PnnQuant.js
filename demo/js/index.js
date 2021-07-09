@@ -275,90 +275,80 @@ class Config extends preact.Component {
 	}
 }
 
-class Footer extends preact.Component {  
-	render() {
-		return preact.createElement("div", {key: "footer", id: "footer", style: {maxWidth: "70vw"}},		
-			[
-				preact.createElement(Readme, {key: "readme", ...this.props}),				
-				preact.createElement(Config, {key: "config", ...this.props})
-			]
-		);
-	}
+function Footer(props) {  
+	return preact.createElement("div", {key: "footer", id: "footer", style: {maxWidth: "70vw"}},		
+		[
+			preact.createElement(Readme, {key: "readme", ...props}),				
+			preact.createElement(Config, {key: "config", ...props})
+		]
+	);
 }
 
-class ImageSet extends preact.Component {
-	onClick = e => {
+function ImageSet(props) {
+	const onClick = e => {
 	    if(!document.querySelector("#btn_upd").disabled) {
 			var id = e.target.name;
 			var imgUrl = e.target.srcset.split(",").pop().trim().split(" ")[0];
 			process(imgUrl);
 		}
 	}
-	onDragStart = e => {
+	const onDragStart = e => {
 		if(!document.querySelector("#btn_upd").disabled) {
 			e.dataTransfer.dropEffect = "copy";
 			e.dataTransfer.setData("text", e.target.src);
 		}
 	}
 	
-	render() {
-		const imgType = this.props.pngOnly ? ".png" : ".jpg";
-		return this.props.images.map(imgName => {			
-			return preact.createElement("img", {key: `img_${imgName}`, className: "lazyload th", name: imgName, style: {zIndex : 2}, 
-				"data-sizes": "auto", "data-src": `img/${imgName}_th${imgType}`, "data-srcset": `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
-				draggable: true, onClick: this.onClick, onDragStart: this.onDragStart })
-		})
-	}
+	const imgType = props.pngOnly ? ".png" : ".jpg";
+	return props.images.map(imgName => {			
+		return preact.createElement("img", {key: `img_${imgName}`, className: "lazyload th", name: imgName, style: {zIndex : 2}, 
+			"data-sizes": "auto", "data-src": `img/${imgName}_th${imgType}`, "data-srcset": `img/${imgName}_th${imgType} 1x, img/${imgName}${imgType} 4x`,
+			draggable: true, onClick: onClick, onDragStart: onDragStart })
+	});
 }
 
-class Category extends preact.Component {
-	render() {
-		const key = this.props.images[0];
-		const th = preact.createElement("th", {key: `th_${key}`}, this.props.text);
-		const pngOnly = this.props.text.indexOf("Transparent") > -1;
-		const imgSet = preact.createElement(ImageSet,  {key: `imgs_${key}`, images: this.props.images, pngOnly: pngOnly});	
-		const td = preact.createElement("td", {key: `td_${key}`}, imgSet);		
-		return preact.createElement("tr", {key: `tr_${key}`}, [th, td]);
-	}
+function Category(props) {
+	const key = props.images[0];
+	const th = preact.createElement("th", {key: `th_${key}`}, props.text);
+	const pngOnly = props.text.indexOf("Transparent") > -1;
+	const imgSet = preact.createElement(ImageSet,  {key: `imgs_${key}`, images: props.images, pngOnly: pngOnly});	
+	const td = preact.createElement("td", {key: `td_${key}`}, imgSet);		
+	return preact.createElement("tr", {key: `tr_${key}`}, [th, td]);
 }
 
-class Gallery extends preact.Component {  
-	render() {
-		const categories = [
-			{images: ["baseball", "compcube", "island", "legend",  "museum",
-				"old-HK", "scream", "venus"], text: "Art"}, 
-			{images: ["airline", "araras", "bluff", "casa",  "climb",
-				"constitucion-chile", "f16", "HKView", "lily-pond", "pool",
-				"quantfrog", "sky_sea", "tree", "talia-ryder", "wooden"], text: "Photos"},
-			{images: ["fish", "fruit-market", "g-fruit", "pills", "rainbow-illusions",
-				"SE5x9", "wildflowers"], text: "Colorful"},
-			{images: ["color-wheel", "cup", "rainbow-shadow"],
-				text: "Partial Transparent"}
-		];
-		return preact.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
-			preact.createElement("tbody", {key: "tb_showcase"},
-				categories.map(category => {
-					return preact.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
-				})
-			)
-		);
-	}
-}
-
-class ForkMe extends preact.Component {  
-	render() {
-		const childrenData = [
-			{tag: "a", attrs: {href: "https://github.com/mcychan/PnnQuant.js"}},
-			{tag: "img", attrs: {src: "img/forkme_right_red_aa0000.svg", style: {position: "absolute", top: 0, right: 0}, alt: "Fork me on GitHub"}},
-			{tag: "div", attrs: {id: "wrapfabtest"}, children: (preact.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
-		];
-
-		return preact.createElement("div", {key: "forkme"},
-			childrenData.map((item, index) => {
-				return preact.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
+function Gallery() {  
+	const categories = [
+		{images: ["baseball", "compcube", "island", "legend",  "museum",
+			"old-HK", "scream", "venus"], text: "Art"}, 
+		{images: ["airline", "araras", "bluff", "casa",  "climb",
+			"constitucion-chile", "f16", "HKView", "lily-pond", "pool",
+			"quantfrog", "sky_sea", "tree", "talia-ryder", "wooden"], text: "Photos"},
+		{images: ["fish", "fruit-market", "g-fruit", "pills", "rainbow-illusions",
+			"SE5x9", "wildflowers"], text: "Colorful"},
+		{images: ["color-wheel", "cup", "rainbow-shadow"],
+			text: "Partial Transparent"}
+	];
+	return preact.createElement("table", {id: "tbl_showcase", key: "tbl_showcase"},
+		preact.createElement("tbody", {key: "tb_showcase"},
+			categories.map(category => {
+				return preact.createElement(Category, {key: `cat_${category["images"][0]}`, images: category["images"], text: category["text"]})
 			})
-		);
-	}
+		)
+	);
+}
+
+function ForkMe() {  
+	const childrenData = [
+		{tag: "a", attrs: {href: "https://github.com/mcychan/PnnQuant.js"}},
+		{tag: "img", attrs: {src: "img/forkme_right_red_aa0000.svg", style: {position: "absolute", top: 0, right: 0}, alt: "Fork me on GitHub"}},
+		{tag: "div", attrs: {id: "wrapfabtest"}, children: (preact.createElement("div", {key: "adBanner", className: "adBanner"}, "ImgV64 Copyright \u00a9 2016-2021"))}
+	];
+
+	return preact.createElement("div", {key: "forkme"},
+		childrenData.map((item, index) => {
+			return preact.createElement(item["tag"], {key: `i${index}`, ...item["attrs"]}, item["children"])
+		})
+	);
 }
 
 class App extends preact.Component {
