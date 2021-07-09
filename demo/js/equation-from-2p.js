@@ -206,7 +206,7 @@ class EquationEditor extends preact.Component {
 			preact.createElement("form", {key: "form", novalidate: ""},
 			[
 				preact.createElement("div", {style: {float: "left", width: "100%"} },
-					Object.keys(state).filter(key => !Array.isArray(state[key])).map((key, index) => {
+					Object.keys(state).map((key, index) => {
 						if(index % 2 == 0)
 							return preact.createElement("div", {style: {float: "left", paddingLeft: "1ex", width: "30%", minWidth: "35%"} }, 
 								[
