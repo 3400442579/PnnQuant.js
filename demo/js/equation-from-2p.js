@@ -165,20 +165,21 @@ const WorkbookContext = React.createContext();
 
 const initialState = { x1: 1, y1: 2, x2: 3, y2: 8};
 	
-function EquationEditor(props) {
+function EquationEditor() {
 	const {state, setState} = useContext(EditorContext);
+	const {setWorkouts} = useContext(WorkbookContext);
 	
 	const onB1Click = e => {
 	    twoPForm(state.x1, state.y1, state.x2, state.y2);
-		props.setWorkouts({workouts: rows});
+		setWorkouts({workouts: rows});
 	}
 	const onB2Click = e => {
 	    knForm(state.x1, state.y1, state.x2, state.y2);
-		props.setWorkouts({workouts: rows});
+		setWorkouts({workouts: rows});
 	}
 	const onB3Click = e => {
 	    kenForm(state.x1, state.y1, state.x2, state.y2);
-		props.setWorkouts({workouts: rows});
+		setWorkouts({workouts: rows});
 	}
 	const onChange = e => {
 		const {id, value} = e.currentTarget;
@@ -190,7 +191,7 @@ function EquationEditor(props) {
 		});
 	}
 	const onClear = e => {
-	    props.setWorkouts({workouts: []});
+	    setWorkouts({workouts: []});
 		draw();
 	}
 	
@@ -288,12 +289,13 @@ class App extends React.Component {
 	render() {
 		const [state, setState] = useState(initialState);
 		return [
-			React.createElement(EditorContext.Provider, {value: {state, setState} },
-				React.createElement(EquationEditor, {key: "equationEditor", setWorkouts: this.setWorkouts})
-			),
-			React.createElement(WorkbookContext.Provider, {value: {state: this.state, setState: this.setWorkouts} }, 			
+			React.createElement(WorkbookContext.Provider, {value: {state: this.state, setWorkouts: this.setWorkouts} }, 			
+			[
+				React.createElement(EditorContext.Provider, {value: {state, setState} },
+					React.createElement(EquationEditor, {key: "equationEditor"})
+				),
 				React.createElement(Workbook, {key: "workbook"})
-			),
+			]),
 			React.createElement(GraphPaper, {key: "graphPaper"}),
 			React.createElement(Footer, {key: "footer"})
 		];
