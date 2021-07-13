@@ -129,22 +129,23 @@ function webgl_detect() {
 }
 
 function readImageData(img, gl, opts) {
-	var can = document.createElement("canvas");
-	can.width = opts.width;
-	can.height = opts.height;
-	if(can.width == 0 || can.height == 0)
-		return false;
-	
-	var ctx = can.getContext('2d');	
+	if(opts.width == 0 || opts.height == 0)
+		return false;	
 	
 	try {
 		if (gl) {			
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);			
-			var pixels = new Uint8Array(can.width * can.height * 4);
-			gl.readPixels(0, 0, can.width, can.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+			var pixels = new Uint8Array(opts.width * opts.height * 4);
+			gl.readPixels(0, 0, opts.width, opts.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 			opts.pixels = new Uint32Array(pixels.buffer);
 		}
 		else {
+			var can = document.createElement("canvas");
+			can.width = opts.width;
+			can.height = opts.height;	
+			
+			var ctx = can.getContext('2d');	
+	
 			ctx.drawImage(img, 0, 0);
 			var imgd = ctx.getImageData(0,0, can.width, can.height);
 			ctx.setTransform(1, 0, 0, 1, 0.49, 0.49); // offset 0.49 pixel to handle sub pixeling
