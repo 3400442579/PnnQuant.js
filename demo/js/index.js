@@ -100,7 +100,7 @@ class Scene extends preact.Component {
 							onDragOver: this.onDragOver, onDragLeave: this.onDragLeave }, 							
 							[
 								preact.createElement("h4", {style: {width: boxWidth} }, "Original"),
-								preact.createElement("img", {key: "origImg", crossOrigin: "Anonymous", draggable: false, ref: this.orig, 
+								preact.createElement("img", {key: "origImg", crossOrigin: "Anonymous", ref: this.orig, 
 									name: imgName, src: imgUrl,
 									onError: this.onError, onLoad: this.onLoad
 								})
