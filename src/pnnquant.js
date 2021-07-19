@@ -479,6 +479,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if(this.opts.alphaThreshold)
 			this.alphaThreshold = this.opts.alphaThreshold;
 		
+		closestMap = [];
+		nearestMap = [];
+		
 		for (var i = 0; i < pixels.length; ++i) {
 			var a = (pixels[i] >>> 24) & 0xff;
 			
@@ -512,7 +515,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			}
 		}
 
-		this.qPixels = this.quantize_image(pixels, nMaxColors, width, height, dither);
 		if (this.m_transparentPixelIndex >= 0)
 		{
 			var k = this.qPixels[this.m_transparentPixelIndex];
@@ -524,9 +526,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				this.palette[1] = temp;
 			}
 		}
-		closestMap = [];
-		nearestMap = [];
-
+		if(this.opts.paletteOnly)
+			return this.palette;
+		
+		this.qPixels = this.quantize_image(pixels, nMaxColors, width, height, dither);
 		return processImagePixels(this.palette, this.qPixels);
 	};
 	
