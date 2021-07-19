@@ -7,7 +7,7 @@
     "url": "https://github.com/mcychan/PnnQuant.js/issues"
   },
   "license": "MPL",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "src/pnnquant.js",
   "repository": {
     "type": "git",
