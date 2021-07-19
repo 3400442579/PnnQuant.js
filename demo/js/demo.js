@@ -106,8 +106,19 @@ function doProcess(gl, ti, opts) {
 		setTimeout(function(){
 			ti.mark("reduced -> DOM", function() {
 				var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
-				quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
-					transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
+				if(opts.isHQ) {
+					opts.paletteOnly = true;
+					opts.ditherFn = quant.getDitherFn();
+					opts.getColorIndex = quant.getColorIndex;
+					opts.palette = quant.quantizeImage();	
+					var hc = new HilbertCurve(opts);
+					quantizeImage(gl, { img8: hc.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(),
+						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
+				}
+				else {
+					quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
+						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
+				}
 				
 				allowChange(document.querySelector("#orig"));		
 			});
