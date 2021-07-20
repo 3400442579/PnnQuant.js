@@ -71,7 +71,7 @@ Copyright (c) 2021 Miller Cy Chan
 	        
 	        for(var j = 0; j < error.p.length; ++j) {
 	        	if(Math.abs(error.p[j]) > DITHER_MAX)
-	        		error.p[j] = error.p[j] < 0 ? -DITHER_MAX : DITHER_MAX;
+	        		error.p[j] = error.p[j] < 0 ? -DITHER_MAX + 1 : DITHER_MAX - 1;
 	        }
 	        errorq.push(error);
 	    }
