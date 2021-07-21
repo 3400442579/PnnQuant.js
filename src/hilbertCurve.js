@@ -70,8 +70,13 @@ Copyright (c) 2021 Miller Cy Chan
 	        error.p[3] = a_pix - a2;
 	        
 	        for(var j = 0; j < error.p.length; ++j) {
-	        	if(Math.abs(error.p[j]) > DITHER_MAX)
+	        	if(Math.abs(error.p[j]) < DITHER_MAX)
+					continue;
+				
+				if(nMaxColors < 64)
 	        		error.p[j] = error.p[j] < 0 ? -DITHER_MAX + 1 : DITHER_MAX - 1;
+				else
+					error.p[j] -= error.p[j] < 0 ? -DITHER_MAX : DITHER_MAX;
 	        }
 	        errorq.push(error);
 	    }
