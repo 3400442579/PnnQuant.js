@@ -51,11 +51,15 @@ Copyright (c) 2021 Miller Cy Chan
 	        var b_pix = Math.clamp(error.p[2], 0, BLOCK_SIZE-1);
 	        var a_pix = Math.clamp(error.p[3], 0, BLOCK_SIZE-1);
 	        
-	        var c2 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;
-			var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);
-			if (lookup[offset] == 0)
-				lookup[offset] = ((pixel >>> 24) & 0xff == 0) ? 1 : ditherFn(palette, nMaxColors, c2) + 1;
-			qPixels[x + y * width] = lookup[offset] - 1;
+	        var c2 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;			
+			if(nMaxColors < 64) {
+				var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);
+				if (lookup[offset] == 0)
+					lookup[offset] = ((pixel >>> 24) & 0xff == 0) ? 1 : ditherFn(palette, nMaxColors, c2) + 1;
+				qPixels[x + y * width] = lookup[offset] - 1;
+			}
+			else
+				qPixels[x + y * width] = ditherFn(palette, nMaxColors, c2);
 
 	        errorq.shift();
 	        c2 = palette[qPixels[x + y * width]];
