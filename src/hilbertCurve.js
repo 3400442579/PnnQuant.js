@@ -46,10 +46,10 @@ Copyright (c) 2021 Miller Cy Chan
 	        		error.p[j] += eb.p[j] * weights[c];
 	        }
 
-	        var r_pix = Math.clamp(error.p[0], 0, BLOCK_SIZE-1);
-	        var g_pix = Math.clamp(error.p[1], 0, BLOCK_SIZE-1);
-	        var b_pix = Math.clamp(error.p[2], 0, BLOCK_SIZE-1);
-	        var a_pix = Math.clamp(error.p[3], 0, BLOCK_SIZE-1);
+	        var r_pix = Math.clamp(error.p[0], 0, 0xff);
+	        var g_pix = Math.clamp(error.p[1], 0, 0xff);
+	        var b_pix = Math.clamp(error.p[2], 0, 0xff);
+	        var a_pix = Math.clamp(error.p[3], 0, 0xff);
 	        
 	        var c2 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;			
 			if(nMaxColors < 64) {
@@ -187,9 +187,8 @@ Copyright (c) 2021 Miller Cy Chan
         
         iter(depth, UP);
         ditherCurrentPixel();      
-        var qPixel32s = processImagePixels();
-		this.qPixels = qPixels;
-		return qPixel32s;
+        this.qPixels = qPixels;		
+		return this.opts.paletteOnly ? this.qPixels : processImagePixels();
     }
 	
 	HilbertCurve.prototype.getIndexedPixels = function getIndexedPixels() {
