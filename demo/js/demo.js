@@ -111,8 +111,9 @@ function doProcess(gl, ti, opts) {
 					opts.ditherFn = quant.getDitherFn();
 					opts.getColorIndex = quant.getColorIndex;
 					opts.palette = quant.quantizeImage();	
-					var hc = new HilbertCurve(opts);
-					quantizeImage(gl, { img8: hc.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(),
+					opts.indexedPixels = new HilbertCurve(opts).dither();
+					var bn = new BlueNoise(opts);
+					quantizeImage(gl, { img8: bn.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(),
 						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				}
 				else {

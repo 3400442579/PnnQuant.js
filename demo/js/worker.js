@@ -1,4 +1,5 @@
 importScripts('hilbertCurve.min.js');
+importScripts('blueNoise.min.js');
 importScripts('pnnquant.min.js');
 importScripts('pnnLABquant.min.js');
 
@@ -9,8 +10,9 @@ function quantizeImage(opts) {
 		opts.ditherFn = quant.getDitherFn();
 		opts.getColorIndex = quant.getColorIndex;
 		opts.palette = quant.quantizeImage();		
-		var hc = new HilbertCurve(opts);
-		return { img8: hc.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+		opts.indexedPixels = new HilbertCurve(opts).dither();
+		var bn = new BlueNoise(opts);
+		return { img8: bn.dither(), pal8: opts.palette, indexedPixels: bn.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
 	}
 	return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
 }
