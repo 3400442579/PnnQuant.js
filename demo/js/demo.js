@@ -112,7 +112,7 @@ function doProcess(gl, ti, opts) {
 					if(opts.colors < 64) {
 						opts.paletteOnly = false;
 						quant.quantizeImage();						
-						opts.palette = quant.getPalette();
+						opts.palette = new Uint32Array(quant.getPalette());
 						opts.indexedPixels = quant.getIndexedPixels();
 					}
 					else {
@@ -121,7 +121,7 @@ function doProcess(gl, ti, opts) {
 						opts.indexedPixels = new HilbertCurve(opts).dither();
 					}
 					var bn = new BlueNoise(opts);
-					quantizeImage(gl, { img8: bn.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(),
+					quantizeImage(gl, { img8: bn.dither(), pal8: opts.palette, indexedPixels: bn.getIndexedPixels(),
 						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
 				}
 				else {

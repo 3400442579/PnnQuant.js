@@ -11,7 +11,7 @@ function quantizeImage(opts) {
 		if(opts.colors < 64) {
 			opts.paletteOnly = false;
 			quant.quantizeImage();			
-			opts.palette = quant.getPalette();
+			opts.palette = new Uint32Array(quant.getPalette());
 			opts.indexedPixels = quant.getIndexedPixels();
 		}
 		else {
