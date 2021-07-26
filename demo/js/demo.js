@@ -106,12 +106,20 @@ function doProcess(gl, ti, opts) {
 		setTimeout(function(){
 			ti.mark("reduced -> DOM", function() {
 				var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
-				if(opts.isHQ) {
-					opts.paletteOnly = true;
+				if(opts.isHQ) {					
 					opts.ditherFn = quant.getDitherFn();
-					opts.getColorIndex = quant.getColorIndex;
-					opts.palette = quant.quantizeImage();	
-					opts.indexedPixels = new HilbertCurve(opts).dither();
+					opts.getColorIndex = quant.getColorIndex;					
+					if(opts.colors < 64) {
+						opts.paletteOnly = false;
+						quant.quantizeImage();						
+						opts.palette = quant.getPalette();
+						opts.indexedPixels = quant.getIndexedPixels();
+					}
+					else {
+						opts.paletteOnly = true;
+						opts.palette = quant.quantizeImage();	
+						opts.indexedPixels = new HilbertCurve(opts).dither();
+					}
 					var bn = new BlueNoise(opts);
 					quantizeImage(gl, { img8: bn.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(),
 						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
