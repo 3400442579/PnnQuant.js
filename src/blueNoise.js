@@ -17,7 +17,7 @@
 		};
 	}
 	
-	var RAW_BLUE_NOISE = new Int8Array([
+	var RAW_BLUE_NOISE = [
 		-63, 119, 75, 49, -74, 21, -32, 7, -6, -66, -19, 78, -101, 89, 24, -25, 122, -50, -6, 100, -125, -45, 105, 32, -83, 
 		114, -20, -88, -3, -35, 73, -93, 103, 59, 126, 79, 19, -115, -41, 6, 118, 69, 49, 96, -69, -36, 4, 41, -79, 55, 
 		12, -125, -70, 37, -101, 76, -116, -45, 68, -124, 31, 55, -36, 69, 42, 12, -104, -1, -19, 127, -93, 82, -49, 65, 50, 
@@ -182,34 +182,22 @@
 		35, 112, 83, -87, -18, 23, -49, -89, -30, -120, -53, 95, 59, -123, 111, -86, 33, 119, -54, -33, -87, 105, -76, 42, 76, 
 		-65, -32, 85, 7, -16, 80, -32, 10, 95, 50, 88, 123, -121, -12, -79, -42, -102, -53, 42, -75, 85, -107, 21, -82, -25, 
 		14, -9, -91, -55, 99, -111, -20, 31, 88, -3, 105, 53, -29, -90, -10, -70, 9, -57, 123, -99, 5			
-	]);
-	var ditherFn, getColorIndex, width, height, pixels, palette, nMaxColors;
-	
-	var qPixels;
-	var lookup;
-	
-	function processImagePixels() {
-		var qPixel32s = new Uint32Array(qPixels.length);
-		for (var i = 0; i < qPixels.length; ++i)
-			qPixel32s[i] = palette[qPixels[i]];		
-
-		return qPixel32s;
-	}
+	];
     
     BlueNoise.prototype.dither = function()
     {    	
-		lookup = new Uint32Array(65536);
+		var lookup = new Uint32Array(65536);
 		
-		ditherFn = this.opts.ditherFn;
-		getColorIndex = this.opts.getColorIndex;
-		width = this.opts.width;
-		height = this.opts.height;
-		pixels = this.opts.pixels;
-		palette = this.opts.palette;
-		nMaxColors = this.opts.colors;
-		qPixels = this.opts.indexedPixels;
+		var ditherFn = this.opts.ditherFn;
+		var getColorIndex = this.opts.getColorIndex;
+		var width = this.opts.width;
+		var height = this.opts.height;
+		var pixels = this.opts.pixels;
+		var palette = this.opts.palette;
+		var nMaxColors = this.opts.colors;
+		var qPixels = this.opts.indexedPixels;
 		
-		var strength = 0.055;
+		var strength = Math.sqrt(2.89);
         for (var y = 0; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
             	var pixel = pixels[x + y * width];   
@@ -245,7 +233,11 @@
         }
 		
 		this.qPixels = qPixels;		
-		return processImagePixels();
+		var qPixel32s = new Uint32Array(qPixels.length);
+		for (var i = 0; i < qPixels.length; ++i)
+			qPixel32s[i] = palette[qPixels[i]];		
+
+		return qPixel32s;
     }
 	
 	BlueNoise.prototype.getIndexedPixels = function getIndexedPixels() {
