@@ -447,7 +447,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var k = 0;
 		for (var i = 0; ; ++k) {
 			var lab1 = new Lab();
-			lab1.alpha = (Math.clamp(bins[i].ac, 0, 0xff) | 0),
+			lab1.alpha = (Math.clamp(Math.round(bins[i].ac), 0, 0xff) | 0),
 			lab1.L = bins[i].Lc; lab1.A = bins[i].Ac; lab1.B = bins[i].Bc;
 
 			this.palette[k] = LAB2RGB(lab1);
