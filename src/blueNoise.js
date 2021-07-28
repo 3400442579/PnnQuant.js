@@ -197,7 +197,7 @@
 		var nMaxColors = this.opts.colors;
 		var qPixels = this.opts.indexedPixels;
 		
-		var strength = Math.sqrt(2.89);
+		var strength = 1.7;
         for (var y = 0; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
             	var pixel = pixels[x + y * width];   
@@ -213,16 +213,18 @@
 				a2 = (c1 >>> 24) & 0xff;
 				
                 var adj = (RAW_BLUE_NOISE[(x & 63) | (y & 63) << 6] + 0.5) / 127.5;
-                adj += ((x + y & 1) - 0.5) * strength * (0.5 + RAW_BLUE_NOISE[(x * 19 & 63) | (y * 23 & 63) << 6])
-                    * -0.0013427734;
-                r_pix = Math.clamp(r_pix + (adj * (r_pix - r2)), 0, 0xff);
-                g_pix = Math.clamp(g_pix + (adj * (g_pix - g2)), 0, 0xff);
-                b_pix = Math.clamp(b_pix + (adj * (b_pix - b2)), 0, 0xff);
-                a_pix = Math.clamp(a_pix + (adj * (a_pix - a2)), 0, 0xff);
+                adj -= ((x + y & 1) - 0.5) * strength * (0.5 + RAW_BLUE_NOISE[(x * 19 & 63) | (y * 23 & 63) << 6])
+                    * 0.0013427734;
+
+                r_pix = Math.clamp(r_pix + (adj * (r_pix - r2)), 0, 0xff) | 0;
+                g_pix = Math.clamp(g_pix + (adj * (g_pix - g2)), 0, 0xff) | 0;
+                b_pix = Math.clamp(b_pix + (adj * (b_pix - b2)), 0, 0xff) | 0;
+                a_pix = Math.clamp(a_pix + (adj * (a_pix - a2)), 0, 0xff) | 0;				
                 
-                c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;			
+                c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;				
 				if(nMaxColors < 64) {
-					var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);
+					var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);       	
+					
 					if (lookup[offset] == 0)
 						lookup[offset] = ((pixel >>> 24) & 0xff == 0) ? 1 : ditherFn(palette, nMaxColors, c1) + 1;
 					qPixels[x + y * width] = lookup[offset] - 1;
@@ -230,7 +232,7 @@
 				else
 					qPixels[x + y * width] = ditherFn(palette, nMaxColors, c1);
             }
-        }
+        }		
 		
 		this.qPixels = qPixels;		
 		var qPixel32s = new Uint32Array(qPixels.length);

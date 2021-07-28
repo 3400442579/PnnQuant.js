@@ -22,7 +22,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	
 	if(!Math.cbrt) {
 		Math.cbrt = function(value){
-			return this.exp((1/3) * this.log(value));
+			return this.exp((1/3.0) * this.log(value));
 		};
 	}
 	
@@ -58,19 +58,19 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		y = (y > 0.008856) ? Math.cbrt(y) : (7.787 * y) + 16.0 / 116.0;
 		z = (z > 0.008856) ? Math.cbrt(z) : (7.787 * z) + 16.0 / 116.0;
 
-		var lab = new Lab();
-		lab.alpha = A,
-			lab.L = ((116 * y) - 16),
-			lab.A = (500 * (x - y)),
-			lab.B = (200 * (y - z));
-		return lab;
+		return {
+			alpha: A,
+			L: ((116 * y) - 16),
+			A: (500 * (x - y)),
+			B: (200 * (y - z))
+		};
 	}
 	
 	function LAB2RGB(lab)
 	{
-		var y = (lab.L + 16) / 116;
-		var x = lab.A / 500 + y;
-		var z = y - lab.B / 200;
+		var y = (lab.L + 16) / 116.0;
+		var x = lab.A / 500.0 + y;
+		var z = y - lab.B / 200.0;
 		var r, g, b;
 
 		x = 0.95047 * ((x * x * x > 0.008856) ? x * x * x : (x - 16.0 / 116.0) / 7.787);
@@ -85,10 +85,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (g > 0.0031308) ? (1.055 * Math.pow(g, 1.0 / 2.4) - 0.055) : 12.92 * g;
 		b = (b > 0.0031308) ? (1.055 * Math.pow(b, 1.0 / 2.4) - 0.055) : 12.92 * b;
 
-		var a = Math.clamp(lab.alpha, 0, 255);
-		r = Math.clamp(r * 255, 0, 255),
-		g = Math.clamp(g * 255, 0, 255),
-		b = Math.clamp(b * 255, 0, 255);
+		var a = Math.clamp(lab.alpha, 0, 0xff);
+		r = Math.clamp(r * 0xff, 0, 0xff),
+		g = Math.clamp(g * 0xff, 0, 0xff),
+		b = Math.clamp(b * 0xff, 0, 0xff);
 		return (a << 24) | (b << 16) | (g << 8) | r;
 	}
 	
@@ -156,10 +156,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (hPrime2 < 0)
 				hPrime2 += deg360InRad;
 		}
-		var deltahPrime;
-		if (CPrimeProduct == 0.0)
-			deltahPrime = 0;
-		else {
+		var deltahPrime = 0;
+		if (CPrimeProduct != 0.0) {
 			/* Avoid the Math.abs() call */
 			deltahPrime = hPrime2 - hPrime1;
 			if (deltahPrime < -deg180InRad)
@@ -460,10 +458,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if ((i = bins[i].fw) == 0)
 				break;
 		}
-		
-		
-		if(typeof this.palette.sort !== "undefined")
-			this.palette.sort();
 	};
 	
 	function nearestColorIndex(palette, nMaxColors, pixel) {
@@ -479,7 +473,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (a <= this.alphaThreshold)
             return k;
 
-		var mindist = 1e100;
+		var mindist = 32767;
 		var lab1 = getLab(a, r, g, b);
 		for (var i = 0; i < nMaxColors; ++i) {
 			var r2 = (palette[i] & 0xff),
@@ -781,7 +775,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if(this.opts.paletteOnly)
 			return this.palette;
 
-		this.quantize_image(pixels, nMaxColors, width, height, dither);
+		this.quantize_image(pixels, nMaxColors, width, height, dither);		
 		return processImagePixels(this.palette, this.qPixels);
 	};
 	
