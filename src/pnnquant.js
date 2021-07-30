@@ -229,9 +229,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if ((i = bins[i].fw) == 0)
 				break;
 		}
-		
-		if(typeof this.palette.sort !== "undefined")
-			this.palette.sort();
 	};
 	
 	function nearestColorIndex(palette, nMaxColors, pixel) {
@@ -326,7 +323,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	
 	function CalcDitherPixel(a, r, g, b, clamp, rowerr, cursor, noBias)
 	{
-		var ditherPixel = [];
+		var ditherPixel = new Int32Array(4);
 		if (noBias) {
 			ditherPixel[0] = clamp[((rowerr[cursor] + 0x1008) >> 4) + r];
 			ditherPixel[1] = clamp[((rowerr[cursor + 1] + 0x1008) >> 4) + g];
@@ -349,8 +346,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		{
 			const DJ = 4, BLOCK_SIZE = 256, DITHER_MAX = 20;
 			var err_len = (width + 2) * DJ;
-			var clamp = new Uint32Array(DJ * BLOCK_SIZE);
-			var limtb = new Uint32Array(2 * BLOCK_SIZE);
+			var clamp = new Int32Array(DJ * BLOCK_SIZE);
+			var limtb = new Int32Array(2 * BLOCK_SIZE);
 
 			for (var i = 0; i < BLOCK_SIZE; ++i)
 			{
@@ -367,9 +364,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			var noBias = this.hasSemiTransparency || nMaxColors < 64;
 			var dir = 1;
-			var row0 = new Uint32Array(err_len);
-			var row1 = new Uint32Array(err_len);
-			var lookup = new Uint32Array(65536);
+			var row0 = new Int32Array(err_len);
+			var row1 = new Int32Array(err_len);
+			var lookup = new Int32Array(65536);
 			for (var i = 0; i < height; ++i)
 			{
 				if (dir < 0)

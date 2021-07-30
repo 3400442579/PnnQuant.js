@@ -22,7 +22,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	
 	if(!Math.cbrt) {
 		Math.cbrt = function(value){
-			return this.exp((1/3.0) * this.log(value));
+			return this.exp((1/3) * this.log(value));
 		};
 	}
 	
@@ -58,12 +58,12 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		y = (y > 0.008856) ? Math.cbrt(y) : (7.787 * y) + 16.0 / 116.0;
 		z = (z > 0.008856) ? Math.cbrt(z) : (7.787 * z) + 16.0 / 116.0;
 
-		return {
-			alpha: A,
-			L: ((116 * y) - 16),
-			A: (500 * (x - y)),
-			B: (200 * (y - z))
-		};
+		var lab = new Lab();
+		lab.alpha = A,
+			lab.L = ((116 * y) - 16),
+			lab.A = (500 * (x - y)),
+			lab.B = (200 * (y - z));
+		return lab;
 	}
 	
 	function LAB2RGB(lab)
@@ -156,8 +156,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (hPrime2 < 0)
 				hPrime2 += deg360InRad;
 		}
-		var deltahPrime = 0;
-		if (CPrimeProduct != 0.0) {
+		var deltahPrime;
+		if (CPrimeProduct == 0.0)
+			deltahPrime = 0;
+		else {
 			/* Avoid the Math.abs() call */
 			deltahPrime = hPrime2 - hPrime1;
 			if (deltahPrime < -deg180InRad)
@@ -473,7 +475,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (a <= this.alphaThreshold)
             return k;
 
-		var mindist = 32767;
+		var mindist = 1e100;
 		var lab1 = getLab(a, r, g, b);
 		for (var i = 0; i < nMaxColors; ++i) {
 			var r2 = (palette[i] & 0xff),
@@ -581,7 +583,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	
 	function CalcDitherPixel(a, r, g, b, clamp, rowerr, cursor, noBias)
 	{
-		var ditherPixel = [];
+		var ditherPixel = new Int32Array(4);
 		if (noBias) {
 			ditherPixel[0] = clamp[((rowerr[cursor] + 0x1008) >> 4) + r];
 			ditherPixel[1] = clamp[((rowerr[cursor + 1] + 0x1008) >> 4) + g];
@@ -603,8 +605,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (dither) {
 			const DJ = 4, BLOCK_SIZE = 256, DITHER_MAX = 16;
 			var err_len = (width + 2) * DJ;
-			var clamp = new Uint32Array(DJ * BLOCK_SIZE);
-			var limtb = new Uint32Array(2 * BLOCK_SIZE);
+			var clamp = new Int32Array(DJ * BLOCK_SIZE);
+			var limtb = new Int32Array(2 * BLOCK_SIZE);
 
 			for (var i = 0; i < BLOCK_SIZE; ++i) {
 				clamp[i] = 0;
@@ -620,9 +622,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			var noBias = this.hasSemiTransparency || nMaxColors < 64;
 			var dir = 1;
-			var row0 = new Uint32Array(err_len);
-			var row1 = new Uint32Array(err_len);
-			var lookup = new Uint32Array(65536);
+			var row0 = new Int32Array(err_len);
+			var row1 = new Int32Array(err_len);
+			var lookup = new Int32Array(65536);
 			for (var i = 0; i < height; ++i) {
 				if (dir < 0)
 					pixelIndex += width - 1;					
@@ -775,7 +777,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if(this.opts.paletteOnly)
 			return this.palette;
 
-		this.quantize_image(pixels, nMaxColors, width, height, dither);		
+		this.quantize_image(pixels, nMaxColors, width, height, dither);
 		return processImagePixels(this.palette, this.qPixels);
 	};
 	
