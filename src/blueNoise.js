@@ -197,7 +197,7 @@
 		var nMaxColors = this.opts.colors;
 		var qPixels = this.opts.indexedPixels;
 		
-		var strength = 1.7;
+		var strength = 1 / 3.0;
         for (var y = 0; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
             	var pixel = pixels[x + y * width];   
@@ -214,12 +214,12 @@
 				
                 var adj = (RAW_BLUE_NOISE[(x & 63) | (y & 63) << 6] + 0.5) / 127.5;
                 adj -= ((x + y & 1) - 0.5) * strength * (0.5 + RAW_BLUE_NOISE[(x * 19 & 63) | (y * 23 & 63) << 6])
-                    * 0.0013427734;
-
+                    * 11 / 8192.0;				
+				
                 r_pix = Math.clamp(r_pix + (adj * (r_pix - r2)), 0, 0xff) | 0;
                 g_pix = Math.clamp(g_pix + (adj * (g_pix - g2)), 0, 0xff) | 0;
                 b_pix = Math.clamp(b_pix + (adj * (b_pix - b2)), 0, 0xff) | 0;
-                a_pix = Math.clamp(a_pix + (adj * (a_pix - a2)), 0, 0xff) | 0;				
+                a_pix = Math.clamp(a_pix + (adj * (a_pix - a2)), 0, 0xff) | 0;
                 
                 c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;				
 				if(nMaxColors < 64) {
