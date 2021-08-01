@@ -9,11 +9,12 @@ function quantizeImage(opts) {
 		opts.ditherFn = quant.getDitherFn();
 		opts.getColorIndex = quant.getColorIndex;					
 		if(opts.colors >= 64) {			
-		opts.paletteOnly = true;
-		opts.palette = quant.quantizeImage();
-		opts.paletteOnly = false;
-		var hc = new HilbertCurve(opts);
-		return { img8: hc.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+			opts.paletteOnly = true;
+			opts.palette = quant.quantizeImage();
+			opts.paletteOnly = false;
+			var hc = new HilbertCurve(opts);
+			return { img8: hc.dither(), pal8: opts.palette, indexedPixels: hc.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+		}
 	}
 	return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
 }
