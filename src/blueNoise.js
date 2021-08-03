@@ -213,8 +213,7 @@
 				a2 = (c1 >>> 24) & 0xff;
 				
                 var adj = (RAW_BLUE_NOISE[(x & 63) | (y & 63) << 6] + 0.5) / 127.5;
-                adj -= ((x + y & 1) - 0.5) * strength * (0.5 + RAW_BLUE_NOISE[(x * 19 & 63) | (y * 23 & 63) << 6])
-                    * 11 / 8192.0;				
+                adj += ((x + y & 1) - 0.5) * strength / 8.0;				
 				
                 r_pix = Math.clamp(r_pix + (adj * (r_pix - r2)), 0, 0xff) | 0;
                 g_pix = Math.clamp(g_pix + (adj * (g_pix - g2)), 0, 0xff) | 0;
