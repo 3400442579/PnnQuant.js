@@ -60,7 +60,10 @@ function quantizeImage(gl, result, width) {
 	can.width = width;
 	can.height = Math.ceil(result.img8.length / width);
 
-	ctx.imageSmoothingQuality = "high";
+	ctx.imageSmoothingEnabled = false; 
+    ctx.mozImageSmoothingEnabled = false; 
+    ctx.webkitImageSmoothingEnabled = false; 
+    ctx.msImageSmoothingEnabled = false; 
 	
 	eventBus.dispatch("scene", {boxWidth: (width - 10) + "px", background: result.transparent < 0 ? "none" : ""});
 	eventBus.dispatch("palt", {pal: pal});
@@ -111,6 +114,7 @@ function doProcess(gl, ti, opts) {
 					opts.getColorIndex = quant.getColorIndex;
 					var pal8;
 					if(opts.colors < 64) {
+						opts.dithering = false;
 						quant.quantizeImage();
 						pal8 = quant.getPalette();
 						opts.palette = new Uint32Array(pal8);
