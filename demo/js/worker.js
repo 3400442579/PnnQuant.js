@@ -25,8 +25,12 @@ function quantizeImage(opts) {
 			opts.indexedPixels = new HilbertCurve(opts).dither();
 		}		
 	}
-	else
+	else {
+		quant.quantizeImage();
 		pal8 = quant.getPalette();
+		opts.palette = new Uint32Array(pal8);
+		opts.indexedPixels = quant.getIndexedPixels();
+	}
 	
 	var bn = new BlueNoise(opts);
 	return { img8: bn.dither(), pal8: pal8, indexedPixels: bn.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
