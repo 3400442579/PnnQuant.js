@@ -545,6 +545,15 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	PnnQuant.prototype.getTransparentIndex = function getTransparentIndex() {
 		return this.m_transparentPixelIndex > -1 ? 0 : -1;
 	};
+	
+	PnnQuant.prototype.getDitherFn = function getDitherFn() {
+		var noBias = this.hasSemiTransparency || this.opts.colors < 64;		
+		return noBias ? nearestColorIndex : closestColorIndex;
+	};
+	
+	PnnQuant.prototype.getColorIndex = function getColorIndex(a, r, g, b) {
+		return getARGBIndex(a, r, g, b, this.hasSemiTransparency, this.m_transparentPixelIndex >= 0);
+	};
 
 	// expose
 	this.PnnQuant = PnnQuant;
