@@ -9,10 +9,10 @@ function quantizeImage(opts) {
 		return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
 	
 	var pal8;
-	if(opts.isHQ) {		
-		opts.ditherFn = quant.getDitherFn();
-		opts.getColorIndex = quant.getColorIndex;		
-		
+	opts.ditherFn = quant.getDitherFn();
+	opts.getColorIndex = quant.getColorIndex;
+	
+	if(opts.isHQ) {			
 		if(opts.colors < 64) {
 			quant.quantizeImage();
 			pal8 = quant.getPalette();
