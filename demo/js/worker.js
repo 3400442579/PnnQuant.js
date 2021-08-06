@@ -4,9 +4,7 @@ importScripts('pnnquant.min.js');
 importScripts('pnnLABquant.min.js');
 
 function quantizeImage(opts) {				
-	var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
-	if(opts.dithering)
-		return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+	var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);	
 	
 	var pal8;
 	opts.ditherFn = quant.getDitherFn();
@@ -14,6 +12,9 @@ function quantizeImage(opts) {
 	
 	if(opts.isHQ) {			
 		if(opts.colors < 64) {
+			if(opts.dithering)
+				return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+			
 			quant.quantizeImage();
 			pal8 = quant.getPalette();
 			opts.palette = new Uint32Array(pal8);
@@ -21,11 +22,17 @@ function quantizeImage(opts) {
 		}
 		else {
 			opts.paletteOnly = true;
-			opts.palette = pal8 = quant.quantizeImage();	
-			opts.indexedPixels = new HilbertCurve(opts).dither();
+			opts.palette = pal8 = quant.quantizeImage();
+			var hc = new HilbertCurve(opts);
+			if(opts.dithering)
+				return { img8: hc.dither(), pal8: pal8, indexedPixels: hc.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+			opts.indexedPixels = hc.dither();
 		}		
 	}
 	else {
+		if(opts.dithering)
+			return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+		
 		quant.quantizeImage();
 		pal8 = quant.getPalette();
 		opts.palette = new Uint32Array(pal8);
