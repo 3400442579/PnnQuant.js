@@ -6,44 +6,51 @@ importScripts('pnnLABquant.min.js');
 function quantizeImage(opts) {				
 	var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);	
 	
-	var pal8;
 	opts.ditherFn = quant.getDitherFn();
 	opts.getColorIndex = quant.getColorIndex;
 	
 	if(opts.isHQ) {			
 		if(opts.colors < 64) {
 			if(opts.dithering)
-				return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+				return quant.getResult();
 			
-			quant.quantizeImage();
-			pal8 = quant.getPalette();
-			opts.palette = new Uint32Array(pal8);
-			opts.indexedPixels = quant.getIndexedPixels();
+			return quant.getResult().then(function(result) {
+				opts.palette = new Uint32Array(result.pal8);
+				opts.indexedPixels = result.indexedPixels;				
+				return new BlueNoise(opts).getResult();
+			});				
 		}
-		else {
-			opts.paletteOnly = true;
-			opts.palette = pal8 = quant.quantizeImage();
-			var hc = new HilbertCurve(opts);
+
+		opts.paletteOnly = true;
+		return quant.getResult().then(function(result) {
+			opts.palette = result.pal8;
+			opts.transparent = result.transparent;
+			opts.type = result.type;
+			
 			if(opts.dithering)
-				return { img8: hc.dither(), pal8: pal8, indexedPixels: hc.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
-			opts.indexedPixels = hc.dither();
-		}		
+				return new HilbertCurve(opts).getResult();
+			
+			return new HilbertCurve(opts).getResult().then(function(hc) {					
+				opts.indexedPixels = hc.indexedPixels;
+				return new BlueNoise(opts).getResult();
+			});				
+		});		
 	}
-	else {
-		if(opts.dithering)
-			return { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
-		
-		quant.quantizeImage();
-		pal8 = quant.getPalette();
-		opts.palette = new Uint32Array(pal8);
-		opts.indexedPixels = quant.getIndexedPixels();
-	}
+
+	if(opts.dithering)
+		return quant.getResult();
 	
-	var bn = new BlueNoise(opts);
-	return { img8: bn.dither(), pal8: pal8, indexedPixels: bn.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() };
+	return quant.getResult().then(function(result) {
+		opts.palette = new Uint32Array(result.pal8);
+		opts.indexedPixels = result.indexedPixels;
+		opts.transparent = result.transparent;
+		opts.type = result.type;		
+		return new BlueNoise(opts).getResult();
+	});
 }
 
 onmessage = function(e) {	
-	var result = quantizeImage(e.data);
-	postMessage(result);
+	quantizeImage(e.data).then(function(result) {
+		postMessage(result);
+	});	
 }
