@@ -12,45 +12,41 @@ function quantizeImage(opts) {
 	if(opts.isHQ) {			
 		if(opts.colors < 64) {
 			if(opts.dithering)
-				return quant.getResult();
+				return Promise.all([quant.getResult()]);
 			
 			return quant.getResult().then(function(result) {
 				opts.palette = new Uint32Array(result.pal8);
 				opts.indexedPixels = result.indexedPixels;				
-				return new BlueNoise(opts).getResult();
+				return Promise.all([result, new BlueNoise(opts).getResult()]);
 			});				
 		}
 
 		opts.paletteOnly = true;
 		return quant.getResult().then(function(result) {
 			opts.palette = result.pal8;
-			opts.transparent = result.transparent;
-			opts.type = result.type;
 			
 			if(opts.dithering)
-				return new HilbertCurve(opts).getResult();
+				return Promise.all([result, new HilbertCurve(opts).getResult()]);
 			
 			return new HilbertCurve(opts).getResult().then(function(hc) {					
 				opts.indexedPixels = hc.indexedPixels;
-				return new BlueNoise(opts).getResult();
+				return Promise.all([result, new BlueNoise(opts).getResult()]);
 			});				
 		});		
 	}
 
 	if(opts.dithering)
-		return quant.getResult();
+		return Promise.all([quant.getResult()]);
 	
 	return quant.getResult().then(function(result) {
 		opts.palette = new Uint32Array(result.pal8);
 		opts.indexedPixels = result.indexedPixels;
-		opts.transparent = result.transparent;
-		opts.type = result.type;		
-		return new BlueNoise(opts).getResult();
+		return Promise.all([result, new BlueNoise(opts).getResult()]);
 	});
 }
 
 onmessage = function(e) {	
 	quantizeImage(e.data).then(function(result) {
-		postMessage(result);
+		postMessage(Object.assign.apply(Object, result));
 	});	
 }

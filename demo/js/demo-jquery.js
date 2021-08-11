@@ -1,5 +1,5 @@
 var cfg_edited = false;
-var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker.js") : null;
+var worker = (typeof Worker !== "undefined") ? new Worker("./js/worker-es5.js") : null;
 var pngOnly = location.search.toLowerCase().indexOf('png') > -1;
 
 var dflt_opts = {
