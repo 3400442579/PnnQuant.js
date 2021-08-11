@@ -102,43 +102,62 @@ function allowChange($orig) {
 	document.querySelector("#palt").style.opacity = 1;
 }
 
+function getResult(opts) {
+	var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);	
+	
+	opts.ditherFn = quant.getDitherFn();
+	opts.getColorIndex = quant.getColorIndex;
+	
+	if(opts.isHQ) {			
+		if(opts.colors < 64) {
+			if(opts.dithering)
+				return quant.getResult();
+			
+			return quant.getResult().then(function(result) {
+				opts.palette = new Uint32Array(result.pal8);
+				opts.indexedPixels = result.indexedPixels;				
+				return new BlueNoise(opts).getResult();
+			});				
+		}
+
+		opts.paletteOnly = true;
+		return quant.getResult().then(function(result) {
+			opts.palette = result.pal8;
+			opts.transparent = result.transparent;
+			opts.type = result.type;
+			
+			if(opts.dithering)
+				return new HilbertCurve(opts).getResult();
+			
+			return new HilbertCurve(opts).getResult().then(function(hc) {					
+				opts.indexedPixels = hc.indexedPixels;
+				return new BlueNoise(opts).getResult();
+			});				
+		});		
+	}
+
+	if(opts.dithering)
+		return quant.getResult();
+	
+	return quant.getResult().then(function(result) {
+		opts.palette = new Uint32Array(result.pal8);
+		opts.indexedPixels = result.indexedPixels;
+		opts.transparent = result.transparent;
+		opts.type = result.type;		
+		return new BlueNoise(opts).getResult();
+	});
+}
+
 function doProcess(gl, ti, opts) {	
 	if(worker != null)			
 		worker.postMessage(opts);
 	else {
 		setTimeout(function(){
 			ti.mark("reduced -> DOM", function() {
-				var quant = opts.isHQ ? new PnnLABQuant(opts) : new PnnQuant(opts);
-				if(opts.isHQ) {
-					if(opts.dithering) {
-						quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
-							transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
-					}
-						
-					opts.ditherFn = quant.getDitherFn();
-					opts.getColorIndex = quant.getColorIndex;
-					var pal8;
-					if(opts.colors < 64) {
-						quant.quantizeImage();
-						pal8 = quant.getPalette();
-						opts.palette = new Uint32Array(pal8);
-						opts.indexedPixels = quant.getIndexedPixels();
-					}
-					else {
-						opts.paletteOnly = true;
-						opts.palette = pal8 = quant.quantizeImage();	
-						opts.indexedPixels = new HilbertCurve(opts).dither();
-					}
-					var bn = new BlueNoise(opts);
-					quantizeImage(gl, { img8: bn.dither(), pal8: pal8, indexedPixels: bn.getIndexedPixels(),
-						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
-				}
-				else {
-					quantizeImage(gl, { img8: quant.quantizeImage(), pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(),
-						transparent: quant.getTransparentIndex(), type: quant.getImgType() }, opts.width);
-				}
-				
-				allowChange(document.querySelector("#orig"));		
+				getResult(opts).then(function(result) {
+					quantizeImage(gl, result, opts.width);
+					allowChange(document.querySelector("#orig"));
+				});						
 			});
 		}, 0);
 	}
