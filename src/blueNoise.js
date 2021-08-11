@@ -248,7 +248,7 @@
 	BlueNoise.prototype.getResult = function getResult() {
 		var bn = this;
 		return new Promise(function(resolve, reject) {
-			resolve({ img8: bn.dither(), pal8: bn.opts.palette, indexedPixels: bn.getIndexedPixels(), transparent: bn.opts.transparent, type: bn.opts.type });
+			resolve({ img8: bn.dither(), indexedPixels: bn.getIndexedPixels() });
 		});
 	};
 

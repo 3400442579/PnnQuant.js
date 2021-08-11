@@ -198,7 +198,7 @@ Copyright (c) 2021 Miller Cy Chan
 	HilbertCurve.prototype.getResult = function getResult() {
 		var hc = this;
 		return new Promise(function(resolve, reject) {
-			resolve({ img8: hc.dither(), pal8: hc.opts.palette, indexedPixels: hc.getIndexedPixels(), transparent: hc.opts.transparent, type: hc.opts.type });
+			resolve({ img8: hc.dither(), indexedPixels: hc.getIndexedPixels() });
 		});
 	};
 
