@@ -370,7 +370,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(3.845) / Object.keys(pixelMap).length);
 		}
 		else if (quan_rt > 0)
-			ratio = Math.min(1.0, Math.pow(nMaxColors, 1.05) / Object.keys(pixelMap).length);			
+			ratio = 1.0;			
 		else
 			ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(4.732) / Object.keys(pixelMap).length);
 		

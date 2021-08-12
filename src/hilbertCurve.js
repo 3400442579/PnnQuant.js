@@ -187,7 +187,11 @@ Copyright (c) 2021 Miller Cy Chan
         
         iter(depth, UP);
         ditherCurrentPixel();      
-        this.qPixels = qPixels;		
+        this.qPixels = qPixels;
+
+		if(!this.opts.dithering)
+			return qPixels;
+		
 		return processImagePixels();
     }
 	
@@ -198,7 +202,10 @@ Copyright (c) 2021 Miller Cy Chan
 	HilbertCurve.prototype.getResult = function getResult() {
 		var hc = this;
 		return new Promise(function(resolve, reject) {
-			resolve({ img8: hc.dither(), indexedPixels: hc.getIndexedPixels() });
+			if(hc.opts.dithering)
+				resolve({ img8: hc.dither(), indexedPixels: hc.getIndexedPixels() });
+			else
+				resolve({ indexedPixels: hc.dither() });
 		});
 	};
 
