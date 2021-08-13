@@ -370,7 +370,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(3.845) / Object.keys(pixelMap).length);
 		}
 		else if (quan_rt > 0)
-			ratio = Math.min(1.0, Math.pow(nMaxColors, 1.05) / Object.keys(pixelMap).length);			
+			ratio = 1.0;			
 		else
 			ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(4.732) / Object.keys(pixelMap).length);
 		
@@ -554,7 +554,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				a2 = (palette[k] >>> 24) & 0xff;
 				var lab2 = getLab(a2, r2, g2, b2);
 					
-				closest[4] = Math.abs(lab2.alpha - lab1.alpha) + Math.abs(lab2.L - lab1.L) + Math.abs(lab2.A - lab1.A) + Math.abs(lab2.B - lab1.B);
+				closest[4] = sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
 					closest[3] = closest[2];
@@ -572,7 +572,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				closest[2] = 0;
 		}
 
-		if (closest[2] == 0 || (Math.floor(Math.random() * 32769) % (closest[3] + closest[2])) <= closest[3])
+		if (closest[2] == 0 || (Math.floor(Math.random() * 32767) % (closest[3] + closest[2])) <= closest[3])
 			k = closest[0];
 		else
 			k = closest[1];
