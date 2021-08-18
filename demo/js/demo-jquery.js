@@ -192,7 +192,7 @@ function readImageData(img, gl, opts) {
 			opts.pixels = new Uint32Array(imgd.data.buffer);
 		}
 		return true;
-	} catch(err) {
+	} catch(err) {		
 		alert(err);
 		throw err;
 	}
@@ -379,7 +379,13 @@ function download(imgUrl, ev) {
 	};
 	xhr.open('GET', imgUrl);
 	xhr.responseType = "arraybuffer";
-	xhr.send();
+	
+	try {
+		xhr.send();
+	}
+	catch(err) {
+		document.querySelector("#orig img").style.border = "";
+	}
 }
 
 function dragStart(evt) {

@@ -334,6 +334,7 @@ function download(imgUrl, ev) {
 	.then(response => response.blob())
 	.then(blob => loadImage(id, blob, ev))
 	.catch(error => {
+		document.querySelector("#orig img").style.border = "";
 		if(document.querySelector("#wrapfabtest").offsetHeight <= 0)
 			alert("AdBlock Detected");
 	});
