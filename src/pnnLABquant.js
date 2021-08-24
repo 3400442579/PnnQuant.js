@@ -554,7 +554,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				a2 = (palette[k] >>> 24) & 0xff;
 				var lab2 = getLab(a2, r2, g2, b2);
 					
-				closest[4] = sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
+				closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
 					closest[3] = closest[2];
