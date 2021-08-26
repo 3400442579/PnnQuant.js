@@ -482,7 +482,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			g2 = (palette[i] >>> 8) & 0xff,
 			b2 = (palette[i] >>> 16) & 0xff,
 			a2 = (palette[i] >>> 24) & 0xff;
-			var curdist = sqr(a2 - a);
+			var curdist = sqr(a2 - a) / Math.exp(1.5);
 			if (curdist > mindist)
 				continue;
 
@@ -554,7 +554,12 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				a2 = (palette[k] >>> 24) & 0xff;
 				var lab2 = getLab(a2, r2, g2, b2);
 					
-				closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
+				closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b);
+				if(PB < 1)
+					closest[4] += sqr(lab2.B - lab1.B) / 2.0;
+				else
+					closest[4] += sqr(a2 - a) / Math.exp(1.5);
+				
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
 					closest[3] = closest[2];
