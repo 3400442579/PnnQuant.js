@@ -558,7 +558,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				if(PB < 1)
 					closest[4] += sqr(lab2.B - lab1.B) / 2.0;
 				else
-					closest[4] += sqr(a2 - a) / Math.exp(1.5);
+					closest[4] += sqr(a2 - a);
 				
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
