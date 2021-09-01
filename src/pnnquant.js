@@ -312,7 +312,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				closest[2] = 0;
 		}
 
-		if (closest[2] == 0 || (Math.floor(Math.random() * 32769) % (closest[3] + closest[2])) <= closest[3])
+		if (closest[2] == 0 || (Math.floor(Math.random() * 32767) % (closest[3] + closest[2])) <= closest[3])
 			k = closest[0];
 		else
 			k = closest[1];
