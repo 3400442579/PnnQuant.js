@@ -68,20 +68,16 @@ Copyright (c) 2021 Miller Cy Chan
 				b2 = (c2 >>> 16) & 0xff,
 				a2 = (c2 >>> 24) & 0xff;
 			
-	        error.p[0] = r_pix > 255 ? 255 : r_pix - r2;
-	        error.p[1] = g_pix > 255 ? 255 : g_pix - g2;
-	        error.p[2] = b_pix > 255 ? 255 : b_pix - b2;
-	        error.p[3] = a_pix > 255 ? 255 : a_pix - a2;
+	        error.p[0] = r_pix - r2;
+	        error.p[1] = g_pix - g2;
+	        error.p[2] = b_pix - b2;
+	        error.p[3] = a_pix - a2;
 	        
 	        for(var j = 0; j < error.p.length; ++j) {
 	        	if(Math.abs(error.p[j]) < DITHER_MAX)
 					continue;
 				
-				error.p[j] -= error.p[j] < 0 ? -DITHER_MAX : DITHER_MAX;
-				if(Math.abs(error.p[j]) < DITHER_MAX)
-					continue;
-				
-	        	error.p[j] = error.p[j] < 0 ? -DITHER_MAX + 1 : DITHER_MAX - 1;				
+				error.p[j] = 0;				
 	        }
 	        errorq.push(error);
 	    }
