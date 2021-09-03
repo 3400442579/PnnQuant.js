@@ -1,4 +1,4 @@
-importScripts('hilbertCurve.min.js');
+importScripts('gilbertCurve.min.js');
 importScripts('blueNoise.min.js');
 importScripts('pnnquant.min.js');
 importScripts('pnnLABquant.min.js');
@@ -26,9 +26,9 @@ function quantizeImage(opts) {
 			opts.palette = result.pal8;
 			
 			if(opts.dithering)
-				return Promise.all([result, new HilbertCurve(opts).getResult()]);
+				return Promise.all([result, new GilbertCurve(opts).getResult()]);
 			
-			return new HilbertCurve(opts).getResult().then(function(hc) {					
+			return new GilbertCurve(opts).getResult().then(function(hc) {					
 				opts.indexedPixels = hc.indexedPixels;
 				return Promise.all([result, new BlueNoise(opts).getResult()]);
 			});				

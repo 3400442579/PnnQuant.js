@@ -125,9 +125,9 @@ function getResult(opts) {
 			opts.palette = result.pal8;
 			
 			if(opts.dithering)
-				return Promise.all([result, new HilbertCurve(opts).getResult()]);
+				return Promise.all([result, new GilbertCurve(opts).getResult()]);
 			
-			return new HilbertCurve(opts).getResult().then(function(hc) {					
+			return new GilbertCurve(opts).getResult().then(function(hc) {					
 				opts.indexedPixels = hc.indexedPixels;
 				return Promise.all([result, new BlueNoise(opts).getResult()]);
 			});				
@@ -330,7 +330,12 @@ function download(imgUrl, ev) {
 	}
 	
 	var id = baseName(imgUrl)[0];	
-	fetch(imgUrl, {mode: 'cors'})
+	fetch(imgUrl, {mode: 'cors',
+		headers:{
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'multipart/form-data'
+		}
+	})
 	.then(response => response.blob())
 	.then(blob => loadImage(id, blob, ev))
 	.catch(error => {
