@@ -806,7 +806,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnLABQuant.prototype.getDitherFn = function getDitherFn() {
-		var noBias = this.hasSemiTransparency || this.palette.length < 64;		
+		var noBias = this.hasSemiTransparency || this.opts.colors < 64;		
 		return noBias ? nearestColorIndex : closestColorIndex;
 	};
 	
