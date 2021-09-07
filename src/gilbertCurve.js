@@ -36,7 +36,7 @@ Copyright (c) 2021 Miller Cy Chan
 	var lookup;
     
 	var DITHER_MAX = 9;
-	var BLOCK_SIZE = 343;	
+	var BLOCK_SIZE = 343.0;	
 	
 	function ditherPixel(x, y)
 	{
@@ -49,10 +49,10 @@ Copyright (c) 2021 Miller Cy Chan
 				error.p[j] += eb.p[j] * weights[c];
 		}
 
-		var r_pix = Math.clamp(error.p[0], 0, 0xff);
-		var g_pix = Math.clamp(error.p[1], 0, 0xff);
-		var b_pix = Math.clamp(error.p[2], 0, 0xff);
-		var a_pix = Math.clamp(error.p[3], 0, 0xff);
+		var r_pix = Math.clamp(error.p[0], 0, 0xff) | 0;
+		var g_pix = Math.clamp(error.p[1], 0, 0xff) | 0;
+		var b_pix = Math.clamp(error.p[2], 0, 0xff) | 0;
+		var a_pix = Math.clamp(error.p[3], 0, 0xff) | 0;
 		
 		var c2 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;			
 		if(nMaxColors < 64) {
@@ -65,7 +65,7 @@ Copyright (c) 2021 Miller Cy Chan
 			qPixels[bidx] = ditherFn(palette, nMaxColors, c2);
 
 		errorq.shift();
-		c2 = palette[qPixels[x + y * width]];
+		c2 = palette[qPixels[bidx]];
 		var r2 = (c2 & 0xff),
 			g2 = (c2 >>> 8) & 0xff,
 			b2 = (c2 >>> 16) & 0xff,
@@ -80,7 +80,7 @@ Copyright (c) 2021 Miller Cy Chan
 			if(Math.abs(error.p[j]) < DITHER_MAX)
 				continue;
 			
-			error.p[j] /= 3;				
+			error.p[j] /= 3.0;				
 		}
 		errorq.push(error);
 	}
@@ -156,8 +156,8 @@ Copyright (c) 2021 Miller Cy Chan
 		errorq = [];
 		weights = [];
 		lookup = new Uint32Array(65536);
-        var weightRatio = Math.pow(BLOCK_SIZE + 1,  1 / (DITHER_MAX - 1));
-        var weight = 1, sumweight = 0;
+        var weightRatio = Math.pow(BLOCK_SIZE + 1.0,  1.0 / (DITHER_MAX - 1.0));
+        var weight = 1.0, sumweight = 0.0;
         for(var c = 0; c < DITHER_MAX; ++c)
         {
             errorq.push(new ErrorBox(0));
@@ -165,10 +165,10 @@ Copyright (c) 2021 Miller Cy Chan
             weight *= weightRatio;
         }
         
-        weight = 0; /* Normalize */
+        weight = 0.0; /* Normalize */
         for(var c = 0; c < DITHER_MAX; ++c)
             weight += (weights[c] /= sumweight);
-        weights[0] += 1 - weight; 		
+        weights[0] += 1.0 - weight; 		
 		
 		ditherFn = this.opts.ditherFn;
 		getColorIndex = this.opts.getColorIndex;

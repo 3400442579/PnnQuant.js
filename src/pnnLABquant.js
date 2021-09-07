@@ -234,6 +234,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		return value * value;
 	}
 	
+	function getRandomInt(max) {
+		return Math.floor(Math.random() * max) + 1;
+	}
+	
 	function getLab(a, r, g, b)
 	{
 		var argb = (a << 24) | (b << 16) | (g << 8) | r;
@@ -555,7 +559,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				var lab2 = getLab(a2, r2, g2, b2);
 					
 				if(PB < 1)
-					closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;									
+					closest[4] = (PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0) | 0;									
 				else
 					closest[4] = sqr(a2 - a) / Math.exp(1.5) + sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
 				
@@ -576,7 +580,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				closest[2] = 0;
 		}
 
-		if (closest[2] == 0 || (Math.floor(Math.random() * 32767) % (closest[3] + closest[2])) <= closest[3])
+		if (closest[2] == 0 || (getRandomInt(32767) % (closest[3] + closest[2])) <= closest[3])
 			k = closest[0];
 		else
 			k = closest[1];
@@ -802,7 +806,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnLABQuant.prototype.getDitherFn = function getDitherFn() {
-		var noBias = this.hasSemiTransparency || this.opts.colors < 64;		
+		var noBias = this.hasSemiTransparency || this.palette.length < 64;		
 		return noBias ? nearestColorIndex : closestColorIndex;
 	};
 	
