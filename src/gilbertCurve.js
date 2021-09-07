@@ -36,7 +36,7 @@ Copyright (c) 2021 Miller Cy Chan
 	var lookup;
     
 	var DITHER_MAX = 9;
-	var BLOCK_SIZE = 8;	
+	var BLOCK_SIZE = 343;	
 	
 	function ditherPixel(x, y)
 	{
