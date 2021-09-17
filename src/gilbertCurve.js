@@ -28,7 +28,7 @@ Copyright (c) 2021 Miller Cy Chan
 		this.p = [r, g, b, a];
 	}
 	
-	var ditherFn, getColorIndex, width, height, pixels, palette, nMaxColors;
+	var ditherFn, getColorIndex, divisor, width, height, pixels, palette, nMaxColors;
 	
 	var qPixels;
 	var errorq = [];
@@ -76,11 +76,13 @@ Copyright (c) 2021 Miller Cy Chan
 		error.p[2] = b_pix - b2;
 		error.p[3] = a_pix - a2;
 		
-		for(var j = 0; j < error.p.length; ++j) {
-			if(Math.abs(error.p[j]) < DITHER_MAX)
-				continue;
-			
-			error.p[j] /= 3.0;				
+		if (divisor < 3 || nMaxColors > 16) {
+			for(var j = 0; j < error.p.length; ++j) {
+				if(Math.abs(error.p[j]) < DITHER_MAX)
+					continue;
+				
+				error.p[j] /= divisor;				
+			}
 		}
 		errorq.push(error);
 	}
@@ -177,6 +179,7 @@ Copyright (c) 2021 Miller Cy Chan
 		pixels = this.opts.pixels;
 		palette = this.opts.palette;
 		nMaxColors = this.opts.colors;
+		divisor = nMaxColors > 2 ? 3.0 : 1.5;
 		qPixels = nMaxColors > 256 ? new Uint16Array(pixels.length) : new Uint8Array(pixels.length);	
         
         if (width >= height)
