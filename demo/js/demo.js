@@ -109,7 +109,7 @@ function getResult(opts) {
 	opts.getColorIndex = quant.getColorIndex;
 	
 	if(opts.isHQ) {			
-		if(opts.colors < 64) {
+		if (opts.colors < 64 && opts.colors > 2) {
 			if(opts.dithering)
 				return Promise.all([quant.getResult()]);
 			
