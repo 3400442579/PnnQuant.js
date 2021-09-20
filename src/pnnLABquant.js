@@ -486,12 +486,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			g2 = (palette[i] >>> 8) & 0xff,
 			b2 = (palette[i] >>> 16) & 0xff,
 			a2 = (palette[i] >>> 24) & 0xff;
-			var curdist = sqr(a2 - a) / Math.exp(1.5);
+			var curdist = this.hasSemiTransparency ? sqr(a2 - a) / Math.exp(1.5) : 0;
 			if (curdist > mindist)
 				continue;
-
-			var lab2 = getLab(a2, r2, g2, b2);
-			if (nMaxColors > 32 || this.hasSemiTransparency) {
+			
+			if (nMaxColors > 32 || nMaxColors <= 4 || this.hasSemiTransparency) {
 				curdist += PR * sqr(r2 - r);
 				if (curdist > mindist)
 					continue;
@@ -505,10 +504,12 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					if (curdist > mindist)
 						continue;
 
+					var lab2 = getLab(a2, r2, g2, b2);
 					curdist += sqr(lab2.B - lab1.B) / 2.0;
 				}
 			}
 			else {
+				var lab2 = getLab(a2, r2, g2, b2);
 				var deltaL_prime_div_k_L_S_L = L_prime_div_k_L_S_L(lab1, lab2);
 				curdist += sqr(deltaL_prime_div_k_L_S_L);
 				if (curdist > mindist)
@@ -625,8 +626,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				limtb[i] = -DITHER_MAX;
 				limtb[i + BLOCK_SIZE] = DITHER_MAX;
 			}
-			for (var i = -DITHER_MAX; i <= DITHER_MAX; ++i)
-				limtb[i + BLOCK_SIZE] = i % 4 == 3 ? 0 : i;
+			for (var i = -DITHER_MAX; i <= DITHER_MAX; ++i) {
+				limtb[i + BLOCK_SIZE] = i;
+				if(nMaxColors > 16 && i % 4 == 3)
+					limtb[i + BLOCK_SIZE] = 0;
+			}
 
 			var noBias = this.hasSemiTransparency || nMaxColors < 64;
 			var dir = 1;
