@@ -179,7 +179,7 @@ Copyright (c) 2021 Miller Cy Chan
 		pixels = this.opts.pixels;
 		palette = this.opts.palette;
 		nMaxColors = this.opts.colors;
-		divisor = nMaxColors > 2 ? 3.0 : 1.5;
+		divisor = nMaxColors > 32 ? 3.0 : nMaxColors > 2 ? 1.8 : 1.5;
 		qPixels = nMaxColors > 256 ? new Uint16Array(pixels.length) : new Uint8Array(pixels.length);	
         
         if (width >= height)
