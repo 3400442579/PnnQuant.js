@@ -85,10 +85,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (g > 0.0031308) ? (1.055 * Math.pow(g, 1.0 / 2.4) - 0.055) : 12.92 * g;
 		b = (b > 0.0031308) ? (1.055 * Math.pow(b, 1.0 / 2.4) - 0.055) : 12.92 * b;
 
-		var a = Math.clamp(lab.alpha, 0, 0xff);
-		r = Math.clamp(r * 0xff, 0, 0xff),
-		g = Math.clamp(g * 0xff, 0, 0xff),
-		b = Math.clamp(b * 0xff, 0, 0xff);
+		var a = Math.clamp(Math.round(lab.alpha), 0, 0xff);
+		r = Math.clamp(Math.round(r * 0xff), 0, 0xff),
+		g = Math.clamp(Math.round(g * 0xff), 0, 0xff),
+		b = Math.clamp(Math.round(b * 0xff), 0, 0xff);
 		return (a << 24) | (b << 16) | (g << 8) | r;
 	}
 	
@@ -449,7 +449,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var k = 0;
 		for (var i = 0; ; ++k) {
 			var lab1 = new Lab();
-			lab1.alpha = (Math.clamp(Math.round(bins[i].ac), 0, 0xff) | 0),
+			lab1.alpha = (this.hasSemiTransparency || this.m_transparentPixelIndex >= 0) ? 
+				(Math.clamp(Math.round(bins[i].ac), 0, 0xff) | 0) : 0xff,
 			lab1.L = bins[i].Lc; lab1.A = bins[i].Ac; lab1.B = bins[i].Bc;
 
 			this.palette[k] = LAB2RGB(lab1);
@@ -461,6 +462,14 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			if ((i = bins[i].fw) == 0)
 				break;
+		}
+		
+		if (k < nMaxColors) {
+			var palette = this.palette;
+			this.palette = new Uint32Array(k + 1);
+			this.palette[0] = (0xff << 24) | (0 << 16) | (0 << 8) | 0;
+			for(var j=1; j <= k; ++j)
+				this.palette[j] = palette[j];
 		}
 	};
 	

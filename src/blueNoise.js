@@ -194,7 +194,7 @@
 		var height = this.opts.height;
 		var pixels = this.opts.pixels;
 		var palette = this.opts.palette;
-		var nMaxColors = this.opts.colors;
+		var nMaxColors = palette.length;
 		var qPixels = this.opts.indexedPixels;
 		
 		var strength = 1 / 3.0;

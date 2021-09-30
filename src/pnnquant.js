@@ -62,15 +62,15 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (nerr >= err)
 				continue;
 			
-			nerr += nerr2 * PR * sqr(bins[i].rc - wr);
+			nerr += nerr2 * sqr(bins[i].rc - wr);
 			if (nerr >= err)
 				continue;
 
-			nerr += nerr2 * PG * sqr(bins[i].gc - wg);
+			nerr += nerr2 * sqr(bins[i].gc - wg);
 			if (nerr >= err)
 				continue;
 
-			nerr += nerr2 * PB * sqr(bins[i].bc - wb);				
+			nerr += nerr2 * sqr(bins[i].bc - wb);				
 			if (nerr >= err)
 				continue;
 			err = nerr;
@@ -228,6 +228,13 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			if ((i = bins[i].fw) == 0)
 				break;
+		}
+		
+		if (k < nMaxColors) {			
+			var palette = this.palette;
+			this.palette = new Uint32Array(k);
+			for(var j=0; j < k; ++j)
+				this.palette[j] = palette[j];
 		}
 	};
 	
@@ -493,7 +500,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			}
 		}
 
-		if (this.hasSemiTransparency || nMaxColors <= 32)
+		if (nMaxColors <= 32)
             PR = PG = PB = 1;
 		
 		this.palette = new Uint32Array(nMaxColors);
