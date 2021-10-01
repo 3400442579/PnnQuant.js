@@ -464,11 +464,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				break;
 		}
 		
-		if (k < nMaxColors) {
+		if (k < nMaxColors - 1) {
 			var palette = this.palette;
-			this.palette = new Uint32Array(k + 1);
+			this.palette = new Uint32Array(k + 2);
 			this.palette[0] = (0xff << 24) | (0 << 16) | (0 << 8) | 0;
-			for(var j=1; j <= k; ++j)
+			for(var j = 1; j <= k + 1; ++j)
 				this.palette[j] = palette[j - 1];
 		}
 	};
