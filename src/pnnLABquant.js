@@ -332,7 +332,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			tb.Lc += lab1.L;
 			tb.Ac += lab1.A;
 			tb.Bc += lab1.B;
-			tb.cnt++;
+			tb.cnt += 1.0;
 		}
 
 		/* Cluster nonempty bins at one end of array */
@@ -356,15 +356,22 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		else if ((proportional < .018 || proportional > .5) && nMaxColors < 64)
 			quan_rt = 0;
 		
-		if (quan_rt > 0)
-			bins[0].cnt = (Math.sqrt(bins[0].cnt) | 0);
-		for (var i = 0; i < maxbins - 1; ++i) {
+		var i = 0;
+		for (; i < maxbins - 1; ++i) {
 			bins[i].fw = i + 1;
 			bins[i + 1].bk = i;
 			
-			if (quan_rt > 0)
-				bins[i + 1].cnt = (Math.sqrt(bins[i + 1].cnt) | 0);
-		}		
+			if (quan_rt > 0) {
+				bins[i].cnt = Math.sqrt(bins[i ].cnt);
+				if(nMaxColors < 64)
+					bins[i].cnt |= 0;
+			}
+		}	
+		if (quan_rt > 0) {
+			bins[i].cnt = Math.sqrt(bins[i ].cnt);
+			if(nMaxColors < 64)
+				bins[i].cnt |= 0;
+		}
 
 		var h, l, l2;
 		if (quan_rt != 0 && nMaxColors < 64) {
@@ -383,7 +390,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		
 		/* Initialize nearest neighbors and build heap of them */
 		var heap = new Uint32Array(bins.length + 1);
-		for (var i = 0; i < maxbins; ++i) {
+		i = 0;
+		for (; i < maxbins; ++i) {
 			find_nn(bins, i, nMaxColors);
 			/* Push slot on heap */
 			var err = bins[i].err;
@@ -399,7 +407,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		
 		/* Merge bins which increase error the least */
 		var extbins = maxbins - nMaxColors;
-		for (var i = 0; i < extbins;) {
+		i = 0;
+		for (; i < extbins;) {
 			var tb;
 			/* Use heap to find which bins to merge */
 			for (; ; ) {
@@ -447,7 +456,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		/* Fill palette */
 		var k = 0;
-		for (var i = 0; ; ++k) {
+		i = 0;
+		for (; ; ++k) {
 			var lab1 = new Lab();
 			lab1.alpha = (this.hasSemiTransparency || this.m_transparentPixelIndex >= 0) ? 
 				(Math.clamp(Math.round(bins[i].ac), 0, 0xff) | 0) : 0xff,
