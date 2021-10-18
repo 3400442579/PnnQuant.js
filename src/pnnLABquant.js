@@ -356,21 +356,21 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		else if ((proportional < .018 || proportional > .5) && nMaxColors < 64)
 			quan_rt = 0;
 		
-		var i = 0;
-		for (; i < maxbins - 1; ++i) {
-			bins[i].fw = i + 1;
-			bins[i + 1].bk = i;
+		var j = 0;
+		for (; j < maxbins - 1; ++j) {
+			bins[j].fw = j + 1;
+			bins[j + 1].bk = j;
 			
 			if (quan_rt > 0) {
-				bins[i].cnt = Math.sqrt(bins[i ].cnt);
+				bins[j].cnt = Math.sqrt(bins[j].cnt);
 				if(nMaxColors < 64)
-					bins[i].cnt |= 0;
+					bins[j].cnt |= 0;
 			}
 		}	
 		if (quan_rt > 0) {
-			bins[i].cnt = Math.sqrt(bins[i ].cnt);
+			bins[j].cnt = Math.sqrt(bins[j].cnt);
 			if(nMaxColors < 64)
-				bins[i].cnt |= 0;
+				bins[j].cnt |= 0;
 		}
 
 		var h, l, l2;
@@ -390,8 +390,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		
 		/* Initialize nearest neighbors and build heap of them */
 		var heap = new Uint32Array(bins.length + 1);
-		i = 0;
-		for (; i < maxbins; ++i) {
+		for (var i = 0; i < maxbins; ++i) {
 			find_nn(bins, i, nMaxColors);
 			/* Push slot on heap */
 			var err = bins[i].err;
@@ -407,8 +406,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		
 		/* Merge bins which increase error the least */
 		var extbins = maxbins - nMaxColors;
-		i = 0;
-		for (; i < extbins;) {
+		for (var i = 0; i < extbins;) {
 			var tb;
 			/* Use heap to find which bins to merge */
 			for (; ; ) {
@@ -456,8 +454,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		/* Fill palette */
 		var k = 0;
-		i = 0;
-		for (; ; ++k) {
+		for (var i = 0;  ; ++k) {
 			var lab1 = new Lab();
 			lab1.alpha = (this.hasSemiTransparency || this.m_transparentPixelIndex >= 0) ? 
 				(Math.clamp(Math.round(bins[i].ac), 0, 0xff) | 0) : 0xff,
@@ -576,8 +573,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				a2 = (palette[k] >>> 24) & 0xff;
 				var lab2 = getLab(a2, r2, g2, b2);
 					
-				if(PB < 1)
-					closest[4] = (PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0) | 0;									
+				if(PB < 1) {
+					closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
+					if(nMaxColors < 64)
+						closest[4] |= 0;
+				}					
 				else
 					closest[4] = sqr(a2 - a) / Math.exp(1.5) + sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
 				
