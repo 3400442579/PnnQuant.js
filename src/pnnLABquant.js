@@ -574,9 +574,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				var lab2 = getLab(a2, r2, g2, b2);
 					
 				if(PB < 1) {
-					closest[4] = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
-					if(nMaxColors < 64)
-						closest[4] |= 0;
+					var err = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
+					closest[4] = err > 0xFFFF ? 0xFFFF : err;
 				}					
 				else
 					closest[4] = sqr(a2 - a) / Math.exp(1.5) + sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
