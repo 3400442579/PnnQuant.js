@@ -778,8 +778,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		if (this.hasSemiTransparency)
 			PR = PG = PB = 1;
-		else if(width < 512 || height < 512)
+		else if(width < 512 || height < 512) {
 			PR = 0.299; PG = 0.587; PB = 0.114;
+		}
 
 		this.palette = new Uint32Array(nMaxColors);
 		if (nMaxColors > 2)
