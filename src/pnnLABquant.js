@@ -570,15 +570,16 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				var r2 = (palette[k] & 0xff),
 				g2 = (palette[k] >>> 8) & 0xff,
 				b2 = (palette[k] >>> 16) & 0xff,
-				a2 = (palette[k] >>> 24) & 0xff;
-				var lab2 = getLab(a2, r2, g2, b2);
+				a2 = (palette[k] >>> 24) & 0xff;				
 					
 				if(PB < 1) {
-					var err = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b) + sqr(lab2.B - lab1.B) / 2.0;
+					var err = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b);
 					closest[4] = err > 0xFFFF ? 0xFFFF : err;
 				}					
-				else
+				else {
+					var lab2 = getLab(a2, r2, g2, b2);
 					closest[4] = sqr(a2 - a) / Math.exp(1.5) + sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
+				}
 				
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
@@ -777,6 +778,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		if (this.hasSemiTransparency)
 			PR = PG = PB = 1;
+		else if(width < 512 || height < 512)
+			PR = 0.299; PG = 0.587; PB = 0.114;
 
 		this.palette = new Uint32Array(nMaxColors);
 		if (nMaxColors > 2)
