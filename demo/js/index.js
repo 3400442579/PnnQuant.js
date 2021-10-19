@@ -154,9 +154,9 @@ class Readme extends preact.Component {
 
 		if(cols > pal.length)
 			cols = pal.length;
-		const rows = Math.floor(pal.length / cols);
-		const ratioX = Math.floor(100.0 / cols);
-		let ratioY = Math.floor(100.0 / rows);
+		const rows = Math.ceil(pal.length / cols);
+		const ratioX = 100.0 / cols;
+		let ratioY = 100.0 / rows;
 		if((ratioY * maxHeight) > (ratioX * maxWidth))
 			ratioY = ratioX * maxWidth / maxHeight;		
 		

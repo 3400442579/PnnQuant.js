@@ -68,9 +68,9 @@ function drawPalette(idxi32, width, maxWidth, maxHeight, cols) {
 
 	if(cols > idxi32.length)
 		cols = idxi32.length;
-	var rows = Math.floor(idxi32.length / cols);
-	var ratioX = Math.floor(100.0 / cols);
-	var ratioY = Math.floor(100.0 / rows);
+	var rows = Math.ceil(idxi32.length / cols);
+	var ratioX = 100.0 / cols;
+	var ratioY = 100.0 / rows;
 	if((ratioY * maxHeight) > (ratioX * maxWidth))
 		ratioY = ratioX * maxWidth / maxHeight;
 	
