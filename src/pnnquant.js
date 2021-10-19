@@ -21,7 +21,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	}
 	
 	var PR = .299, PG = .587, PB = .114;
-	var closestMap = [], nearestMap = [];
+	var closestMap = {}, nearestMap = {};
 	
 	function PnnBin() {
 		this.ac = this.rc = this.gc = this.bc = 0;
@@ -291,10 +291,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var closest = closestMap[pixel];
 		if (!closest)
 		{
-			closest = [];
+			closest = new Array(5);
 			closest[2] = closest[3] = 1e100;
 
-			for (; k < nMaxColors; k++)
+			for (; k < nMaxColors; ++k)
 			{
 				var r2 = (palette[k] & 0xff),
 				g2 = (palette[k] >>> 8) & 0xff,

@@ -28,7 +28,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	
 	var PR = .2126, PG = .7152, PB = .0722;
 	var ratio = 1.0;
-	var closestMap = [], pixelMap = [], nearestMap = [];
+	var closestMap = {}, pixelMap = {}, nearestMap = {};
 	
 	function Lab() {
 		this.alpha = this.A = this.B = this.L = 0;
@@ -562,7 +562,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		var closest = closestMap[pixel];
 		if (closest == null) {		
-			closest = [];
+			closest = new Array(5);
 			closest[2] = closest[3] = 0xFFFF;
 
 			for (; k < nMaxColors; ++k) {
