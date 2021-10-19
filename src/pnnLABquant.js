@@ -563,8 +563,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var closest = closestMap[pixel];
 		if (closest == null) {		
 			closest = [];
-			closest[2] = closest[3] = 1e100;
-			var lab1 = getLab(a, r, g, b);
+			closest[2] = closest[3] = 0xFFFF;
 
 			for (; k < nMaxColors; ++k) {
 				var r2 = (palette[k] & 0xff),
@@ -572,14 +571,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				b2 = (palette[k] >>> 16) & 0xff,
 				a2 = (palette[k] >>> 24) & 0xff;				
 					
-				if(PB < 1) {
-					var err = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b);
-					closest[4] = err > 0xFFFF ? 0xFFFF : err;
-				}					
-				else {
-					var lab2 = getLab(a2, r2, g2, b2);
-					closest[4] = sqr(a2 - a) / Math.exp(1.5) + sqr(lab2.L - lab1.L) + sqr(lab2.A - lab1.A) + sqr(lab2.B - lab1.B);
-				}
+				var err = PR * sqr(r2 - r) + PG * sqr(g2 - g) + PB * sqr(b2 - b);
+				if(PB >= 1)
+					err += sqr(a2 - a);
+				closest[4] = err > 0xFFFF ? 0xFFFF : err;
 				
 				if (closest[4] < closest[2]) {
 					closest[1] = closest[0];
@@ -594,7 +589,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				}
 			}
 
-			if (closest[3] == 1e100)
+			if (closest[3] == 0xFFFF)
 				closest[2] = 0;
 		}
 
