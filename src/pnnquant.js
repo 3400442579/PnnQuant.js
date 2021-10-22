@@ -20,7 +20,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		};
 	}
 	
-	var PR = .299, PG = .587, PB = .114;
+	var PR = .2126, PG = .7152, PB = .0722;
 	var closestMap = {}, nearestMap = {};
 	
 	function PnnBin() {
@@ -367,7 +367,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				limtb[i + BLOCK_SIZE] = DITHER_MAX;
 			}
 			for (var i = -DITHER_MAX; i <= DITHER_MAX; ++i)
-				limtb[i + BLOCK_SIZE] = i % 4 == 3 ? 0 : i;
+				limtb[i + BLOCK_SIZE] = i;
 
 			var noBias = this.hasSemiTransparency || nMaxColors < 64;
 			var dir = 1;
@@ -502,6 +502,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		if (nMaxColors <= 32)
             PR = PG = PB = 1;
+		else if(width < 512 || height < 512) {
+			PR = 0.299; PG = 0.587; PB = 0.114;
+		}
 		
 		this.palette = new Uint32Array(nMaxColors);
 		if (nMaxColors > 2)
@@ -554,8 +557,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnQuant.prototype.getDitherFn = function getDitherFn() {
-		var noBias = this.hasSemiTransparency || this.opts.colors < 64;		
-		return noBias ? nearestColorIndex : closestColorIndex;
+		return this.opts.dithering ? nearestColorIndex : closestColorIndex;
 	};
 	
 	PnnQuant.prototype.getColorIndex = function getColorIndex(a, r, g, b) {
