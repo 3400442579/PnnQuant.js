@@ -9,40 +9,29 @@ function quantizeImage(opts) {
 	opts.ditherFn = quant.getDitherFn();
 	opts.getColorIndex = quant.getColorIndex;
 	
-	if(opts.isHQ) {			
-		if (opts.colors < 64 && opts.colors > 32) {
-			if(opts.dithering)
-				return Promise.all([quant.getResult()]);
-			
-			return quant.getResult().then(function(result) {
-				opts.palette = new Uint32Array(result.pal8);
-				opts.indexedPixels = result.indexedPixels;				
-				return Promise.all([result, new BlueNoise(opts).getResult()]);
-			});				
-		}
-
-		opts.paletteOnly = true;
+	if (opts.colors < 64 && opts.colors > 32) {
+		if(opts.dithering)
+			return Promise.all([quant.getResult()]);
+		
 		return quant.getResult().then(function(result) {
-			opts.palette = result.pal8;
-			
-			if(opts.dithering)
-				return Promise.all([result, new GilbertCurve(opts).getResult()]);
-			
-			return new GilbertCurve(opts).getResult().then(function(hc) {					
-				opts.indexedPixels = hc.indexedPixels;
-				return Promise.all([result, new BlueNoise(opts).getResult()]);
-			});				
-		});		
+			opts.palette = new Uint32Array(result.pal8);
+			opts.indexedPixels = result.indexedPixels;				
+			return Promise.all([result, new BlueNoise(opts).getResult()]);
+		});				
 	}
 
-	if(opts.dithering)
-		return Promise.all([quant.getResult()]);
-	
+	opts.paletteOnly = true;
 	return quant.getResult().then(function(result) {
-		opts.palette = new Uint32Array(result.pal8);
-		opts.indexedPixels = result.indexedPixels;
-		return Promise.all([result, new BlueNoise(opts).getResult()]);
-	});
+		opts.palette = result.pal8;
+		
+		if(opts.dithering)
+			return Promise.all([result, new GilbertCurve(opts).getResult()]);
+		
+		return new GilbertCurve(opts).getResult().then(function(hc) {					
+			opts.indexedPixels = hc.indexedPixels;
+			return Promise.all([result, new BlueNoise(opts).getResult()]);
+		});				
+	});	
 }
 
 onmessage = function(e) {	
