@@ -54,23 +54,12 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var wb = bin1.bc;
 		for (var i = bin1.fw; i != 0; i = bins[i].fw)
 		{
-			var n2 = bins[i].cnt, nerr2 = (n1 * n2) / (n1 + n2);
-			if (nerr2 >= err)
-				continue;
+			var nerr = PR * sqr(bins[i].rc - wr) + PG * sqr(bins[i].gc - wg) + PB * sqr(bins[i].bc - wb);
+			if(this.hasSemiTransparency)
+				nerr += sqr(bins[i].ac - wa);
 			
-			var nerr = nerr2 * sqr(bins[i].ac - wa);
-			if (nerr >= err)
-				continue;
-			
-			nerr += nerr2 * sqr(bins[i].rc - wr);
-			if (nerr >= err)
-				continue;
-
-			nerr += nerr2 * sqr(bins[i].gc - wg);
-			if (nerr >= err)
-				continue;
-
-			nerr += nerr2 * sqr(bins[i].bc - wb);				
+			var n2 = bins[i].cnt;
+			nerr *= (n1 * n2) / (n1 + n2);
 			if (nerr >= err)
 				continue;
 			err = nerr;
@@ -213,10 +202,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var k = 0;
 		for (var i = 0; ; ++k)
 		{
-			var a = Math.round(Math.clamp(bins[i].ac, 0, 0xff)),
-			r = Math.round(Math.clamp(bins[i].rc, 0, 0xff)),
-			g = Math.round(Math.clamp(bins[i].gc, 0, 0xff)),
-			b = Math.round(Math.clamp(bins[i].bc, 0, 0xff));
+			var a = Math.clamp(bins[i].ac, 0, 0xff) | 0,
+			r = Math.clamp(bins[i].rc, 0, 0xff) | 0,
+			g = Math.clamp(bins[i].gc, 0, 0xff) | 0,
+			b = Math.clamp(bins[i].bc, 0, 0xff) | 0;
 
 			this.palette[k] = (a << 24) | (b << 16) | (g << 8) | r;
 			if (this.m_transparentPixelIndex >= 0 && this.palette[k] == this.m_transparentColor)
