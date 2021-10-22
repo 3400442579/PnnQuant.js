@@ -8,7 +8,9 @@ class Scene extends preact.Component {
 	}
 	
 	componentDidMount() {
-		eventBus.on("scene", data => this.setState(data));
+		eventBus.on("scene", data => {
+			requestAnimationFrame(() => this.setState(data));
+		});
 		eventBus.on("process", data => {
 			var imgUrl = this.orig.current.src;
 			process(imgUrl);
@@ -135,7 +137,9 @@ class Readme extends preact.Component {
 				height: this.container.offsetHeight,
 			},
 		});
-		eventBus.on("palt", data => this.setState(data));
+		eventBus.on("palt", data => {
+			requestAnimationFrame(() => this.setState(data));
+		});
 	}
 	componentWillUnmount() {
 		eventBus.remove("palt");
