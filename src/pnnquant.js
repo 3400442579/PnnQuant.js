@@ -113,21 +113,21 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (sqr(nMaxColors) / maxbins < .03)
 			quan_rt = 0;
 		
-		if (quan_rt > 0)
-			bins[0].cnt = (Math.sqrt(bins[0].cnt) | 0);
-		else if (quan_rt < 0)
-			bins[0].cnt = (Math.cbrt(bins[0].cnt) | 0);
-		for (var i = 0; i < maxbins - 1; ++i)
+		var j = 0;
+		for (; j < maxbins - 1; ++j)
 		{
-			bins[i].fw = i + 1;
-			bins[i + 1].bk = i;
+			bins[j].fw = j + 1;
+			bins[j + 1].bk = j;
 			
 			if (quan_rt > 0)
-				bins[i + 1].cnt = (Math.sqrt(bins[i + 1].cnt) | 0);
+				bins[j].cnt = (Math.sqrt(bins[j].cnt) | 0);
 			else if (quan_rt < 0)
-				bins[i + 1].cnt = (Math.cbrt(bins[i + 1].cnt) | 0);
+				bins[j].cnt = (Math.cbrt(bins[j].cnt) | 0);
 		}
-		
+		if (quan_rt > 0)
+			bins[j].cnt = (Math.sqrt(bins[j].cnt) | 0);
+		else if (quan_rt < 0)
+			bins[j].cnt = (Math.cbrt(bins[j].cnt) | 0);		
 
 		var h, l, l2;
 		/* Initialize nearest neighbors and build heap of them */
