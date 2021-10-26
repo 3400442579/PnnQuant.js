@@ -89,7 +89,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			bins[index].rc += r;
 			bins[index].gc += g;
 			bins[index].bc += b;
-			bins[index].cnt++;
+			bins[index].cnt += 1.0;
 		}
 
 		/* Cluster nonempty bins at one end of array */
@@ -120,14 +120,14 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			bins[j + 1].bk = j;
 			
 			if (quan_rt > 0)
-				bins[j].cnt = (Math.sqrt(bins[j].cnt) | 0);
+				bins[j].cnt = Math.sqrt(bins[j].cnt) | 0 ;
 			else if (quan_rt < 0)
-				bins[j].cnt = (Math.cbrt(bins[j].cnt) | 0);
+				bins[j].cnt = Math.cbrt(bins[j].cnt) | 0;
 		}
 		if (quan_rt > 0)
-			bins[j].cnt = (Math.sqrt(bins[j].cnt) | 0);
+			bins[j].cnt = Math.sqrt(bins[j].cnt) | 0;
 		else if (quan_rt < 0)
-			bins[j].cnt = (Math.cbrt(bins[j].cnt) | 0);		
+			bins[j].cnt = Math.cbrt(bins[j].cnt) | 0;		
 
 		var h, l, l2;
 		/* Initialize nearest neighbors and build heap of them */
@@ -202,7 +202,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var k = 0;
 		for (var i = 0; ; ++k)
 		{
-			var a = Math.clamp(bins[i].ac, 0, 0xff) | 0,
+			var a = Math.round(Math.clamp(bins[i].ac, 0, 0xff)),
 			r = Math.clamp(bins[i].rc, 0, 0xff) | 0,
 			g = Math.clamp(bins[i].gc, 0, 0xff) | 0,
 			b = Math.clamp(bins[i].bc, 0, 0xff) | 0;
