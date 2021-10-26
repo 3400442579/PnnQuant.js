@@ -185,10 +185,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			var n1 = tb.cnt;
 			var n2 = nb.cnt;
 			var d = 1.0 / (n1 + n2);
-			tb.ac = d * (n1 * tb.ac + n2 * nb.ac);
-			tb.rc = d * (n1 * tb.rc + n2 * nb.rc);
-			tb.gc = d * (n1 * tb.gc + n2 * nb.gc);
-			tb.bc = d * (n1 * tb.bc + n2 * nb.bc);
+			tb.ac = d * Math.round(n1 * tb.ac + n2 * nb.ac);
+			tb.rc = d * Math.round(n1 * tb.rc + n2 * nb.rc);
+			tb.gc = d * Math.round(n1 * tb.gc + n2 * nb.gc);
+			tb.bc = d * Math.round(n1 * tb.bc + n2 * nb.bc);
 			tb.cnt += nb.cnt;
 			tb.mtm = ++i;
 
