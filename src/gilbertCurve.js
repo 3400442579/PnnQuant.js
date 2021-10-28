@@ -14,6 +14,16 @@ Copyright (c) 2021 Miller Cy Chan
 		};
 	}
 	
+	if (!Math.fround) {
+		Math.fround = (function() {
+			var temp = new Float32Array(1);
+			return function fround(x) {
+				temp[0] = +x;
+				return temp[0];
+			}
+		})();
+	}
+	
 	function sign(x) {
     	if(x < 0)
     		return -1;
@@ -81,7 +91,7 @@ Copyright (c) 2021 Miller Cy Chan
 				if(Math.abs(error.p[j]) < DITHER_MAX)
 					continue;
 				
-				error.p[j] /= divisor;				
+				error.p[j] = Math.fround(error.p[j] / divisor);
 			}
 		}
 		errorq.push(error);
@@ -156,21 +166,24 @@ Copyright (c) 2021 Miller Cy Chan
          * a sequence of 9 pixels.
          */
 		errorq = [];
-		weights = [];
+		weights = new Array(DITHER_MAX);
 		lookup = new Uint32Array(65536);
         var weightRatio = Math.pow(BLOCK_SIZE + 1.0,  1.0 / (DITHER_MAX - 1.0));
         var weight = 1.0, sumweight = 0.0;
         for(var c = 0; c < DITHER_MAX; ++c)
         {
             errorq.push(new ErrorBox(0));
-            sumweight += (weights[DITHER_MAX - c - 1] = 1.0 / weight);
+			var d = Math.fround(1.0 / weight);
+            sumweight += (weights[DITHER_MAX - c - 1] = d);
             weight *= weightRatio;
         }
         
         weight = 0.0; /* Normalize */
-        for(var c = 0; c < DITHER_MAX; ++c)
-            weight += (weights[c] /= sumweight);
-        weights[0] += 1.0 - weight; 		
+        for(var c = 0; c < DITHER_MAX; ++c) {
+			weights[c] = Math.fround(weights[c] / sumweight);
+            weight += weights[c];
+		}
+        weights[0] += Math.fround(1.0 - weight); 		
 		
 		ditherFn = this.opts.ditherFn;
 		getColorIndex = this.opts.getColorIndex;

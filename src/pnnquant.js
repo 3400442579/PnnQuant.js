@@ -20,14 +20,23 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		};
 	}
 	
+	if (!Math.fround) {
+		Math.fround = (function() {
+			var temp = new Float32Array(1);
+			return function fround(x) {
+				temp[0] = +x;
+				return temp[0];
+			}
+		})();
+	}
+	
 	var PR = .2126, PG = .7152, PB = .0722;
 	var closestMap = {}, nearestMap = {};
 	
 	function PnnBin() {
 		this.ac = this.rc = this.gc = this.bc = 0;
-		this.cnt = 0;
+		this.cnt = this.err = 0.0;
 		this.nn = this.fw = this.bk = this.tm = this.mtm = 0;
-		this.err = 0.0;
 	}
 	
 	function getARGBIndex(a, r, g, b, hasSemiTransparency, hasTransparency) {
@@ -65,7 +74,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			err = nerr;
 			nn = i;
 		}
-		bin1.err = err;
+		bin1.err = Math.fround(err);
 		bin1.nn = nn;
 	}
 	
@@ -99,7 +108,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (bins[i] == null)
 				continue;
 
-			var d = 1.0 / bins[i].cnt;
+			var d = Math.fround(1.0 / bins[i].cnt);
 			bins[i].ac *= d;
 			bins[i].rc *= d;
 			bins[i].gc *= d;
@@ -119,13 +128,21 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			bins[j].fw = j + 1;
 			bins[j + 1].bk = j;
 			
-			if (quan_rt > 0)
-				bins[j].cnt = Math.sqrt(bins[j].cnt) | 0 ;
+			if (quan_rt > 0) {				
+				if(nMaxColors < 64)
+					bins[j].cnt = Math.fround(Math.sqrt(bins[j].cnt));
+				else
+					bins[j].cnt = Math.sqrt(bins[j].cnt) | 0;
+			}
 			else if (quan_rt < 0)
 				bins[j].cnt = Math.cbrt(bins[j].cnt) | 0;
 		}
-		if (quan_rt > 0)
-			bins[j].cnt = Math.sqrt(bins[j].cnt) | 0;
+		if (quan_rt > 0) {				
+			if(nMaxColors < 64)
+				bins[j].cnt = Math.fround(Math.sqrt(bins[j].cnt));
+			else
+				bins[j].cnt = Math.sqrt(bins[j].cnt) | 0;
+		}
 		else if (quan_rt < 0)
 			bins[j].cnt = Math.cbrt(bins[j].cnt) | 0;		
 
@@ -136,7 +153,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		{
 			find_nn(bins, i);
 			/* Push slot on heap */
-			var err = bins[i].err;
+			var err = Math.fround(bins[i].err);
 			for (l = ++heap[0]; l > 1; l = l2)
 			{
 				l2 = l >> 1;
@@ -168,7 +185,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					tb.tm = i;
 				}
 				/* Push slot down */
-				var err = bins[b1].err;
+				var err = Math.fround(bins[b1].err);
 				for (l = 1; (l2 = l + l) <= heap[0]; l = l2)
 				{
 					if ((l2 < heap[0]) && (bins[heap[l2]].err > bins[heap[l2 + 1]].err))
@@ -184,7 +201,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			var nb = bins[tb.nn];
 			var n1 = tb.cnt;
 			var n2 = nb.cnt;
-			var d = 1.0 / (n1 + n2);
+			var d = Math.fround(1.0 / (n1 + n2));
 			tb.ac = d * Math.round(n1 * tb.ac + n2 * nb.ac);
 			tb.rc = d * Math.round(n1 * tb.rc + n2 * nb.rc);
 			tb.gc = d * Math.round(n1 * tb.gc + n2 * nb.gc);
