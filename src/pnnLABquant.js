@@ -500,7 +500,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			g2 = (palette[i] >>> 8) & 0xff,
 			b2 = (palette[i] >>> 16) & 0xff,
 			a2 = (palette[i] >>> 24) & 0xff;
-			var curdist = this.hasSemiTransparency ? sqr(a2 - a) / Math.exp(1.5) : 0;
+			var curdist = this.hasSemiTransparency ? sqr(a2 - a) * 0.75 : 0;
 			if (curdist > mindist)
 				continue;
 			
