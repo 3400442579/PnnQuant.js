@@ -9,6 +9,10 @@ class Scene extends preact.Component {
 	
 	componentDidMount() {
 		eventBus.on("scene", data => {
+			if(data.imgUrl == this.state.imgUrl) {
+				eventBus.dispatch("app", {enabled: true});
+				return;
+			}
 			requestAnimationFrame(() => this.setState(data));
 		});
 		eventBus.on("process", data => {
