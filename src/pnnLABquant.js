@@ -754,9 +754,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if(this.opts.alphaThreshold)
 			this.alphaThreshold = this.opts.alphaThreshold;
 		
-		pixelMap = [];
-		closestMap = [];
-		nearestMap = [];
+		pixelMap = {};
+		closestMap = {};
+		nearestMap = {};
 		
 		for (var i = 0; i < pixels.length; ++i) {
 			var a = (pixels[i] >>> 24) & 0xff;

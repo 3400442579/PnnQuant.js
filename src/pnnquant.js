@@ -219,7 +219,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var k = 0;
 		for (var i = 0; ; ++k)
 		{
-			var a = Math.round(Math.clamp(bins[i].ac, 0, 0xff)),
+			var a = Math.clamp(bins[i].ac, 0, 0xff) | 0,
 			r = Math.clamp(bins[i].rc, 0, 0xff) | 0,
 			g = Math.clamp(bins[i].gc, 0, 0xff) | 0,
 			b = Math.clamp(bins[i].bc, 0, 0xff) | 0;
@@ -489,8 +489,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if(this.opts.alphaThreshold)
 			this.alphaThreshold = this.opts.alphaThreshold;
 		
-		closestMap = [];
-		nearestMap = [];
+		closestMap = {};
+		nearestMap = {};
 		
 		for (var i = 0; i < pixels.length; ++i) {
 			var a = (pixels[i] >>> 24) & 0xff;
@@ -506,7 +506,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			}
 		}
 
-		if (nMaxColors <= 32)
+		if (this.hasSemiTransparency || nMaxColors <= 32)
             PR = PG = PB = 1;
 		else if(width < 512 || height < 512) {
 			PR = 0.299; PG = 0.587; PB = 0.114;
