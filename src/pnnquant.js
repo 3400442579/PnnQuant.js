@@ -153,7 +153,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		{
 			find_nn(bins, i);
 			/* Push slot on heap */
-			var err = Math.fround(bins[i].err);
+			var err = bins[i].err;
 			for (l = ++heap[0]; l > 1; l = l2)
 			{
 				l2 = l >> 1;
@@ -185,7 +185,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 					tb.tm = i;
 				}
 				/* Push slot down */
-				var err = Math.fround(bins[b1].err);
+				var err = bins[b1].err;
 				for (l = 1; (l2 = l + l) <= heap[0]; l = l2)
 				{
 					if ((l2 < heap[0]) && (bins[heap[l2]].err > bins[heap[l2 + 1]].err))
@@ -225,10 +225,9 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = Math.clamp(bins[i].bc, 0, 0xff) | 0;
 
 			this.palette[k] = (a << 24) | (b << 16) | (g << 8) | r;
-			if (this.m_transparentPixelIndex >= 0 && this.palette[k] == this.m_transparentColor)
-			{
+			if (this.m_transparentPixelIndex >= 0 && this.palette[k] == this.m_transparentColor) {
 				var temp = this.palette[0];
-				this.palette[0] = this.palette[k];
+				this.palette[0] = this.m_transparentColor;
 				this.palette[k] = temp;
 			}
 
@@ -264,11 +263,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			g2 = (palette[i] >>> 8) & 0xff,
 			b2 = (palette[i] >>> 16) & 0xff,
 			a2 = (palette[i] >>> 24) & 0xff;
-			var curdist = sqr(a2 - a);
-			if (curdist > mindist)
-				continue;
-
-			curdist += PR * sqr(r2 - r);
+			var curdist = PR * sqr(r2 - r);
 			if (curdist > mindist)
 				continue;
 
@@ -277,6 +272,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				continue;
 
 			curdist += PB * sqr(b2 - b);
+			if (curdist > mindist)
+				continue;
+			
+			curdist += sqr(a2 - a);
 			if (curdist > mindist)
 				continue;
 
@@ -306,7 +305,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				g2 = (palette[k] >>> 8) & 0xff,
 				b2 = (palette[k] >>> 16) & 0xff,
 				a2 = (palette[k] >>> 24) & 0xff;
-				closest[4] = Math.abs(a - a2) + Math.abs(r - r2) + Math.abs(g - g2) + Math.abs(b - b2);
+				closest[4] = Math.abs(r - r2) + Math.abs(g - g2) + Math.abs(b - b2) + Math.abs(a - a2);
 				if (closest[4] < closest[2])
 				{
 					closest[1] = closest[0];
@@ -499,7 +498,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			{				
 				if (a == 0) {
 					this.m_transparentPixelIndex = i;
-					this.m_transparentColor = pixels[i];
+					this.m_transparentColor = pixels[i] = (a << 24) | (102 << 16) | (102 <<  8) | 51;
 				}
 				else
 					this.hasSemiTransparency = true;
@@ -530,15 +529,19 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 		if (this.m_transparentPixelIndex >= 0)
 		{
-			var k = this.qPixels[this.m_transparentPixelIndex];
+			if(this.hasSemiTransparency)
+				this.opts.divisor = 1.75;
+			
+			var k = this.qPixels[this.m_transparentPixelIndex];			
 			if (nMaxColors > 2)
 				this.palette[k] = this.m_transparentColor;
-			else if (palette[k] != this.m_transparentColor) {
-				var temp = palette[0];
-				this.palette[0] = palette[1];
+			else if (this.palette[k] != this.m_transparentColor) {
+				var temp = this.palette[0];
+				this.palette[0] = this.palette[1];
 				this.palette[1] = temp;
 			}
 		}
+		
 		if(this.opts.paletteOnly)
 			return this.palette;
 		
