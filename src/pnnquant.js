@@ -6,7 +6,6 @@ Copyright (c) 2018-2021 Miller Cy Chan
 (function(){
 	function PnnQuant(opts) {
 		this.opts = opts || {};
-		this.alphaThreshold = 0;
 		this.hasSemiTransparency = false;		
 		this.m_transparentPixelIndex = -1;
 		this.m_transparentColor = 0;
@@ -30,6 +29,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		})();
 	}
 	
+	var alphaThreshold = 0;
 	var PR = .2126, PG = .7152, PB = .0722;
 	var closestMap = {}, nearestMap = {};
 	
@@ -225,7 +225,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			b = Math.clamp(bins[i].bc, 0, 0xff) | 0;
 
 			this.palette[k] = (a << 24) | (b << 16) | (g << 8) | r;
-			if (this.m_transparentPixelIndex >= 0 && this.palette[k] == this.m_transparentColor) {
+			if (this.m_transparentPixelIndex >= 0 && a == 0) {
 				var temp = this.palette[0];
 				this.palette[0] = this.m_transparentColor;
 				this.palette[k] = temp;
@@ -253,7 +253,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
-		if (a <= this.alphaThreshold)
+		if (a <= alphaThreshold)
             return k;
 
 		var mindist = 1e100;
@@ -486,7 +486,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var pixels = this.opts.pixels, width = this.opts.width, height = this.opts.height,
 			nMaxColors = this.opts.colors, dither = this.opts.dithering;
 		if(this.opts.alphaThreshold)
-			this.alphaThreshold = this.opts.alphaThreshold;
+			alphaThreshold = this.opts.alphaThreshold;
 		
 		closestMap = {};
 		nearestMap = {};
@@ -566,7 +566,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnQuant.prototype.getDitherFn = function getDitherFn() {
-		return this.opts.dithering ? nearestColorIndex : closestColorIndex;
+		return this.opts.dithering && !this.hasSemiTransparency ? nearestColorIndex : closestColorIndex;
 	};
 	
 	PnnQuant.prototype.getColorIndex = function getColorIndex(a, r, g, b) {
