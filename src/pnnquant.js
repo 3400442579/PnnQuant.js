@@ -63,12 +63,23 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var wb = bin1.bc;
 		for (var i = bin1.fw; i != 0; i = bins[i].fw)
 		{
-			var nerr = PR * sqr(bins[i].rc - wr) + PG * sqr(bins[i].gc - wg) + PB * sqr(bins[i].bc - wb);
-			if(this.hasSemiTransparency)
-				nerr += sqr(bins[i].ac - wa);
+			var n2 = bins[i].cnt, nerr2 = (n1 * n2) / (n1 + n2);
+			if (nerr2 >= err)
+				continue;
 			
-			var n2 = bins[i].cnt;
-			nerr *= (n1 * n2) / (n1 + n2);
+			var nerr = nerr2 * sqr(bins[i].ac - wa);
+			if (nerr >= err)
+				continue;
+			
+			nerr += nerr2 * PR * sqr(bins[i].rc - wr);
+			if (nerr >= err)
+				continue;
+
+			nerr += nerr2 * PG * sqr(bins[i].gc - wg);
+			if (nerr >= err)
+				continue;
+
+			nerr += nerr2 * PB * sqr(bins[i].bc - wb);				
 			if (nerr >= err)
 				continue;
 			err = nerr;
@@ -108,7 +119,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (bins[i] == null)
 				continue;
 
-			var d = Math.fround(1.0 / bins[i].cnt);
+			var d = 1.0 / bins[i].cnt;
 			bins[i].ac *= d;
 			bins[i].rc *= d;
 			bins[i].gc *= d;
@@ -530,7 +541,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (this.m_transparentPixelIndex >= 0)
 		{
 			if(this.hasSemiTransparency)
-				this.opts.divisor = 1.75;
+				this.opts.divisor = 1.25;
 			
 			var k = this.qPixels[this.m_transparentPixelIndex];			
 			if (nMaxColors > 2)
@@ -566,7 +577,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	};
 	
 	PnnQuant.prototype.getDitherFn = function getDitherFn() {
-		return this.opts.dithering && !this.hasSemiTransparency ? nearestColorIndex : closestColorIndex;
+		return this.opts.dithering ? nearestColorIndex : closestColorIndex;
 	};
 	
 	PnnQuant.prototype.getColorIndex = function getColorIndex(a, r, g, b) {
