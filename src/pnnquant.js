@@ -508,8 +508,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if (a < 0xff)
 			{				
 				if (a == 0) {
-					this.m_transparentPixelIndex = i;
 					this.m_transparentColor = pixels[i];
+					this.m_transparentPixelIndex = i;
+					if(this.m_transparentColor == 0)
+						pixels[i] = this.m_transparentColor = (a << 24) | (102 << 16) | (102 <<  8) | 51;
 				}
 				else
 					this.hasSemiTransparency = true;

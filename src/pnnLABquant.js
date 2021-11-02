@@ -377,7 +377,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (quan_rt != 0 && nMaxColors < 64) {
 			if (proportional > .018 && proportional < .022)
 				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(4.732) / Object.keys(pixelMap).length);
-		else
+			else
 				ratio = Math.min(1.0, proportional + nMaxColors * Math.exp(3.845) / Object.keys(pixelMap).length);
 		}		
 		else
@@ -474,8 +474,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		if (k < nMaxColors - 1) {
 			var palette = this.palette;
 			this.palette = new Uint32Array(k + 2);
-			this.palette[0] = (0xff << 24) | (0 << 16) | (0 << 8) | 0;
-			for(var j = 1; j <= k + 1; ++j)
+			var j = 0;
+			if(this.m_transparentPixelIndex >= 0)
+				this.palette[j++] = palette[j];
+			this.palette[j++] = (0xff << 24) | (0 << 16) | (0 << 8) | 0;
+			for(; j <= k + 1; ++j)
 				this.palette[j] = palette[j - 1];
 		}
 	};
@@ -763,8 +766,10 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			
 			if (a < 0xff) {				
 				if (a == 0) {
+					this.m_transparentColor = pixels[i];
 					this.m_transparentPixelIndex = i;
-					this.m_transparentColor = pixels[i] = (a << 24) | (102 << 16) | (102 <<  8) | 51;
+					if(this.m_transparentColor == 0)
+						pixels[i] = this.m_transparentColor = (a << 24) | (102 << 16) | (102 <<  8) | 51;
 				}
 				else
 					this.hasSemiTransparency = true;
