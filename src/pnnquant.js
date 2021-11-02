@@ -502,14 +502,14 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		closestMap = {};
 		nearestMap = {};
 		
-		for (var i = 0; i < pixels.length; ++i) {
+		for (var i = pixels.length - 1; i >= 0; --i) {
 			var a = (pixels[i] >>> 24) & 0xff;
 			
 			if (a < 0xff)
 			{				
 				if (a == 0) {
 					this.m_transparentPixelIndex = i;
-					this.m_transparentColor = pixels[i] = (a << 24) | (102 << 16) | (102 <<  8) | 51;
+					this.m_transparentColor = pixels[i];
 				}
 				else
 					this.hasSemiTransparency = true;
