@@ -25,7 +25,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		};
 	}
 	
-	var alphaThreshold = 0;
+	var alphaThreshold = 0, hasSemiTransparency = false;
 	var PR = .2126, PG = .7152, PB = .0722;
 	var ratio = 1.0;
 	var closestMap = {}, pixelMap = {}, nearestMap = {};
@@ -500,11 +500,11 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			g2 = (palette[i] >>> 8) & 0xff,
 			b2 = (palette[i] >>> 16) & 0xff,
 			a2 = (palette[i] >>> 24) & 0xff;
-			var curdist = this.hasSemiTransparency ? sqr(a2 - a) : 0;
+			var curdist = hasSemiTransparency ? sqr(a2 - a) : 0;
 			if (curdist > mindist)
 				continue;
 			
-			if (nMaxColors > 32 || nMaxColors <= 4 || this.hasSemiTransparency) {
+			if (nMaxColors > 32 || nMaxColors <= 4 || hasSemiTransparency) {
 				curdist += PR * sqr(r2 - r);
 				if (curdist > mindist)
 					continue;
@@ -776,6 +776,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		else if(width < 512 || height < 512) {
 			PR = 0.299; PG = 0.587; PB = 0.114;
 		}
+		hasSemiTransparency = this.hasSemiTransparency;
 
 		this.palette = new Uint32Array(nMaxColors);
 		if (nMaxColors > 2)
