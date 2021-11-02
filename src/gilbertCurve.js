@@ -43,7 +43,6 @@ Copyright (c) 2021 Miller Cy Chan
 	var qPixels;
 	var errorq = [];
 	var weights = [];
-	var lookup;
     
 	var DITHER_MAX = 9;
 	var BLOCK_SIZE = 343.0;	
@@ -65,14 +64,7 @@ Copyright (c) 2021 Miller Cy Chan
 		var a_pix = Math.clamp(error.p[3], 0, 0xff) | 0;
 		
 		var c2 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;			
-		if(nMaxColors < 64) {
-			var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);
-			if (lookup[offset] == 0)
-				lookup[offset] = ((pixel >>> 24) & 0xff == 0) ? 1 : ditherFn(palette, nMaxColors, c2) + 1;
-			qPixels[bidx] = lookup[offset] - 1;
-		}
-		else
-			qPixels[bidx] = ditherFn(palette, nMaxColors, c2);
+		qPixels[bidx] = ditherFn(palette, nMaxColors, c2);
 
 		errorq.shift();
 		c2 = palette[qPixels[bidx]];
@@ -167,7 +159,6 @@ Copyright (c) 2021 Miller Cy Chan
          */
 		errorq = [];
 		weights = new Array(DITHER_MAX);
-		lookup = new Uint32Array(65536);
         var weightRatio = Math.pow(BLOCK_SIZE + 1.0,  1.0 / (DITHER_MAX - 1.0));
         var weight = 1.0, sumweight = 0.0;
         for(var c = 0; c < DITHER_MAX; ++c)

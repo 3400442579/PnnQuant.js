@@ -185,9 +185,7 @@
 	];
     
     BlueNoise.prototype.dither = function()
-    {    	
-		var lookup = new Uint32Array(65536);
-		
+    {    			
 		var ditherFn = this.opts.ditherFn;
 		var getColorIndex = this.opts.getColorIndex;
 		var width = this.opts.width;
@@ -221,15 +219,7 @@
                 a_pix = Math.clamp(a_pix + (adj * (a_pix - a2)), 0, 0xff) | 0;
                 
                 c1 = (a_pix << 24) | (b_pix << 16) | (g_pix <<  8) | r_pix;				
-				if(nMaxColors < 64) {
-					var offset = getColorIndex(a_pix, r_pix, g_pix, b_pix);       	
-					
-					if (lookup[offset] == 0)
-						lookup[offset] = ((pixel >>> 24) & 0xff == 0) ? 1 : ditherFn(palette, nMaxColors, c1) + 1;
-					qPixels[x + y * width] = lookup[offset] - 1;
-				}
-				else
-					qPixels[x + y * width] = ditherFn(palette, nMaxColors, c1);
+				qPixels[x + y * width] = ditherFn(palette, nMaxColors, c1);
             }
         }		
 		

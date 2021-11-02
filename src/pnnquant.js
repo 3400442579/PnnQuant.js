@@ -555,7 +555,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			}
 		}
 		
-		if(!(this.hasSemiTransparency && this.opts.colors <= 32) && this.opts.paletteOnly)
+		if(this.opts.paletteOnly)
 			return this.palette;
 		
 		this.qPixels = this.quantize_image(pixels, nMaxColors, width, height, dither);
@@ -590,7 +590,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var quant = this;
 		return new Promise(function(resolve, reject) {
 			var result = quant.quantizeImage();
-			if(!(quant.hasSemiTransparency && quant.opts.colors <= 32) && quant.opts.paletteOnly)
+			if(quant.opts.paletteOnly)
 				resolve({ pal8: result, indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() });
 			else
 				resolve({ img8: result, pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() });

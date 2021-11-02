@@ -463,7 +463,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			this.palette[k] = LAB2RGB(lab1);
 			if (this.m_transparentPixelIndex >= 0 && lab1.alpha == 0) {
 				var temp = this.palette[0];
-				this.palette[0] = this.palette[k];
+				this.palette[0] = this.m_transparentColor;
 				this.palette[k] = temp;
 			}
 
@@ -810,7 +810,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				this.palette[1] = temp;
 			}
 		}
-		if(!(this.hasSemiTransparency && this.opts.colors <= 32) && this.opts.paletteOnly)
+		if(this.opts.paletteOnly)
 			return this.palette;
 
 		this.quantize_image(pixels, nMaxColors, width, height, dither);
@@ -846,7 +846,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var quant = this;
 		return new Promise(function(resolve, reject) {
 			var result = quant.quantizeImage();
-			if(!(quant.hasSemiTransparency && quant.opts.colors <= 32) && quant.opts.paletteOnly)
+			if(quant.opts.paletteOnly)
 				resolve({ pal8: result, indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() });
 			else
 				resolve({ img8: result, pal8: quant.getPalette(), indexedPixels: quant.getIndexedPixels(), transparent: quant.getTransparentIndex(), type: quant.getImgType() });
