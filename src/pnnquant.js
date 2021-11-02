@@ -502,7 +502,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		closestMap = {};
 		nearestMap = {};
 		
-		for (var i = pixels.length - 1; i >= 0; --i) {
+		for (var i = 0; i < pixels.length; ++i) {
 			var a = (pixels[i] >>> 24) & 0xff;
 			
 			if (a < 0xff)
@@ -545,7 +545,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			if(this.hasSemiTransparency)
 				this.opts.divisor = 1.25;
 			
-			var k = this.qPixels[this.m_transparentPixelIndex];			
+			var k = this.getDitherFn()(this.palette, pixels.length, pixels[this.m_transparentPixelIndex]);
 			if (nMaxColors > 2)
 				this.palette[k] = this.m_transparentColor;
 			else if (this.palette[k] != this.m_transparentColor) {
