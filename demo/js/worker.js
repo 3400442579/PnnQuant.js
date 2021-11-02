@@ -22,9 +22,6 @@ function quantizeImage(opts) {
 
 	opts.paletteOnly = true;
 	return quant.getResult().then(function(result) {
-		if(quant.hasSemiTransparency && quant.opts.colors <= 32)
-			return Promise.all([result]);
-		
 		opts.palette = result.pal8;
 		
 		if(opts.dithering)
