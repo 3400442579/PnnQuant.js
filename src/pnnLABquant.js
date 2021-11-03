@@ -562,6 +562,8 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
+		if (a <= alphaThreshold)
+            return k;
 
 		var closest = closestMap[pixel];
 		if (closest == null) {		
@@ -799,7 +801,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		
 		if (this.m_transparentPixelIndex >= 0) {
 			if(this.hasSemiTransparency)
-				this.opts.divisor = 1.5;
+				this.opts.divisor = 1.75;
 			
 			var k = this.getDitherFn()(this.palette, pixels.length, pixels[this.m_transparentPixelIndex]);
 			if (nMaxColors > 2)
