@@ -800,8 +800,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		}
 		
 		if (this.m_transparentPixelIndex >= 0) {
-			if(this.hasSemiTransparency)
-				this.opts.divisor = 1.75;
+			this.opts.divisor = this.hasSemiTransparency ? 1.75 : 1.5;
 			
 			var k = this.getDitherFn()(this.palette, pixels.length, pixels[this.m_transparentPixelIndex]);
 			if (nMaxColors > 2)
