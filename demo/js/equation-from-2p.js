@@ -170,10 +170,10 @@ function EquationEditor() {
 	const {setWorkouts} = useContext(WorkbookContext);
 	
 	useEffect(() => {
-		if (!state.workouts)
+		if (!rows)
 			return; 
 
-		if(state.workouts.length == 0)
+		if(rows.length == 0)
 			draw();
 	});
 	
@@ -181,17 +181,22 @@ function EquationEditor() {
 		switch (action.type) {
 			case 'b1':
 				twoPForm(state.x1, state.y1, state.x2, state.y2);
-				return { ...state, workouts: rows };
+				setWorkouts({workouts: rows});
+				return { ...state };
 			case 'b2':
 				knForm(state.x1, state.y1, state.x2, state.y2);
-				return { ...state, workouts: rows };
+				setWorkouts({workouts: rows});
+				return { ...state };
 			case 'b3':
 				kenForm(state.x1, state.y1, state.x2, state.y2);
-				return { ...state, workouts: rows };
+				setWorkouts({workouts: rows});
+				return { ...state };
 			case 'change':
 				return { ...state, [action.id] : action.value - 0 };
 			case 'clear':
-				return { ...state, workouts: [] };
+				rows = [];
+				setWorkouts({workouts: rows});
+				return { ...state };
 			default:
 				throw new Error();
 		}

@@ -247,10 +247,10 @@ function EquationEditor() {
 	const {setWorkouts} = useContext(WorkbookContext);
 	
 	useEffect(() => {
-		if (!state.workouts)
+		if (!rows)
 			return; 
 
-		if(state.workouts.length == 0)
+		if(rows.length == 0)
 			draw();
 	});
 	
@@ -258,14 +258,18 @@ function EquationEditor() {
 		switch (action.type) {
 			case 'b1':
 				show_xpa_b(state.a, state.b, state.y);
-				return { ...state, workouts: rows };
+				setWorkouts({workouts: rows});
+				return { ...state };
 			case 'b2':
 				show_x_xpa_b(state.a, state.b, state.y);
-				return { ...state, workouts: rows };
+				setWorkouts({workouts: rows});
+				return { ...state };
 			case 'change':
 				return { ...state, [action.id] : action.value - 0 };
 			case 'clear':
-				return { ...state, workouts: [] };
+				rows = [];
+				setWorkouts({workouts: rows});
+				return { ...state };
 			default:
 				throw new Error();
 		}
