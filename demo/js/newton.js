@@ -237,20 +237,15 @@
 const React = preactCompat, ReactDOM = preactCompat;
 const {useContext, useEffect, useReducer, useState} = React;
 
-const EditorContext = React.createContext();
 const WorkbookContext = React.createContext();
 
 const initialState = { a: 1, b: 2, y: 48};
 	
-function EquationEditor() {
-	const {setState} = useContext(EditorContext);
+function EquationEditor() {	
 	const {setWorkouts} = useContext(WorkbookContext);
-	
+		
 	useEffect(() => {
-		if (!rows)
-			return; 
-
-		if(rows.length == 0)
+		if(rows && rows.length == 0)
 			draw();
 	});
 	
@@ -375,9 +370,7 @@ class App extends React.Component {
 		return [
 			React.createElement(WorkbookContext.Provider, {value: {state: this.state, setWorkouts: this.setWorkouts} }, 			
 			[
-				React.createElement(EditorContext.Provider, {value: {state, setState} },
-					React.createElement(EquationEditor, {key: "equationEditor"})
-				),
+				React.createElement(EquationEditor, {key: "equationEditor"}),
 				React.createElement(Workbook, {key: "workbook"})
 			]),
 			React.createElement(GraphPaper, {key: "graphPaper"}),
