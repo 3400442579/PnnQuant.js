@@ -158,7 +158,7 @@
 	var ctx, color, axes, rows;	
 		
 const React = preactCompat, ReactDOM = preactCompat;
-const {useContext, useState} = React;
+const {useContext, useEffect, useReducer, useState} = React;
 
 const EditorContext = React.createContext();
 const WorkbookContext = React.createContext();
@@ -166,34 +166,51 @@ const WorkbookContext = React.createContext();
 const initialState = { x1: 1, y1: 2, x2: 3, y2: 8};
 	
 function EquationEditor() {
-	const {state, setState} = useContext(EditorContext);
+	const {setState} = useContext(EditorContext);
 	const {setWorkouts} = useContext(WorkbookContext);
 	
-	const onB1Click = e => {
-	    twoPForm(state.x1, state.y1, state.x2, state.y2);
-		setWorkouts({workouts: rows});
-	}
-	const onB2Click = e => {
-	    knForm(state.x1, state.y1, state.x2, state.y2);
-		setWorkouts({workouts: rows});
-	}
-	const onB3Click = e => {
-	    kenForm(state.x1, state.y1, state.x2, state.y2);
-		setWorkouts({workouts: rows});
-	}
+	useEffect(() => {
+		if (!state.workouts)
+			return; 
+
+		if(state.workouts.length == 0)
+			draw();
+	});
+	
+	const reducer = (state, action) => {
+		switch (action.type) {
+			case 'b1':
+				twoPForm(state.x1, state.y1, state.x2, state.y2);
+				return { ...state, workouts: rows };
+			case 'b2':
+				knForm(state.x1, state.y1, state.x2, state.y2);
+				return { ...state, workouts: rows };
+			case 'b3':
+				kenForm(state.x1, state.y1, state.x2, state.y2);
+				return { ...state, workouts: rows };
+			case 'change':
+				return { ...state, [action.id] : action.value - 0 };
+			case 'clear':
+				return { ...state, workouts: [] };
+			default:
+				throw new Error();
+		}
+	};
+	
+	const [state, dispatch] = useReducer(reducer, initialState);
+	
+	const onB1Click = e => dispatch({ type: 'b1' });
+
+	const onB2Click = e => dispatch({ type: 'b2' });
+
+	const onB3Click = e => dispatch({ type: 'b3' });
+
 	const onChange = e => {
 		const {id, value} = e.currentTarget;
-		setState(prevState => {
-			return {
-				...prevState,
-				[id] : value - 0
-			}
-		});
-	}
-	const onClear = e => {
-	    setWorkouts({workouts: []});
-		draw();
-	}
+		dispatch({ type: 'change', id: id, value: value });
+	};
+	
+	const onClear = e => dispatch({ type: 'clear' });
 	
 	return React.createElement("form", {key: "form", novalidate: ""},
 	[

@@ -235,7 +235,7 @@
 	var ctx, color, axes, rows;
 
 const React = preactCompat, ReactDOM = preactCompat;
-const {useContext, useState} = React;
+const {useContext, useEffect, useReducer, useState} = React;
 
 const EditorContext = React.createContext();
 const WorkbookContext = React.createContext();
@@ -243,30 +243,46 @@ const WorkbookContext = React.createContext();
 const initialState = { a: 1, b: 2, y: 48};
 	
 function EquationEditor() {
-	const {state, setState} = useContext(EditorContext);
+	const {setState} = useContext(EditorContext);
 	const {setWorkouts} = useContext(WorkbookContext);
 	
-	const onB1Click = e => {
-	    show_xpa_b(state.a, state.b, state.y);
-		setWorkouts({workouts: rows});
-	}
-	const onB2Click = e => {
-	    show_x_xpa_b(state.a, state.b, state.y);
-		setWorkouts({workouts: rows});
-	}
+	useEffect(() => {
+		if (!state.workouts)
+			return; 
+
+		if(state.workouts.length == 0)
+			draw();
+	});
+	
+	const reducer = (state, action) => {
+		switch (action.type) {
+			case 'b1':
+				show_xpa_b(state.a, state.b, state.y);
+				return { ...state, workouts: rows };
+			case 'b2':
+				show_x_xpa_b(state.a, state.b, state.y);
+				return { ...state, workouts: rows };
+			case 'change':
+				return { ...state, [action.id] : action.value - 0 };
+			case 'clear':
+				return { ...state, workouts: [] };
+			default:
+				throw new Error();
+		}
+	};
+	
+	const [state, dispatch] = useReducer(reducer, initialState);
+	
+	const onB1Click = e => dispatch({ type: 'b1' });
+
+	const onB2Click = e => dispatch({ type: 'b2' });
+
 	const onChange = e => {
 		const {id, value} = e.currentTarget;
-		setState(prevState => {
-			return {
-				...prevState,
-				[id] : value - 0
-			}
-		});
-	}
-	const onClear = e => {
-	    setWorkouts({workouts: []});
-		draw();
-	}
+		dispatch({ type: 'change', id: id, value: value });
+	};
+	
+	const onClear = e => dispatch({ type: 'clear' });
 	
 	return React.createElement("form", {key: "form", novalidate: ""},
 	[
