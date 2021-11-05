@@ -557,20 +557,19 @@ Copyright (c) 2018-2021 Miller Cy Chan
 	}
 	
 	function closestColorIndex(palette, nMaxColors, pixel) {
-		var k = 0;
 		var r = (pixel & 0xff),
 		g = (pixel >>> 8) & 0xff,
 		b = (pixel >>> 16) & 0xff,
 		a = (pixel >>> 24) & 0xff;
 		if (a <= alphaThreshold)
-            return k;
+            return 0;
 
 		var closest = closestMap[pixel];
 		if (closest == null) {		
 			closest = new Array(5);
 			closest[2] = closest[3] = 0xFFFF;
 
-			for (; k < nMaxColors; ++k) {
+			for (var k = 0; k < nMaxColors; ++k) {
 				var r2 = (palette[k] & 0xff),
 				g2 = (palette[k] >>> 8) & 0xff,
 				b2 = (palette[k] >>> 16) & 0xff,
@@ -596,15 +595,13 @@ Copyright (c) 2018-2021 Miller Cy Chan
 
 			if (closest[3] == 0xFFFF)
 				closest[2] = 0;
+			
+			closestMap[pixel] = closest;
 		}
 
 		if (closest[2] == 0 || (getRandomInt(32767) % (closest[3] + closest[2])) <= closest[3])
-			k = closest[0];
-		else
-			k = closest[1];
-
-		closestMap[pixel] = closest;
-		return k;
+			return closest[0];
+		return closest[1];
 	}
 	
 	function CalcDitherPixel(a, r, g, b, clamp, rowerr, cursor, noBias)
