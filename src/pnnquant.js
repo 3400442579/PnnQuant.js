@@ -308,7 +308,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 		var closest = closestMap[pixel];
 		if (!closest)
 		{
-			closest = new Array(5);
+			closest = new Array(4);
 			closest[2] = closest[3] = 0xFFFF;
 
 			for (; k < nMaxColors; ++k)
@@ -319,18 +319,22 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				a2 = (palette[k] >>> 24) & 0xff;
 				
 				var err = Math.abs(r - r2) + Math.abs(g - g2) + Math.abs(b - b2) + Math.abs(a - a2);
-				closest[4] = err > 0xFFFF ? 0xFFFF : err;
-				if (closest[4] < closest[2])
+				if(err > 0xFFFF)
+					err = 0xFFFF;
+				
+				if (err < closest[2])
 				{
 					closest[1] = closest[0];
 					closest[3] = closest[2];
 					closest[0] = k;
-					closest[2] = closest[4];
+					if(err > palette.length)
+						closest[0] = nearestColorIndex(palette, nMaxColors, pixel);
+					closest[2] = err;
 				}
-				else if (closest[4] < closest[3])
+				else if (err < closest[3])
 				{
 					closest[1] = k;
-					closest[3] = closest[4];
+					closest[3] = err;
 				}
 			}
 
