@@ -326,9 +326,7 @@ Copyright (c) 2018-2021 Miller Cy Chan
 				{
 					closest[1] = closest[0];
 					closest[3] = closest[2];
-					closest[0] = k;
-					if(err > palette.length)
-						closest[0] = nearestColorIndex(palette, nMaxColors, pixel);
+					closest[0] = k;					
 					closest[2] = err;
 				}
 				else if (err < closest[3])
@@ -339,13 +337,19 @@ Copyright (c) 2018-2021 Miller Cy Chan
 			}
 
 			if (closest[3] == 0xFFFF)
-				closest[2] = 0;
+				closest[1] = closest[0];
 			
 			closestMap[pixel] = closest;
 		}
 
-		if (closest[2] == 0 || (Math.floor(Math.random() * 32767) % (closest[3] + closest[2])) <= closest[3])
+		if (closest[2] == 0 || (Math.floor(Math.random() * 32767) % (closest[3] + closest[2])) <= closest[3]) {
+			if(closest[2] > palette.length)
+				return nearestColorIndex(palette, nMaxColors, pixel);
 			return closest[0];
+		}
+		
+		if(closest[3] > palette.length)
+			return nearestColorIndex(palette, nMaxColors, pixel);
 		return closest[1];
 	}
 	
